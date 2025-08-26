@@ -135,12 +135,12 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-sm text-gray-700">
-                      <strong>You:</strong> I have an idea for a B2B productivity app but I'm not sure about the market fit.
+                      <strong>You:</strong> I have an idea for a B2B productivity app but I&apos;m not sure about the market fit.
                     </p>
                   </div>
                   <div className="bg-blue-100 p-3 rounded-lg">
                     <p className="text-sm text-gray-700">
-                      <strong>Mary:</strong> Let's explore this systematically. What specific productivity problem does your app solve? Start by sketching your user workflow on the canvas →
+                      <strong>Mary:</strong> Let&apos;s explore this systematically. What specific productivity problem does your app solve? Start by sketching your user workflow on the canvas →
                     </p>
                   </div>
                 </div>

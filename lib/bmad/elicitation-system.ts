@@ -466,7 +466,7 @@ export class ElicitationSystem {
     // Simple analysis - could be enhanced with NLP
     const words = response.toLowerCase().split(/\s+/);
     
-    let category = technique.category;
+    const category = technique.category;
     let estimatedTime = 5; // Default
     
     // Adjust based on response complexity

@@ -32,9 +32,31 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# supabase
+.supabase/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+logs/
+
+# temporary files
+.tmp/
+tmp/
 
 # typescript
 *.tsbuildinfo
