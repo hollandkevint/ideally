@@ -12,8 +12,8 @@ interface Workspace {
   description: string
   created_at: string
   updated_at: string
-  chat_context: any[]
-  canvas_elements: any[]
+  chat_context: Array<Record<string, unknown>>
+  canvas_elements: Array<Record<string, unknown>>
 }
 
 export default function DashboardPage() {

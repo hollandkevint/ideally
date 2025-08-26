@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
+  // const router = useRouter() // Unused for now
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,7 +125,7 @@ export default function LoginPage() {
 
           <div className="text-center space-y-2">
             <p className="text-secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-primary hover:text-primary-hover">
                 Sign up here
               </Link>

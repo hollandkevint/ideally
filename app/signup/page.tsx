@@ -12,7 +12,7 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
-  const router = useRouter()
+  // const router = useRouter() // Unused for now
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()

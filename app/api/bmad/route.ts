@@ -121,7 +121,7 @@ async function handleCreateSession(
   params: { 
     workspaceId: string; 
     pathway: PathwayType; 
-    initialContext?: any;
+    initialContext?: Record<string, unknown>;
   }
 ) {
   const { workspaceId, pathway, initialContext } = params;

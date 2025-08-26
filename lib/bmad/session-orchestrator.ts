@@ -1,9 +1,6 @@
 import { 
   BmadSession, 
   PathwayType, 
-  SessionProgress,
-  SessionContext,
-  SessionOutputs,
   BmadPhase,
   BmadTemplate,
   BmadMethodError,
@@ -12,7 +9,6 @@ import {
 } from './types';
 import { bmadTemplateEngine } from './template-engine';
 import { pathwayRouter } from './pathway-router';
-import { elicitationSystem } from './elicitation-system';
 import { BmadDatabase } from './database';
 
 /**
@@ -22,7 +18,7 @@ export interface SessionConfiguration {
   userId: string;
   workspaceId: string;
   pathway: PathwayType;
-  initialContext?: any;
+  initialContext?: Record<string, unknown>;
 }
 
 /**
@@ -33,7 +29,7 @@ export interface SessionAdvancement {
   nextAction: 'continue_phase' | 'advance_phase' | 'complete_template' | 'complete_session';
   message: string;
   elicitationNeeded: boolean;
-  templateUpdate?: any;
+  templateUpdate?: Record<string, unknown>;
   phaseTransition?: PhaseTransitionInfo;
 }
 

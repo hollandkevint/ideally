@@ -22,7 +22,7 @@ interface Workspace {
   name: string
   description: string
   chat_context: ChatMessage[]
-  canvas_elements: any[]
+  canvas_elements: Array<Record<string, unknown>>
   user_id: string
 }
 
@@ -303,7 +303,7 @@ export default function WorkspacePage() {
                 <div>
                   <p className="font-medium text-blue-900 mb-1">Welcome to your Strategic Session!</p>
                   <p className="text-blue-700 text-sm">
-                    I'm Mary, your AI strategic advisor. I'm here to help you think through ideas, validate concepts, 
+                    I&apos;m Mary, your AI strategic advisor. I&apos;m here to help you think through ideas, validate concepts, 
                     and develop actionable plans. What challenge would you like to explore today?
                   </p>
                 </div>

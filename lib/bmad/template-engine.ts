@@ -50,7 +50,7 @@ export class BmadTemplateEngine {
    */
   private async parseTemplateYaml(yamlContent: string): Promise<BmadTemplate> {
     try {
-      const parsed = yaml.load(yamlContent) as any;
+      const parsed = yaml.load(yamlContent) as Record<string, unknown>;
       
       if (!parsed || typeof parsed !== 'object') {
         throw new Error('Invalid YAML structure');
@@ -69,7 +69,7 @@ export class BmadTemplateEngine {
   /**
    * Transform parsed YAML object into BmadTemplate structure
    */
-  private transformYamlToTemplate(yamlData: any): BmadTemplate {
+  private transformYamlToTemplate(yamlData: Record<string, unknown>): BmadTemplate {
     // Validate required top-level fields
     if (!yamlData.metadata || !yamlData.phases) {
       throw new Error('Template missing required metadata or phases');
@@ -100,16 +100,21 @@ export class BmadTemplateEngine {
   /**
    * Transform YAML phases into BmadPhase objects
    */
-  private transformPhases(phasesData: any): BmadPhase[] {
+  private transformPhases(phasesData: unknown): BmadPhase[] {
+    let normalizedPhases: Record<string, unknown>[];
+    
     if (!Array.isArray(phasesData)) {
       // Handle object format where phases are keyed
-      phasesData = Object.entries(phasesData).map(([id, phaseData]) => ({
+      const phasesObj = phasesData as Record<string, Record<string, unknown>>;
+      normalizedPhases = Object.entries(phasesObj).map(([id, phaseData]) => ({
         id,
-        ...(phaseData as any)
+        ...phaseData
       }));
+    } else {
+      normalizedPhases = phasesData as Record<string, unknown>[];
     }
 
-    return phasesData.map((phaseData: any) => ({
+    return normalizedPhases.map((phaseData) => ({
       id: phaseData.id,
       name: phaseData.name,
       description: phaseData.description || '',
@@ -125,7 +130,7 @@ export class BmadTemplateEngine {
   /**
    * Transform outputs configuration
    */
-  private transformOutputs(outputsData: any[]): any[] {
+  private transformOutputs(outputsData: Record<string, unknown>[]): Record<string, unknown>[] {
     return outputsData.map(output => ({
       id: output.id,
       name: output.name,
@@ -138,7 +143,7 @@ export class BmadTemplateEngine {
   /**
    * Transform validation rules
    */
-  private transformValidationRules(rulesData: any[]): ValidationRule[] {
+  private transformValidationRules(rulesData: Record<string, unknown>[]): ValidationRule[] {
     return rulesData.map(rule => ({
       type: rule.type,
       value: rule.value,

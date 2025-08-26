@@ -26,7 +26,7 @@ interface ChatMessage {
 interface CanvasElement {
   id: string
   type: 'excalidraw' | 'mermaid'
-  data: any
+  data: Record<string, unknown>
   position: { x: number; y: number }
   created_at: Date
 }

@@ -51,7 +51,7 @@ export interface TemplateOutput {
 
 export interface ValidationRule {
   type: 'required' | 'minLength' | 'maxLength' | 'pattern' | 'custom';
-  value: any;
+  value: string | number | boolean | RegExp;
   errorMessage: string;
 }
 
@@ -63,7 +63,7 @@ export interface PhaseTransition {
 
 export interface TransitionCondition {
   type: 'completion' | 'time' | 'user_choice' | 'quality_threshold';
-  value: any;
+  value: string | number | boolean;
 }
 
 // Session-related types
@@ -127,16 +127,23 @@ export interface SessionProgress {
   nextSteps: string[];
 }
 
+export interface UserResponse {
+  text?: string;
+  data?: Record<string, unknown>;
+  elicitationChoice?: number;
+  timestamp: Date;
+}
+
 export interface SessionContext {
-  userResponses: { [key: string]: any };
+  userResponses: { [key: string]: UserResponse };
   elicitationHistory: ElicitationHistory[];
   personaEvolution: PersonaEvolution[];
   knowledgeReferences: KnowledgeReference[];
 }
 
 export interface SessionOutputs {
-  phaseOutputs: { [phaseId: string]: any };
-  templateOutputs: { [templateId: string]: any };
+  phaseOutputs: { [phaseId: string]: Record<string, unknown> };
+  templateOutputs: { [templateId: string]: Record<string, unknown> };
   finalDocuments: GeneratedDocument[];
   actionItems: ActionItem[];
 }
@@ -158,7 +165,7 @@ export interface NumberedOption {
 
 export interface ElicitationResult {
   selectedPath: string;
-  generatedContext: any;
+  generatedContext: Record<string, unknown>;
   nextPhaseHint?: string;
 }
 
@@ -189,7 +196,7 @@ export class BmadMethodError extends Error {
   constructor(
     message: string,
     public code: string,
-    public context?: any
+    public context?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'BmadMethodError';
@@ -197,7 +204,7 @@ export class BmadMethodError extends Error {
 }
 
 export class TemplateValidationError extends BmadMethodError {
-  constructor(message: string, public templateId: string, public validation: any) {
+  constructor(message: string, public templateId: string, public validation: Record<string, unknown>) {
     super(message, 'TEMPLATE_VALIDATION_ERROR', { templateId, validation });
   }
 }
@@ -259,5 +266,5 @@ export interface SessionMetadata {
 
 export interface SkipCondition {
   type: string;
-  value: any;
+  value: string | number | boolean;
 }

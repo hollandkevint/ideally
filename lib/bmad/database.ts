@@ -4,11 +4,7 @@ import {
   PathwayType, 
   ElicitationHistory, 
   PersonaEvolution,
-  KnowledgeReference,
-  SessionOutputs,
   PhaseTimeAllocation,
-  SessionProgress,
-  BmadKnowledgeEntry,
   ActionItem,
   GeneratedDocument,
   BmadMethodError
@@ -60,7 +56,7 @@ export interface UserResponseRow {
   phase_id: string;
   prompt_id: string;
   response_text?: string;
-  response_data?: any;
+  response_data?: Record<string, unknown>;
   elicitation_choice?: number;
   timestamp: string;
 }
@@ -70,10 +66,10 @@ export interface ElicitationHistoryRow {
   session_id: string;
   phase_id: string;
   template_id: string;
-  options: any;
+  options: Record<string, unknown>;
   user_selection: string;
   selected_path: string;
-  generated_context?: any;
+  generated_context?: Record<string, unknown>;
   next_phase_hint?: string;
   timestamp: string;
 }
@@ -230,7 +226,7 @@ export class BmadDatabase {
     try {
       const supabase = await createClient();
       
-      const updateData: any = {};
+      const updateData: Record<string, unknown> = {};
       if (updates.currentPhase !== undefined) updateData.current_phase = updates.currentPhase;
       if (updates.currentTemplate !== undefined) updateData.current_template = updates.currentTemplate;
       if (updates.overallCompletion !== undefined) updateData.overall_completion = updates.overallCompletion;
@@ -262,7 +258,7 @@ export class BmadDatabase {
     promptId: string,
     response: {
       text?: string;
-      data?: any;
+      data?: Record<string, unknown>;
       elicitationChoice?: number;
     }
   ): Promise<void> {

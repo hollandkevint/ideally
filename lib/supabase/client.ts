@@ -28,17 +28,17 @@ export type Database = {
       user_workspace: {
         Row: {
           user_id: string
-          workspace_state: any
+          workspace_state: Record<string, unknown>
           updated_at: string
         }
         Insert: {
           user_id: string
-          workspace_state?: any
+          workspace_state?: Record<string, unknown>
           updated_at?: string
         }
         Update: {
           user_id?: string
-          workspace_state?: any
+          workspace_state?: Record<string, unknown>
           updated_at?: string
         }
       }
