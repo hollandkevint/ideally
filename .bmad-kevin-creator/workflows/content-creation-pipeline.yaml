@@ -1,0 +1,169 @@
+name: content-creation-pipeline
+description: End-to-end process for creating high-impact content
+version: 1.0.0
+
+phases:
+  - name: ideation
+    description: "Develop and validate content ideas"
+    duration: "1-2 days"
+    agents:
+      - thought-partner
+    steps:
+      - id: brainstorm
+        action: "Generate initial ideas based on current trends and Kevin's expertise"
+        agent: thought-partner
+        command: "*brainstorm"
+        
+      - id: validate
+        action: "Test idea uniqueness and value proposition"
+        agent: thought-partner
+        command: "*stress-test"
+        
+      - id: angle
+        action: "Find unique perspective that only Kevin can provide"
+        agent: thought-partner
+        command: "*angle"
+    
+    outputs:
+      - validated_idea
+      - unique_angle
+      - target_audience
+      - key_insights
+
+  - name: creation
+    description: "Transform idea into platform-specific content"
+    duration: "1-2 days"
+    agents:
+      - linkedin-writer
+      - blog-writer
+    steps:
+      - id: choose_format
+        action: "Determine if idea suits LinkedIn post, blog article, or both"
+        decision_criteria:
+          linkedin: "Single insight, timely, discussion-worthy"
+          blog: "Complex topic, multiple insights, evergreen value"
+          
+      - id: write_linkedin
+        condition: "format includes linkedin"
+        action: "Create LinkedIn post with viral potential"
+        agent: linkedin-writer
+        command: "*create-post"
+        
+      - id: write_blog
+        condition: "format includes blog"
+        action: "Develop comprehensive blog article"
+        agent: blog-writer
+        command: "*create-article"
+    
+    outputs:
+      - draft_content
+      - supporting_materials
+      - visual_recommendations
+
+  - name: optimization
+    description: "Edit and enhance content for maximum impact"
+    duration: "0.5-1 day"
+    agents:
+      - content-editor
+      - hook-optimizer
+    steps:
+      - id: ruthless_edit
+        action: "Apply Kevin's writing principles without mercy"
+        agent: content-editor
+        command: "*edit-ruthlessly"
+        
+      - id: hook_optimization
+        action: "Test and refine opening for maximum engagement"
+        agent: hook-optimizer
+        command: "*optimize"
+        
+      - id: final_polish
+        action: "Last pass for perfection"
+        agent: content-editor
+        command: "*final-polish"
+    
+    outputs:
+      - polished_content
+      - quality_score
+      - platform_optimizations
+
+  - name: distribution
+    description: "Publish and promote content strategically"
+    duration: "0.5 day"
+    agents:
+      - narrative-architect
+    steps:
+      - id: timing
+        action: "Determine optimal publishing time"
+        considerations:
+          - audience_timezone
+          - platform_best_practices
+          - competing_content
+          
+      - id: metadata
+        action: "Optimize titles, tags, descriptions"
+        platform_specific: true
+        
+      - id: cross_promotion
+        action: "Plan distribution across channels"
+        agent: narrative-architect
+        command: "*distribution-strategy"
+    
+    outputs:
+      - publishing_schedule
+      - promotion_plan
+      - engagement_strategy
+
+quality_gates:
+  - phase: ideation
+    criteria:
+      - unique_angle_identified
+      - aligns_with_kevin_expertise
+      - clear_audience_value
+      
+  - phase: creation
+    criteria:
+      - follows_writing_principles
+      - includes_concrete_examples
+      - authentic_voice
+      
+  - phase: optimization
+    criteria:
+      - passes_quality_checklist
+      - zero_passive_voice
+      - hook_effectiveness_tested
+      
+  - phase: distribution
+    criteria:
+      - platform_optimized
+      - engagement_plan_ready
+      - metrics_tracking_setup
+
+success_metrics:
+  linkedin:
+    - engagement_rate: ">10%"
+    - comments: ">20"
+    - reshares: ">5"
+    - profile_views: ">100"
+    
+  blog:
+    - read_time: ">5 minutes"
+    - scroll_depth: ">75%"
+    - shares: ">10"
+    - backlinks: ">2"
+
+escalation_points:
+  - trigger: "Idea validation fails"
+    action: "Return to brainstorm with thought-partner"
+    
+  - trigger: "Content doesn't match voice"
+    action: "Review with content-editor using principles"
+    
+  - trigger: "Low predicted engagement"
+    action: "Rework with hook-optimizer"
+
+continuous_improvement:
+  - Track performance metrics
+  - Update swipe file with successes
+  - Refine templates based on results
+  - Adjust workflow timing as needed

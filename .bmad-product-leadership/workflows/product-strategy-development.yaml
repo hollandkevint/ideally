@@ -1,0 +1,307 @@
+workflow:
+  id: product-strategy-development
+  name: Product Strategy Development Workflow
+  version: 1.0
+  description: >-
+    Comprehensive workflow for developing product strategy using SVPG methodologies.
+    Creates customer-centric, evidence-based product strategy that guides empowered
+    teams toward meaningful business outcomes and sustainable competitive advantage.
+
+phases:
+  - id: discovery-foundation
+    name: Customer Discovery & Market Research
+    description: >-
+      Establish deep customer understanding and market insights that form the
+      foundation of strategic decision-making.
+    agents:
+      - product-exploration-lead
+      - product-coach
+    tasks:
+      - design-discovery-plan
+      - assess-product-maturity
+    templates:
+      - discovery-plan-tmpl
+      - product-maturity-assessment-tmpl
+    outputs:
+      - Customer discovery plan
+      - Market research insights
+      - Competitive landscape analysis
+      - Product maturity baseline
+    duration: 3-4 weeks
+    success_criteria:
+      - 20+ customer interviews completed
+      - Clear customer segments identified
+      - Key market trends documented
+      - Current capabilities assessed
+
+  - id: strategic-analysis
+    name: Strategic Analysis & Positioning
+    description: >-
+      Synthesize customer insights and market research into strategic
+      framework including positioning, differentiation, and opportunity prioritization.
+    agents:
+      - fractional-product-advisor
+      - product-exploration-lead
+    tasks:
+      - develop-product-strategy
+      - assess-product-opportunity
+    templates:
+      - product-strategy-tmpl
+      - opportunity-assessment-tmpl
+    outputs:
+      - Product positioning statement
+      - Value proposition framework
+      - Competitive differentiation strategy
+      - Market opportunity assessment
+    duration: 2-3 weeks
+    success_criteria:
+      - Clear positioning defined
+      - Unique value props articulated
+      - Competitive advantages identified
+      - Market sizing validated
+
+  - id: strategic-themes
+    name: Strategic Theme Definition
+    description: >-
+      Define 3-5 strategic themes that will guide product development investments
+      and team empowerment decisions over the strategy horizon.
+    agents:
+      - fractional-product-advisor
+      - product-coach
+    tasks:
+      - develop-product-strategy
+    templates:
+      - product-strategy-tmpl
+    outputs:
+      - Strategic theme definitions
+      - Investment allocation framework
+      - Success metrics for each theme
+      - Cross-theme dependency mapping
+    duration: 1-2 weeks
+    success_criteria:
+      - 3-5 strategic themes defined
+      - Clear investment priorities
+      - Measurable success criteria
+      - Team alignment achieved
+
+  - id: roadmap-development
+    name: High-Level Roadmap Creation
+    description: >-
+      Create outcome-focused roadmap aligned with strategic themes that provides
+      direction while preserving team autonomy and discovery.
+    agents:
+      - fractional-product-advisor
+      - zero-to-one-product-builder
+      - growth-product-lead
+    tasks:
+      - develop-product-strategy
+      - validate-product-concept
+    templates:
+      - product-strategy-tmpl
+      - product-concept-tmpl
+    outputs:
+      - Now/Next/Later roadmap
+      - Outcome-based milestones
+      - Feature hypothesis documentation
+      - Success measurement framework
+    duration: 2-3 weeks
+    success_criteria:
+      - Clear 12-month roadmap
+      - Outcome-focused milestones
+      - Team empowerment preserved
+      - Stakeholder alignment achieved
+
+  - id: measurement-framework
+    name: Success Measurement Design
+    description: >-
+      Establish comprehensive measurement framework that tracks progress toward
+      strategic objectives and enables data-driven iteration.
+    agents:
+      - growth-product-lead
+      - product-operations-lead
+    tasks:
+      - develop-growth-strategy
+      - establish-product-metrics
+    templates:
+      - growth-strategy-tmpl
+      - product-metrics-tmpl
+    outputs:
+      - North Star metric definition
+      - Leading/lagging indicator framework
+      - OKR structure and targets
+      - Measurement cadence and reviews
+    duration: 1-2 weeks
+    success_criteria:
+      - North Star metric defined
+      - Complete metrics hierarchy
+      - Tracking infrastructure planned
+      - Review processes established
+
+  - id: team-empowerment
+    name: Team Empowerment Framework
+    description: >-
+      Design organizational structure and empowerment model that enables teams
+      to execute strategy autonomously while maintaining alignment.
+    agents:
+      - product-coach
+      - product-operations-lead
+    tasks:
+      - assess-product-maturity
+      - design-coaching-plan
+    templates:
+      - coaching-plan-tmpl
+      - team-empowerment-tmpl
+    checklists:
+      - product-team-readiness-checklist
+      - empowerment-indicators-checklist
+    outputs:
+      - Team structure recommendations
+      - Empowerment authority matrix
+      - Decision-making frameworks
+      - Coaching and development plans
+    duration: 2-3 weeks
+    success_criteria:
+      - Clear team boundaries defined
+      - Decision authority established
+      - Coaching plans created
+      - Empowerment readiness validated
+
+  - id: implementation-planning
+    name: Strategy Implementation Planning
+    description: >-
+      Create detailed implementation plan including resource requirements,
+      timeline, risk mitigation, and change management approach.
+    agents:
+      - fractional-product-advisor
+      - product-operations-lead
+      - product-coach
+    tasks:
+      - plan-capability-scaling
+      - create-gtm-strategy
+    templates:
+      - scaling-plan-tmpl
+      - gtm-strategy-tmpl
+    outputs:
+      - Implementation roadmap
+      - Resource requirement analysis
+      - Risk mitigation strategies
+      - Change management plan
+    duration: 1-2 weeks
+    success_criteria:
+      - Detailed implementation plan
+      - Resource needs identified
+      - Risk factors addressed
+      - Change strategy defined
+
+  - id: strategy-communication
+    name: Strategy Communication & Alignment
+    description: >-
+      Execute comprehensive strategy communication plan to achieve organization-wide
+      understanding and alignment on strategic direction.
+    agents:
+      - fractional-product-advisor
+      - product-coach
+    tasks:
+      - facilitate-strategy-session
+    templates:
+      - strategy-session-tmpl
+    outputs:
+      - Strategy presentation materials
+      - Stakeholder alignment sessions
+      - Documentation and resources
+      - Feedback collection and iteration
+    duration: 2-3 weeks
+    success_criteria:
+      - Strategy clearly communicated
+      - Stakeholder buy-in achieved
+      - Questions and concerns addressed
+      - Implementation readiness confirmed
+
+decision_points:
+  - id: customer-insights-validation
+    after_phase: discovery-foundation
+    criteria:
+      - Clear customer segments identified
+      - Pain points and needs validated
+      - Market size opportunity confirmed
+      - Competitive landscape understood
+    fail_action: Extend discovery phase or pivot focus
+
+  - id: strategic-clarity-check
+    after_phase: strategic-analysis
+    criteria:
+      - Positioning statement resonates with stakeholders
+      - Value propositions are differentiated
+      - Market opportunity is compelling
+      - Strategy aligns with business objectives
+    fail_action: Iterate on positioning and analysis
+
+  - id: roadmap-feasibility-review
+    after_phase: roadmap-development
+    criteria:
+      - Roadmap is realistic given resources
+      - Success metrics are achievable
+      - Team capabilities align with requirements
+      - Timeline supports business needs
+    fail_action: Adjust scope or timeline
+
+  - id: implementation-readiness
+    after_phase: team-empowerment
+    criteria:
+      - Teams have necessary empowerment
+      - Decision frameworks are clear
+      - Capability gaps are addressed
+      - Organizational support is confirmed
+    fail_action: Address empowerment and capability gaps
+
+collaboration_points:
+  - Weekly strategy development sessions during analysis phases
+  - Daily standups during intensive discovery period
+  - Cross-functional workshops for roadmap development
+  - Regular stakeholder check-ins throughout process
+  - Executive reviews at each decision point
+
+tools_required:
+  - Customer interview and research tools
+  - Competitive analysis platforms
+  - Strategic planning and visualization tools
+  - Collaboration and documentation systems
+  - Presentation and communication tools
+
+success_metrics:
+  - Customer interview completion rate: 100%
+  - Stakeholder alignment score: 85%+
+  - Strategy clarity rating: 4.5/5
+  - Implementation readiness: 90%+
+  - Team empowerment readiness: 85%+
+
+risk_factors:
+  - Insufficient customer access or insights
+  - Stakeholder misalignment on priorities
+  - Resource constraints limiting implementation
+  - Organizational resistance to change
+  - Market conditions changing during development
+  - Competitive pressures requiring rapid response
+
+mitigation_strategies:
+  - Invest early in customer access and research infrastructure
+  - Engage stakeholders throughout process, not just at end
+  - Develop multiple resource scenarios and contingency plans
+  - Address change management proactively with clear communication
+  - Monitor market conditions and build flexibility into strategy
+  - Focus on sustainable competitive advantages
+
+exit_criteria:
+  - Comprehensive product strategy documented and approved
+  - Clear measurement framework established
+  - Empowered teams ready to execute
+  - Implementation plan with resource allocation
+  - Organization-wide alignment and understanding
+  - Regular review and iteration processes established
+
+next_workflows:
+  - Individual team strategy execution workflows
+  - Quarterly strategy review and iteration
+  - Product discovery and validation workflows
+  - Growth strategy implementation
+  - Platform development workflows

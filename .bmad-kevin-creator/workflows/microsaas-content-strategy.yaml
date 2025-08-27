@@ -1,0 +1,310 @@
+name: microsaas-content-strategy
+description: Content strategy for Kevin's solopreneur journey and MicroSaaS development
+version: 1.0.0
+
+phases:
+  - name: pre_launch_foundation
+    description: "Build audience and validate ideas before product launch"
+    duration: "Months 1-6"
+    agents:
+      - microsaas-advisor
+      - thought-partner
+      - linkedin-writer
+    objectives:
+      - build_solopreneur_brand: "Establish Kevin as credible indie builder"
+      - validate_market_need: "Test ideas through content engagement"
+      - document_journey: "Authentic building-in-public narrative"
+      - grow_relevant_audience: "Attract potential customers and supporters"
+    
+    steps:
+      - id: journey_documentation_start
+        action: "Begin authentic documentation of transition"
+        agent: microsaas-advisor
+        command: "*journey-update"
+        content_types:
+          - origin_story: "Why Kevin is going solo"
+          - early_struggles: "Real challenges of independence"
+          - learning_process: "Skills being developed"
+          - idea_validation: "How he's testing concepts"
+        
+      - id: idea_validation_content
+        action: "Use content to test product concepts"
+        agent: thought-partner
+        command: "*challenge"
+        content_approaches:
+          - problem_exploration: "Deep dive into pain points"
+          - solution_hypothesis: "Proposed approaches for feedback"
+          - market_research_sharing: "Insights from customer interviews"
+          - contrarian_takes: "Challenge existing solutions"
+        
+      - id: audience_building
+        action: "Grow community of potential customers"
+        agent: linkedin-writer
+        command: "*create-post"
+        targeting:
+          - data_product_managers: "Kevin's professional peers"
+          - healthcare_tech_leaders: "Domain expertise audience"
+          - fellow_solopreneurs: "Journey companions and supporters"
+          - technical_founders: "Kindred spirits building products"
+
+  - name: product_development_transparency
+    description: "Share the actual building process"
+    duration: "Months 7-12"
+    agents:
+      - microsaas-advisor
+      - data-product-writer
+      - narrative-architect
+    objectives:
+      - build_anticipation: "Generate interest in upcoming product"
+      - demonstrate_capability: "Show Kevin can actually build"
+      - create_feedback_loops: "Get input during development"
+      - maintain_authenticity: "Real struggles and breakthroughs"
+    
+    steps:
+      - id: development_documentation
+        action: "Share real product development process"
+        agent: microsaas-advisor
+        command: "*product-story"
+        content_series:
+          - technical_decisions: "Architecture and technology choices"
+          - design_process: "UX/UI development thinking"
+          - customer_feedback: "How user input shapes product"
+          - setbacks_and_pivots: "When things don't go as planned"
+        
+      - id: expertise_demonstration
+        action: "Show technical credibility through building"
+        agent: data-product-writer
+        command: "*implementation-guide"
+        content_focus:
+          - technical_deep_dives: "How specific features work"
+          - integration_challenges: "Real technical problems solved"
+          - scalability_planning: "Building for growth"
+          - security_considerations: "Healthcare compliance requirements"
+        
+      - id: narrative_coherence
+        action: "Maintain consistent story arc"
+        agent: narrative-architect
+        command: "*story-connect"
+        elements:
+          - journey_progression: "How story evolves over time"
+          - theme_consistency: "Recurring messages and values"
+          - audience_engagement: "Community building through narrative"
+          - future_vision: "Where this all leads"
+
+  - name: launch_and_traction
+    description: "Product launch and early growth content"
+    duration: "Months 13-18"
+    agents:
+      - microsaas-advisor
+      - hook-optimizer
+      - content-editor
+    objectives:
+      - successful_launch: "Generate initial customers and buzz"
+      - traction_building: "Show growth and validation"
+      - community_nurturing: "Support early adopters"
+      - iterative_improvement: "Use feedback for product evolution"
+    
+    steps:
+      - id: launch_narrative
+        action: "Craft compelling product launch story"
+        agent: microsaas-advisor
+        command: "*launch-story"
+        launch_content:
+          - origin_to_reality: "Full journey from idea to product"
+          - customer_validation: "Real users solving real problems"
+          - technical_achievement: "What was actually built"
+          - future_roadmap: "Where product is heading"
+        
+      - id: viral_launch_content
+        action: "Maximize reach and engagement for launch"
+        agent: hook-optimizer
+        command: "*viral-check"
+        viral_strategies:
+          - multiple_hook_testing: "A/B test different angles"
+          - platform_optimization: "Tailor for each channel"
+          - timing_coordination: "Sequence across platforms"
+          - engagement_amplification: "Encourage sharing and discussion"
+        
+      - id: quality_maintenance
+        action: "Ensure authenticity during high-visibility period"
+        agent: content-editor
+        command: "*authenticity-check"
+        quality_focus:
+          - voice_consistency: "Still sounds like Kevin"
+          - value_delivery: "Helpful even if not interested in product"
+          - transparency_maintenance: "Honest about challenges"
+          - community_focus: "Supporting others, not just selling"
+
+  - name: growth_and_scaling
+    description: "Scale product and personal brand together"
+    duration: "Months 19-24"
+    agents:
+      - narrative-architect
+      - microsaas-advisor
+      - data-product-writer
+    objectives:
+      - sustainable_growth: "Build systems for consistent content"
+      - market_expansion: "Reach new customer segments"
+      - product_evolution: "Document feature development"
+      - thought_leadership: "Establish expertise in building MicroSaaS"
+    
+    steps:
+      - id: scaling_narrative
+        action: "Document transition from product to business"
+        agent: narrative-architect
+        command: "*evolution-plan"
+        scaling_themes:
+          - business_operations: "Systems and processes"
+          - team_building: "When and how to hire"
+          - market_expansion: "New customer segments"
+          - product_roadmap: "Feature development priorities"
+        
+      - id: success_transparency
+        action: "Share real metrics and business insights"
+        agent: microsaas-advisor
+        command: "*revenue-story"
+        transparency_areas:
+          - revenue_metrics: "Actual numbers (within comfort level)"
+          - customer_success: "Real user outcomes and stories"
+          - operational_challenges: "What's hard about running SaaS"
+          - learning_insights: "What Kevin has discovered"
+        
+      - id: expertise_synthesis
+        action: "Develop frameworks from experience"
+        agent: data-product-writer
+        command: "*framework-build"
+        knowledge_sharing:
+          - microsaas_frameworks: "Reusable approaches"
+          - technical_patterns: "Architecture that works"
+          - market_insights: "What Kevin learned about customers"
+          - solopreneur_wisdom: "Advice for other builders"
+
+content_types_by_phase:
+  pre_launch:
+    linkedin_posts:
+      - "Why I'm leaving corporate to build solo"
+      - "Here's the problem I can't stop thinking about"
+      - "Interviewed 50 potential customers. Here's what I learned"
+      - "Building my first prototype. Here's what I'm learning"
+    
+    blog_articles:
+      - "The Real Reason I'm Going Solo (It's Not What You Think)"
+      - "Finding Product-Market Fit: My Customer Interview Process"
+      - "Technical Decisions for a Solo-Built SaaS"
+    
+    vulnerability_shares:
+      - "The scary financials of going independent"
+      - "Imposter syndrome as a first-time founder"
+      - "When my first product idea completely failed"
+
+  development:
+    linkedin_posts:
+      - "Month 3 building in public: Here's what's working"
+      - "Just shipped the MVP. Here's what I learned"
+      - "Customer feedback that changed everything"
+      - "The technical debt I'm already regretting"
+    
+    blog_articles:
+      - "Building a Healthcare SaaS: Technical Architecture Decisions"
+      - "Customer Development for Technical Founders"
+      - "What I Wish I Knew Before Starting Development"
+    
+    technical_content:
+      - "How I Built [Feature] Using [Technology]"
+      - "Healthcare Data Compliance for Indie Developers"
+      - "API Design for B2B SaaS Products"
+
+  launch:
+    linkedin_posts:
+      - "After 12 months, [Product] is live. Here's the story"
+      - "First week post-launch: Real numbers and lessons"
+      - "The customer feedback that validates everything"
+      - "What I'd do differently if starting over"
+    
+    blog_articles:
+      - "From Idea to Launch: The Complete Journey"
+      - "Launch Week: What Actually Happened"
+      - "Building in Public: Year One Retrospective"
+    
+    celebration_content:
+      - "Thank you to everyone who supported this journey"
+      - "The people who made this possible"
+      - "What's next for [Product] and me"
+
+  scaling:
+    linkedin_posts:
+      - "Year 2: Here's what I learned about SaaS growth"
+      - "When to hire your first employee (and when not to)"
+      - "The metrics that actually matter for MicroSaaS"
+      - "Feature requests vs. vision: How I decide"
+    
+    blog_articles:
+      - "Scaling a One-Person SaaS: Systems and Processes"
+      - "The Business Side of Building: What Technical Founders Need to Know"
+      - "Two Years Solo: Financial Reality of MicroSaaS"
+    
+    wisdom_sharing:
+      - "Frameworks for Solo SaaS Success"
+      - "Technical Architecture That Scales Without Team"
+      - "Customer Success for One-Person Companies"
+
+authenticity_principles:
+  transparency_boundaries:
+    share_openly:
+      - "Struggles and challenges faced"
+      - "Learning process and mistakes"
+      - "Revenue numbers (at comfort level)"
+      - "Customer feedback and insights"
+    
+    keep_private:
+      - "Specific customer details"
+      - "Competitive advantage secrets"
+      - "Personal financial stress beyond business"
+      - "Family impact beyond general mentions"
+  
+  value_first_always:
+    - "Every post helps audience regardless of product interest"
+    - "Share frameworks and insights freely"
+    - "Support other builders without expecting reciprocation"
+    - "Teach what you're learning in real-time"
+  
+  community_building:
+    - "Engage with other solopreneurs genuinely"
+    - "Share others' successes and insights"
+    - "Create content that sparks discussion"
+    - "Build relationships, not just audience"
+
+success_metrics:
+  audience_development:
+    - relevant_followers: "Quality over quantity growth"
+    - engagement_rate: "Meaningful discussions, not just likes"
+    - email_subscribers: "People wanting deeper content"
+    - community_connections: "Genuine professional relationships"
+  
+  business_impact:
+    - customer_acquisition: "Content driving product signups"
+    - brand_recognition: "Known in solopreneur/data communities"
+    - speaking_opportunities: "Invited to share journey"
+    - partnership_inquiries: "Collaboration opportunities"
+  
+  thought_leadership:
+    - original_frameworks: "Unique insights from experience"
+    - industry_influence: "Others reference Kevin's content"
+    - helping_others: "Community members succeed using advice"
+    - authentic_inspiration: "Real impact on other builders"
+
+risk_mitigation:
+  oversharing_protection:
+    - "Regular authenticity checks with microsaas-advisor"
+    - "Clear boundaries on what to share"
+    - "Focus on business lessons, not personal details"
+  
+  burnout_prevention:
+    - "Content calendar matches energy levels"
+    - "Quality over quantity always"
+    - "Break periods built into schedule"
+  
+  authenticity_maintenance:
+    - "Regular voice checks with content-editor"
+    - "Community feedback integration"
+    - "Avoid manufactured drama or conflict"

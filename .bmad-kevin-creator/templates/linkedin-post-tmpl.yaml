@@ -1,0 +1,90 @@
+name: linkedin-post
+description: Kevin's LinkedIn post structure for maximum engagement
+version: 1.0.0
+sections:
+  - name: hook
+    description: "Scroll-stopping first line"
+    required: true
+    prompts:
+      - "What surprising truth or contrarian take opens this post?"
+      - "What number or statistic would shock the reader?"
+      - "What common belief are you challenging?"
+    examples:
+      - "We keep carving up Product Management into smaller buckets. It's tiring."
+      - "It might be time to stop chasing breadth, optionality, and prestige."
+      - "I've always struggled with the phrase, 'Measure what matters'."
+  
+  - name: re_hook
+    description: "Address the 'but what about...' objection"
+    required: false
+    prompts:
+      - "What's the obvious counterargument?"
+      - "What context makes this more nuanced?"
+      - "Why does this matter specifically now?"
+    examples:
+      - "Building data products does seem to require a slightly different approach."
+      - "It is for me."
+      - "Sometimes what matters can't be measured."
+  
+  - name: main_points
+    description: "2-7 key insights (vary the count - not always 3-5)"
+    required: true
+    format: "varied_list"
+    prompts:
+      - "What are the key takeaways?"
+      - "What specific examples support this?"
+      - "How does this apply in practice?"
+    structure:
+      - "Sometimes bold, sometimes CAPS, sometimes neither"
+      - "Mix fragment with full sentences"
+      - "Include specific details (dates, numbers, tools)"
+    variations:
+      - "2 deep points with stories"
+      - "4 quick hits"
+      - "6 rapid-fire insights"
+      - "1 main point explored from angles"
+  
+  - name: personal_element
+    description: "Kevin's experience or observation"
+    required: true
+    prompts:
+      - "What personal experience relates to this?"
+      - "What have you learned from doing this?"
+      - "What mistake did you make that taught this?"
+    examples:
+      - "After years building data products in healthcare, here's what I've learned:"
+      - "I'm doing that for data products in healthcare."
+      - "The most interesting part?"
+  
+  - name: value_statement
+    description: "What the reader gains"
+    required: true
+    prompts:
+      - "How will this help the reader?"
+      - "What can they do differently tomorrow?"
+      - "Why should they care?"
+  
+  - name: call_to_action
+    description: "Engagement driver"
+    required: true
+    types:
+      - question: "Ask for their experience"
+      - challenge: "Invite them to try something"
+      - share: "Request they share if valuable"
+    examples:
+      - "What's your experience?"
+      - "Hold me accountable - join me - refine your own craft."
+      - "What differences have you noticed?"
+
+formatting_rules:
+  - line_breaks: "Between each main point"
+  - bold_text: "Key concepts only"
+  - emojis: "Sparingly, if at all"
+  - length: "150-300 words ideal"
+  - paragraphs: "2-3 lines max"
+
+metadata:
+  - hashtags: "3-5 relevant ones"
+  - image: "Always 4:5 aspect ratio"
+  - timing: "Tuesday-Thursday, 7-9 AM EST"
+  - engagement: "Reply within first hour"

@@ -1,0 +1,357 @@
+workflow:
+  id: manual-to-automated
+  name: Manual to Automated Scaling Workflow
+  version: 1.0
+  description: >-
+    Systematic approach to scaling from manual, founder-led processes to
+    automated, repeatable systems while preserving the quality and outcomes
+    that drove initial success. Focuses on automating what works rather than
+    building what seems scalable.
+
+phases:
+  - id: manual-process-documentation
+    name: Manual Process Documentation & Analysis
+    description: >-
+      Document current manual processes in detail to understand what's
+      actually working before attempting to automate anything.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+    tasks:
+      - design-manual-delivery
+    templates:
+      - retention-metrics-tmpl
+    checklists:
+      - retention-drivers-checklist
+    outputs:
+      - Complete manual process documentation
+      - Time and resource analysis
+      - Success factor identification
+      - Quality control checkpoints
+    duration: 1-2 weeks
+    success_criteria:
+      - All manual processes documented step-by-step
+      - Time investment per customer calculated
+      - Success drivers clearly identified
+      - Quality metrics established
+
+  - id: automation-opportunity-assessment
+    name: Automation Opportunity Assessment
+    description: >-
+      Identify which parts of the manual process can be automated without
+      losing the essential elements that drive customer success.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+      - pricing-strategist
+    templates:
+      - retention-metrics-tmpl
+    outputs:
+      - Automation opportunity matrix
+      - ROI analysis for each opportunity
+      - Risk assessment for automation
+      - Prioritized automation roadmap
+    duration: 1 week
+    success_criteria:
+      - Clear automation vs. manual decision matrix
+      - ROI calculated for each automation opportunity
+      - Risk levels assessed and documented
+      - Priority order established
+
+  - id: pilot-automation-design
+    name: Pilot Automation Design
+    description: >-
+      Design and build minimal automation for highest-impact, lowest-risk
+      processes while maintaining manual oversight and quality control.
+    agents:
+      - customer-success-engineer
+      - growth-catalyst
+    outputs:
+      - Pilot automation specifications
+      - Quality control mechanisms
+      - Rollback procedures
+      - Success measurement framework
+    duration: 2-4 weeks
+    success_criteria:
+      - Pilot automation designed and built
+      - Quality controls in place
+      - Rollback plan documented
+      - Success metrics defined
+
+  - id: automation-testing
+    name: Automation Testing & Validation
+    description: >-
+      Test automation with subset of customers while monitoring quality
+      and customer satisfaction to ensure no degradation in outcomes.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+    tasks:
+      - design-manual-delivery
+    templates:
+      - retention-metrics-tmpl
+    checklists:
+      - retention-drivers-checklist
+    outputs:
+      - Automation performance results
+      - Customer satisfaction comparison
+      - Quality metric analysis
+      - Process refinement recommendations
+    duration: 4-6 weeks
+    success_criteria:
+      - No decrease in customer satisfaction
+      - Maintained or improved success metrics
+      - Clear efficiency gains demonstrated
+      - Customer feedback validates experience
+
+  - id: gradual-rollout
+    name: Gradual Automation Rollout
+    description: >-
+      Systematically roll out automation to broader customer base while
+      maintaining manual backup systems and continuous monitoring.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+      - growth-catalyst
+    templates:
+      - retention-metrics-tmpl
+    checklists:
+      - retention-drivers-checklist
+    outputs:
+      - Full rollout completion
+      - Performance monitoring dashboard
+      - Exception handling procedures
+      - Team training materials
+    duration: 4-8 weeks
+    success_criteria:
+      - Automation handling 80%+ of standard cases
+      - Manual processes available for exceptions
+      - Team trained on new systems
+      - Performance metrics maintained
+
+  - id: scale-optimization
+    name: Scale Optimization & Refinement
+    description: >-
+      Optimize automated systems based on scale learnings and prepare
+      for next wave of automation opportunities.
+    agents:
+      - customer-success-engineer
+      - growth-catalyst
+      - pricing-strategist
+    outputs:
+      - Optimized automation systems
+      - Next automation phase planning
+      - Capacity scaling projections
+      - Unit economics improvements
+    duration: 2-4 weeks
+    success_criteria:
+      - Systems optimized for current scale
+      - Next automation opportunities identified
+      - Capacity planning completed
+      - Improved unit economics achieved
+
+  - id: continuous-improvement
+    name: Continuous Improvement & Monitoring
+    description: >-
+      Establish ongoing process for monitoring automation performance
+      and identifying new automation opportunities as business scales.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+    templates:
+      - retention-metrics-tmpl
+    outputs:
+      - Continuous monitoring framework
+      - Regular improvement process
+      - Automation opportunity pipeline
+      - Performance benchmarking system
+    duration: Ongoing
+    success_criteria:
+      - Regular monitoring system in place
+      - Improvement process established
+      - New opportunities regularly identified
+      - Performance benchmarks updated
+
+automation_principles:
+  - id: preserve-success-drivers
+    name: Preserve What Drives Success
+    description: >-
+      Never automate away the core elements that drive customer success
+      and retention. These should remain manual or heavily monitored.
+    examples:
+      - Relationship building conversations
+      - Complex problem-solving
+      - Strategic guidance and consultation
+      - Customization decisions
+      - Crisis intervention
+
+  - id: automate-repetitive-tasks
+    name: Automate Repetitive, Predictable Tasks
+    description: >-
+      Focus automation on tasks that are repetitive, predictable, and
+      don't require human judgment or relationship building.
+    examples:
+      - Data entry and updates
+      - Standard report generation
+      - Basic email sequences
+      - Simple notifications and reminders
+      - Routine status updates
+
+  - id: maintain-human-oversight
+    name: Maintain Human Oversight
+    description: >-
+      Ensure human oversight and intervention capability for all
+      automated processes, especially those affecting customer experience.
+    examples:
+      - Exception handling processes
+      - Quality control checkpoints
+      - Customer escalation paths
+      - Manual override capabilities
+      - Regular human review cycles
+
+  - id: gradual-implementation
+    name: Gradual Implementation Approach
+    description: >-
+      Implement automation gradually, starting with lowest risk areas
+      and expanding based on proven success and maintained quality.
+    stages:
+      - Pilot with 5-10 customers
+      - Expand to 25% of customer base
+      - Scale to 50% with proven processes
+      - Full rollout with exception handling
+      - Optimization and refinement
+
+automation_categories:
+  - id: high-automation-potential
+    name: High Automation Potential
+    description: Tasks that are good candidates for early automation
+    characteristics:
+      - Highly repetitive
+      - Rule-based decisions
+      - Low customer interaction
+      - Predictable outcomes
+      - Easy to measure quality
+    examples:
+      - Data synchronization
+      - Report generation  
+      - Basic email workflows
+      - Status updates
+      - Simple notifications
+
+  - id: medium-automation-potential
+    name: Medium Automation Potential  
+    description: Tasks that can be partially automated with human oversight
+    characteristics:
+      - Some variability in process
+      - Requires pattern recognition
+      - Customer-facing but standard
+      - Measurable quality indicators
+      - Clear escalation criteria
+    examples:
+      - Onboarding sequences
+      - Check-in scheduling
+      - Basic troubleshooting
+      - Success milestone tracking
+      - Standard reporting
+
+  - id: low-automation-potential
+    name: Low Automation Potential
+    description: Tasks that should remain manual or have minimal automation
+    characteristics:
+      - High variability
+      - Requires human judgment
+      - Relationship-dependent
+      - Complex problem-solving
+      - Strategic importance
+    examples:
+      - Complex problem resolution
+      - Strategic consultation
+      - Relationship building
+      - Custom solution design
+      - Crisis management
+
+decision_points:
+  - id: automation-readiness-check
+    after_phase: manual-process-documentation
+    criteria:
+      - Manual processes consistently successful
+      - Clear documentation of all steps
+      - Success factors identified
+      - Quality metrics established
+    fail_action: Continue manual processes until consistent success achieved
+
+  - id: pilot-success-validation
+    after_phase: automation-testing
+    criteria:
+      - No degradation in customer satisfaction
+      - Maintained success metrics
+      - Clear efficiency improvements
+      - Acceptable error rates
+    fail_action: Refine automation or revert to manual processes
+
+  - id: scale-readiness-check
+    after_phase: gradual-rollout
+    criteria:
+      - Automation handling majority of cases
+      - Exception processes working well
+      - Team comfortable with new systems
+      - Performance metrics maintained
+    fail_action: Address issues before further scaling
+
+risk_factors:
+  - Automation reducing customer satisfaction
+  - Loss of personal touch in customer relationships
+  - System failures affecting customer experience
+  - Team resistance to automated processes
+  - Over-automation leading to rigidity
+  - Losing competitive advantages from manual approach
+
+mitigation_strategies:
+  - Gradual rollout with constant monitoring
+  - Maintain manual backup systems
+  - Regular customer satisfaction surveys
+  - Team training and change management
+  - Preserve high-touch elements that drive success
+  - Customer feedback integration
+
+success_metrics:
+  efficiency_metrics:
+    - Time per customer: 50%+ reduction
+    - Cost per customer: 40%+ reduction
+    - Team capacity: 3x+ increase
+    - Process consistency: 95%+ standardization
+
+  quality_metrics:
+    - Customer satisfaction: Maintained or improved
+    - Success rates: No degradation
+    - Retention rates: Maintained or improved
+    - Quality scores: 95%+ maintained
+
+  scale_metrics:
+    - Customer handling capacity: 5x+ increase
+    - Response times: Maintained or improved
+    - Error rates: <2% for automated processes
+    - Manual intervention: <20% of cases
+
+tools_required:
+  - Process automation platform
+  - Customer success management system
+  - Performance monitoring dashboard
+  - Quality control tracking
+  - Customer feedback collection tools
+  - Team collaboration platforms
+
+collaboration_points:
+  - Weekly automation performance reviews
+  - Monthly customer satisfaction assessments
+  - Quarterly automation opportunity identification
+  - Cross-team process optimization sessions
+  - Regular customer feedback integration
+
+exit_criteria:
+  - Automated systems handling 80%+ of standard processes
+  - Customer satisfaction maintained or improved
+  - Team efficiency improved significantly
+  - Manual processes available for exceptions
+  - Continuous improvement process established
+  - Next automation opportunities identified

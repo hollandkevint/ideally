@@ -1,0 +1,10 @@
+bundle:
+  name: Kevin Creator IDE Minimal
+  icon: ✍️
+  description: Minimal content creation team for Kevin's IDE workflow - content strategy, writing, editing, and publishing.
+agents:
+  - thought-partner
+  - content-editor
+  - linkedin-writer
+  - blog-writer
+workflows: null

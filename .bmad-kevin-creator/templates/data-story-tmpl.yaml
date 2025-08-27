@@ -1,0 +1,193 @@
+name: data-story
+description: Framework for translating technical data concepts into compelling business narratives
+version: 1.0.0
+sections:
+  - name: business_context
+    description: "Why this technical topic matters to business people"
+    required: true
+    elements:
+      - real_world_impact: "How this affects actual operations"
+      - financial_implications: "Cost/revenue/efficiency impacts"
+      - strategic_importance: "Why leadership should care"
+      - competitive_advantage: "How this creates differentiation"
+    approach:
+      - "Start with business outcome, not technical feature"
+      - "Use concrete examples from Kevin's experience"
+      - "Quantify impact where possible"
+      - "Connect to reader's likely priorities"
+    examples:
+      - "This data architecture decision cost us $2M in delayed insights"
+      - "Poor data quality meant clinicians couldn't trust our recommendations"
+      - "The right FHIR implementation reduced integration time from 6 months to 2 weeks"
+
+  - name: problem_narrative
+    description: "The human story behind the technical challenge"
+    required: true
+    storytelling_elements:
+      - characters: "Real people affected (anonymized)"
+      - situation: "Specific business scenario"
+      - conflict: "What went wrong and why"
+      - stakes: "What happens if not solved"
+    kevin_perspective:
+      - "I was working with a healthcare system that..."
+      - "The data team was spending 80% of their time on..."
+      - "Clinicians kept telling us they couldn't..."
+      - "The CEO asked why our data wasn't..."
+    avoid:
+      - "Generic industry problems"
+      - "Abstract technical challenges"
+      - "Theoretical scenarios"
+    include:
+      - "Specific people in specific situations"
+      - "Measurable business impact"
+      - "Emotional stakes (frustration, pressure, etc.)"
+
+  - name: technical_explanation
+    description: "How the technology actually works"
+    required: true
+    balance:
+      - technical_accuracy: "Correct implementation details"
+      - accessibility: "Understandable to business audience"
+      - specificity: "Actual tools, standards, processes"
+      - practicality: "Focus on what matters for implementation"
+    structure:
+      - "Here's what was actually happening..."
+      - "The technical challenge was..."
+      - "We needed a system that could..."
+      - "The solution works by..."
+    kevin_expertise_areas:
+      - healthcare_data: "FHIR, HL7, clinical workflows"
+      - data_governance: "Quality, compliance, security"
+      - integration: "APIs, ETL, real-time processing"
+      - analytics: "Reporting, ML, decision support"
+    presentation_techniques:
+      - analogies: "Like a [familiar concept]"
+      - metaphors: "Think of it as [relatable system]"
+      - step_by_step: "First this happens, then..."
+      - visual_descriptions: "Picture a dashboard that..."
+
+  - name: implementation_reality
+    description: "What it's actually like to implement this"
+    required: true
+    honest_assessment:
+      - complexity_level: "How hard is this really"
+      - time_requirements: "Realistic timeline expectations"
+      - resource_needs: "Skills, tools, budget required"
+      - common_obstacles: "What typically goes wrong"
+    kevin_experience:
+      - "When we implemented this at [company]..."
+      - "The biggest surprise was..."
+      - "If I were doing this again, I'd..."
+      - "The part everyone underestimates is..."
+    practical_guidance:
+      - prerequisites: "What needs to be in place first"
+      - success_factors: "What makes implementation succeed"
+      - warning_signs: "Red flags to watch for"
+      - decision_criteria: "How to know if this is right for you"
+
+  - name: results_and_impact
+    description: "What actually happened when this was implemented"
+    required: true
+    metrics_and_outcomes:
+      - quantified_results: "Specific numbers where possible"
+      - qualitative_benefits: "How people's work changed"
+      - unexpected_consequences: "Positive and negative surprises"
+      - long_term_effects: "What happened 6-12 months later"
+    storytelling_completion:
+      - resolution: "How the original problem was solved"
+      - transformation: "How the situation improved"
+      - lessons_learned: "Key insights from the experience"
+      - ongoing_journey: "What challenges remain"
+    examples:
+      - "Data quality scores improved from 60% to 95%"
+      - "Clinicians started actually using the insights"
+      - "We reduced time to insight from weeks to hours"
+      - "But we also discovered new challenges around..."
+
+  - name: broader_implications
+    description: "What this means for the industry/field"
+    required: true
+    kevin_perspective:
+      - industry_trends: "How this fits with broader changes"
+      - future_predictions: "Where this is heading"
+      - strategic_advice: "What leaders should be thinking about"
+      - innovation_opportunities: "What new possibilities this creates"
+    thought_leadership_elements:
+      - contrarian_insights: "What most people get wrong"
+      - framework_development: "Mental models for thinking about this"
+      - best_practices: "What Kevin has learned works"
+      - future_vision: "What's coming next"
+
+  - name: actionable_takeaways
+    description: "What readers can actually do with this information"
+    required: true
+    immediate_actions:
+      - assessment_questions: "How to evaluate your current state"
+      - first_steps: "Where to start if interested"
+      - resources_needed: "What to gather or prepare"
+      - stakeholder_conversations: "Who to talk to"
+    strategic_guidance:
+      - decision_framework: "How to evaluate if this fits"
+      - implementation_approach: "Recommended sequence"
+      - risk_mitigation: "How to minimize downsides"
+      - success_measurement: "How to track progress"
+    avoid:
+      - "Generic recommendations"
+      - "One-size-fits-all advice"
+      - "Theoretical next steps"
+    include:
+      - "Specific actions for specific situations"
+      - "Context-dependent guidance"
+      - "Realistic timelines and expectations"
+
+formatting_for_accessibility:
+  technical_terms:
+    - define_on_first_use: "Explain acronyms and jargon"
+    - provide_context: "Why this term matters"
+    - use_consistently: "Same term throughout"
+  
+  structure:
+    - headers_guide_flow: "Clear section navigation"
+    - bullets_for_lists: "Easy scanning of key points"
+    - examples_throughout: "Concrete illustrations"
+    - summaries_provided: "Key points highlighted"
+  
+  audience_adaptation:
+    - business_leader: "Focus on strategic implications"
+    - technical_team: "Include implementation details"
+    - mixed_audience: "Layer technical depth appropriately"
+
+kevin_credibility_markers:
+  experience_references:
+    - "In my work at [healthcare system/company]..."
+    - "After implementing this X times..."
+    - "The pattern I've seen across organizations..."
+    - "From a technical perspective..."
+  
+  domain_expertise:
+    - healthcare_specifics: "Clinical workflow considerations"
+    - regulatory_awareness: "HIPAA, compliance implications"
+    - scalability_insights: "Enterprise implementation challenges"
+    - vendor_knowledge: "Tool ecosystem understanding"
+  
+  practitioner_perspective:
+    - "Here's what actually happens..."
+    - "The documentation doesn't tell you..."
+    - "What we discovered in production..."
+    - "The real challenge turns out to be..."
+
+success_indicators:
+  understanding:
+    - "Technical people say it's accurate"
+    - "Business people say it's clear"
+    - "Questions focus on implementation, not confusion"
+  
+  engagement:
+    - "Generates discussion about similar experiences"
+    - "Gets shared by both technical and business audiences"
+    - "Leads to consulting/speaking opportunities"
+  
+  impact:
+    - "Referenced in other technical discussions"
+    - "Influences actual implementation decisions"
+    - "Positions Kevin as bridge between technical and business"

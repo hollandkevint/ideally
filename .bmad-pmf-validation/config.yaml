@@ -1,0 +1,12 @@
+name: bmad-pmf-validation
+version: 1.0.0
+short-title: PMF Validation for B2B
+description: >-
+  This expansion pack provides a systematic approach to finding product-market fit
+  for solopreneurs and microsaas founders. Based on proven 0-1 methodologies, it
+  guides founders through demand discovery, case study development, sales-based
+  learning, and systematic debugging to escape the "pain cave" and achieve
+  sustainable growth. Includes specialized agents for demand research, case study
+  architecture, sales optimization, and manual-first delivery approaches.
+author: BMAD PMF Team
+slashPrefix: bmadPMF

@@ -1,0 +1,26 @@
+{
+  "name": "ideally-co",
+  "version": "0.1.0",
+  "description": "bMAD Method Analyst Web Platform - Dual-Pane Strategic Workspace Foundation",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "start": "npm run start --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "type-check": "npm run type-check --workspace=apps/web"
+  },
+  "keywords": [
+    "strategic-thinking",
+    "dual-pane",
+    "coaching",
+    "bmad-method",
+    "ai-assistant"
+  ],
+  "author": "Kevin Kellogg",
+  "license": "MIT"
+}

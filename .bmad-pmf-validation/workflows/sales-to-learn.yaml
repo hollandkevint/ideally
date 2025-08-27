@@ -1,0 +1,388 @@
+workflow:
+  id: sales-to-learn
+  name: Sales-to-Learn Methodology Workflow
+  version: 1.0
+  description: >-
+    Systematic approach to using sales conversations as the primary vehicle
+    for learning about market demand, customer needs, and product-market fit.
+    Based on the principle that real money conversations reveal truth better
+    than any research methodology.
+
+phases:
+  - id: learning-objectives
+    name: Learning Objectives & Hypothesis Setting
+    description: >-
+      Define specific learning objectives and hypotheses to test through
+      sales conversations to maximize insight extraction.
+    agents:
+      - pmf-strategist
+      - demand-researcher
+    templates:
+      - demand-analysis-tmpl
+    outputs:
+      - Learning objectives framework
+      - Hypothesis documentation
+      - Success criteria definition
+    duration: 3-5 days
+    success_criteria:
+      - Clear learning priorities established
+      - Testable hypotheses formulated
+      - Success metrics defined
+
+  - id: conversation-design
+    name: Sales Conversation Design
+    description: >-
+      Design sales conversations to maximize learning while still being
+      authentic sales interactions with real buying intent.
+    agents:
+      - sales-debugger
+      - case-study-architect
+    tasks:
+      - create-sales-pitch
+    templates:
+      - sales-pitch-deck-tmpl
+    checklists:
+      - sales-debug-checklist
+    outputs:
+      - Learning-optimized pitch structure
+      - Discovery question framework
+      - Feedback capture methodology
+    duration: 1 week
+    success_criteria:
+      - Conversation structure balances selling and learning
+      - Key learning moments identified
+      - Feedback capture system ready
+
+  - id: prospect-targeting
+    name: Learning-Focused Prospect Targeting
+    description: >-
+      Target prospects strategically to test specific hypotheses and
+      maximize learning diversity across market segments.
+    agents:
+      - growth-catalyst
+      - demand-researcher
+    tasks:
+      - design-outreach-campaign
+    templates:
+      - outreach-message-tmpl
+    outputs:
+      - Hypothesis-driven target segments
+      - Learning-focused outreach messages
+      - Prospect diversity framework
+    duration: 1 week
+    success_criteria:
+      - Multiple segments identified for testing
+      - Outreach messages designed for learning
+      - Target diversity ensures broad insights
+
+  - id: conversation-execution
+    name: Learning-Focused Conversation Execution
+    description: >-
+      Execute sales conversations with systematic learning capture,
+      balancing genuine sales intent with insight extraction.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+      - demand-researcher
+    tasks:
+      - analyze-sales-call
+      - identify-demand-patterns
+    checklists:
+      - sales-debug-checklist
+      - demand-intensity-checklist
+    outputs:
+      - Conducted sales conversations (20+ minimum)
+      - Real-time learning capture
+      - Hypothesis testing results
+    duration: 4-6 weeks
+    success_criteria:
+      - 5-7 conversations per week minimum
+      - Systematic learning capture after each call
+      - Diverse prospect segments engaged
+
+  - id: pattern-synthesis
+    name: Learning Synthesis & Pattern Recognition
+    description: >-
+      Synthesize insights from sales conversations to identify demand
+      patterns, market opportunities, and PMF signals.
+    agents:
+      - demand-researcher
+      - pmf-strategist
+      - case-study-architect
+    tasks:
+      - identify-demand-patterns
+      - analyze-sales-call
+    templates:
+      - demand-analysis-tmpl
+      - unfolding-plan-tmpl
+    outputs:
+      - Demand pattern documentation
+      - Market insight synthesis
+      - PMF signal analysis
+    duration: 1-2 weeks
+    success_criteria:
+      - Clear patterns identified across conversations
+      - Market insights synthesized
+      - Actionable conclusions drawn
+
+  - id: strategy-evolution
+    name: Strategy Evolution Based on Learning
+    description: >-
+      Evolve product, positioning, and go-to-market strategy based on
+      insights gathered from sales conversations.
+    agents:
+      - pmf-strategist
+      - case-study-architect
+      - pricing-strategist
+    tasks:
+      - draft-case-study
+    templates:
+      - case-study-tmpl
+      - unfolding-plan-tmpl
+    outputs:
+      - Updated case study and positioning
+      - Refined target customer profile
+      - Strategic pivots or adjustments
+    duration: 1-2 weeks
+    success_criteria:
+      - Strategy clearly informed by learning
+      - Measurable improvements in approach
+      - Team aligned on new direction
+
+  - id: learning-validation
+    name: Learning Validation Through Continued Sales
+    description: >-
+      Validate insights and strategic changes through continued sales
+      conversations, measuring improvement in key metrics.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+    tasks:
+      - analyze-sales-call
+    checklists:
+      - pmf-signals-checklist
+      - case-study-validation-checklist
+    outputs:
+      - Validation conversation results
+      - Performance improvement metrics
+      - Continued learning insights
+    duration: 2-4 weeks
+    success_criteria:
+      - Improved performance metrics
+      - Validated learning insights
+      - Enhanced market understanding
+
+learning_frameworks:
+  - id: demand-discovery-framework
+    name: Demand Discovery Learning
+    focus_areas:
+      - What customers are trying to accomplish
+      - Why projects become priorities now
+      - How they evaluate options
+      - What success looks like to them
+    key_questions:
+      - "What's the main thing you're trying to accomplish?"
+      - "Why is this a priority now vs. last quarter?"
+      - "What options are you considering?"
+      - "How will you know you've succeeded?"
+    success_indicators:
+      - Clear project identification
+      - Urgency drivers understood
+      - Competitive landscape mapped
+      - Success criteria defined
+
+  - id: positioning-testing-framework
+    name: Positioning & Value Proposition Testing
+    focus_areas:
+      - How they categorize your solution
+      - What they compare you to
+      - Which benefits resonate most
+      - What creates differentiation
+    key_questions:
+      - "How would you describe what we do to a colleague?"
+      - "What would you compare this to?"
+      - "What's most valuable about this approach?"
+      - "How is this different from alternatives?"
+    success_indicators:
+      - Clear category positioning
+      - Competitive comparison clarity
+      - Value proposition resonance
+      - Differentiation recognition
+
+  - id: buying-process-framework
+    name: Buying Process Learning
+    focus_areas:
+      - Who's involved in decisions
+      - How they evaluate solutions
+      - What triggers buying decisions
+      - Common objections and concerns
+    key_questions:
+      - "Who else would be involved in this decision?"
+      - "What's your process for evaluating solutions?"
+      - "What would need to be true to move forward?"
+      - "What concerns do you have about this approach?"
+    success_indicators:
+      - Decision-making process mapped
+      - Key stakeholders identified
+      - Buying criteria understood
+      - Objection patterns recognized
+
+  - id: market-size-framework
+    name: Market Size & Opportunity Learning
+    focus_areas:
+      - How many people have this problem
+      - What they currently spend on solutions
+      - How urgent/important the problem is
+      - What drives timing for solutions
+    key_questions:
+      - "How common is this challenge in your industry?"
+      - "What do you currently spend on this problem?"
+      - "How important is solving this vs. other priorities?"
+      - "What would cause you to prioritize this?"
+    success_indicators:
+      - Market size estimates
+      - Spending patterns understood
+      - Priority ranking clarified
+      - Timing drivers identified
+
+conversation_optimization:
+  - id: discovery-optimization
+    name: Discovery Phase Optimization
+    techniques:
+      - Open-ended questioning
+      - Follow-up probing
+      - Hypothesis testing
+      - Active listening
+      - Pattern recognition
+    learning_goals:
+      - Understand real problems
+      - Identify decision criteria
+      - Map stakeholder involvement
+      - Assess urgency levels
+
+  - id: presentation-optimization  
+    name: Presentation Phase Optimization
+    techniques:
+      - Reaction monitoring
+      - Engagement measurement
+      - Question analysis
+      - Energy tracking
+      - Objection patterns
+    learning_goals:
+      - Test value proposition
+      - Measure resonance
+      - Identify confusion points
+      - Assess competitive position
+
+  - id: closing-optimization
+    name: Closing Phase Optimization
+    techniques:
+      - Decision criteria probing
+      - Timeline exploration
+      - Objection handling
+      - Next step definition
+      - Commitment testing
+    learning_goals:
+      - Understand buying process
+      - Identify decision factors
+      - Test pricing sensitivity
+      - Map approval process
+
+data_collection_methods:
+  - id: real-time-capture
+    name: Real-Time Learning Capture
+    methods:
+      - Live note-taking during calls
+      - Energy level tracking
+      - Question pattern logging
+      - Objection documentation
+      - Reaction recording
+    tools:
+      - CRM with call logging
+      - Real-time collaboration docs
+      - Voice-to-text transcription
+      - Reaction tracking sheets
+
+  - id: post-call-analysis
+    name: Post-Call Analysis Process
+    methods:
+      - Immediate reaction capture (within 1 hour)
+      - Pattern recognition analysis
+      - Hypothesis validation check
+      - Learning objective assessment
+      - Next conversation planning
+    tools:
+      - Call analysis templates
+      - Learning insight database
+      - Pattern recognition tools
+      - Hypothesis tracking sheets
+
+  - id: weekly-synthesis
+    name: Weekly Learning Synthesis
+    methods:
+      - Cross-conversation pattern analysis
+      - Hypothesis testing results
+      - Market insight compilation
+      - Strategy adjustment recommendations
+      - Next week planning
+    tools:
+      - Pattern analysis frameworks
+      - Insight synthesis templates
+      - Strategy evolution documents
+      - Learning dashboard
+
+success_metrics:
+  quantity_metrics:
+    - Conversations per week: target 5-7
+    - Learning objectives tested per conversation: 3-5
+    - Hypotheses validated/invalidated per week: 2-3
+    - Market insights generated per week: 5-10
+
+  quality_metrics:
+    - Depth of insights per conversation
+    - Strategic pivots informed by learning
+    - Improvement in subsequent conversations
+    - Accuracy of market understanding
+
+  outcome_metrics:
+    - Close rate improvement over time
+    - Sales cycle reduction
+    - Deal size increase
+    - Retention rate improvement
+
+collaboration_points:
+  - Daily learning capture review
+  - Weekly pattern recognition sessions
+  - Bi-weekly strategy evolution meetings
+  - Monthly market insight synthesis
+  - Quarterly learning methodology review
+
+tools_required:
+  - CRM with detailed call logging
+  - Call recording and transcription
+  - Learning insight database
+  - Pattern analysis tools
+  - Hypothesis tracking system
+  - Performance metrics dashboard
+
+risk_factors:
+  - Learning focus compromises sales effectiveness
+  - Analysis paralysis from too much data
+  - Confirmation bias in insight interpretation
+  - Sample size too small for valid conclusions
+  - Market conditions changing during learning period
+
+mitigation_strategies:
+  - Balance learning with genuine sales intent
+  - Focus on actionable insights over data volume
+  - Use multiple perspectives for insight validation
+  - Continuous conversation volume to ensure sample size
+  - Monitor market conditions and adjust accordingly
+
+exit_criteria:
+  - Clear demand patterns identified
+  - Market size and opportunity understood
+  - Competitive positioning optimized
+  - Buying process mapped
+  - Strategy evolved based on learning
+  - Measurable improvement in sales metrics

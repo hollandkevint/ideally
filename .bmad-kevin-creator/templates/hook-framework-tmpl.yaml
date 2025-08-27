@@ -1,0 +1,97 @@
+name: hook-framework
+description: Proven hook patterns for Kevin's content
+version: 1.0.0
+hook_types:
+  - name: contrarian_take
+    description: "Challenge conventional wisdom"
+    structure: "[Common belief] + [Why it's wrong]"
+    examples:
+      - "Everyone says measure what matters. But sometimes what matters can't be measured."
+      - "We keep carving up Product Management into smaller buckets. It's exhausting and misses the point."
+    when_to_use: "When you have a genuinely different perspective"
+  
+  - name: surprising_statistic
+    description: "Lead with shocking data"
+    structure: "[Number] + [Unexpected context]"
+    examples:
+      - "70% of data products fail. Not because of bad data, but because of trust."
+      - "I've reviewed 1,000+ PRDs. Only 3 got data governance right from the start."
+    when_to_use: "When you have compelling data that challenges assumptions"
+  
+  - name: personal_vulnerability
+    description: "Admit a struggle or failure"
+    structure: "I [struggled with/failed at] + [what it taught me]"
+    examples:
+      - "I spent 3 years building the wrong product. Here's what I learned."
+      - "I've always struggled with the phrase 'data-driven decisions.'"
+    when_to_use: "When sharing hard-won lessons"
+  
+  - name: pattern_recognition
+    description: "Point out what everyone sees but no one says"
+    structure: "I've noticed [pattern] + [what it means]"
+    examples:
+      - "After 10 years in healthcare tech, I've noticed the best products do one thing differently."
+      - "Every failed data product I've seen made the same mistake."
+    when_to_use: "When you've identified a non-obvious pattern"
+  
+  - name: time_pressure
+    description: "Create urgency or timeliness"
+    structure: "[Time marker] + [why now matters]"
+    examples:
+      - "It might be time to stop chasing optionality."
+      - "2024 was the year everyone discovered data products. 2025 is when we learn who was pretending."
+    when_to_use: "When timing or trends matter"
+  
+  - name: direct_challenge
+    description: "Challenge the reader directly"
+    structure: "You're probably [doing X wrong]"
+    examples:
+      - "You're probably thinking about data products all wrong."
+      - "Your data strategy is failing. Here's why."
+    when_to_use: "When you need to shake people awake"
+  
+  - name: unexpected_comparison
+    description: "Connect two unrelated things"
+    structure: "[Thing A] is like [surprising Thing B]"
+    examples:
+      - "Building data products is like training for a marathon while running it."
+      - "Data governance is like flossing - everyone knows they should, few actually do."
+    when_to_use: "When explaining complex concepts"
+  
+  - name: myth_busting
+    description: "Debunk common misconceptions"
+    structure: "The myth: [X]. The reality: [Y]"
+    examples:
+      - "The myth: More data equals better decisions. The reality: Trust beats volume every time."
+      - "Everyone thinks data products need AI. They actually need boring stuff like documentation."
+    when_to_use: "When correcting widespread misunderstandings"
+  
+  - name: future_prediction
+    description: "Make a bold prediction"
+    structure: "In [timeframe], [prediction]"
+    examples:
+      - "In 5 years, every PM will be a data PM. Here's how to get ahead."
+      - "The next billion-dollar data company won't sell data. They'll sell trust."
+    when_to_use: "When you see a clear trend others miss"
+  
+  - name: question_hook
+    description: "Open with provocative question"
+    structure: "[Question that challenges assumptions]"
+    examples:
+      - "What if everything we know about data products is wrong?"
+      - "Why do 70% of data initiatives fail despite perfect execution?"
+    when_to_use: "When you want readers to think differently"
+
+optimization_tips:
+  - test_multiple: "Write 3-5 variations, pick the strongest"
+  - specificity_wins: "Concrete beats abstract every time"
+  - emotion_matters: "Surprise, curiosity, or mild controversy"
+  - clarity_first: "If it needs explanation, it's not a hook"
+  - voice_match: "Must sound like Kevin, not generic"
+
+common_mistakes:
+  - too_long: "If it's more than one line, it's not a hook"
+  - too_vague: "Generic statements don't stop scrolls"
+  - trying_too_hard: "Forced controversy reads as inauthentic"
+  - burying_the_lede: "Get to the point immediately"
+  - overused_patterns: "LinkedIn is saturated with certain formats"

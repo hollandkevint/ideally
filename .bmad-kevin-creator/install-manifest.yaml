@@ -1,0 +1,138 @@
+version: 1.0.0
+installed_at: '2025-08-22T16:28:01.416Z'
+install_type: expansion-pack
+expansion_pack_id: bmad-kevin-creator
+expansion_pack_name: bmad-kevin-creator
+ides_setup:
+  - cursor
+  - claude-code
+files:
+  - path: .bmad-kevin-creator/config.yaml
+    hash: d39e726225bc0329
+    modified: false
+  - path: .bmad-kevin-creator/README.md
+    hash: 7fedf5f921ea3531
+    modified: false
+  - path: .bmad-kevin-creator/workflows/thought-leadership-development.yaml
+    hash: deba7d873ed13b17
+    modified: false
+  - path: .bmad-kevin-creator/workflows/microsaas-content-strategy.yaml
+    hash: c84a5e0db59397be
+    modified: false
+  - path: .bmad-kevin-creator/workflows/content-creation-pipeline.yaml
+    hash: 76d1257c7ada7fa8
+    modified: false
+  - path: .bmad-kevin-creator/utils/workflow-management.md
+    hash: c2196880f2281f84
+    modified: false
+  - path: .bmad-kevin-creator/utils/variation-generator.md
+    hash: 5f6e4034a5d16ea4
+    modified: false
+  - path: .bmad-kevin-creator/utils/bmad-doc-template.md
+    hash: 34df6ead8b91abfc
+    modified: false
+  - path: .bmad-kevin-creator/utils/ai-pattern-detector.md
+    hash: baee058cb6a4cff3
+    modified: false
+  - path: .bmad-kevin-creator/templates/microsaas-pitch-tmpl.yaml
+    hash: a20b215f468089dc
+    modified: false
+  - path: .bmad-kevin-creator/templates/linkedin-post-tmpl.yaml
+    hash: 7599655eca3e78e6
+    modified: false
+  - path: .bmad-kevin-creator/templates/hook-framework-tmpl.yaml
+    hash: 65dd8433d33c33ae
+    modified: false
+  - path: .bmad-kevin-creator/templates/data-story-tmpl.yaml
+    hash: b05ed2a9fdf73880
+    modified: false
+  - path: .bmad-kevin-creator/templates/blog-structure-tmpl.yaml
+    hash: 2ab2c9dd194e5c18
+    modified: false
+  - path: .bmad-kevin-creator/tasks/write-linkedin-post.md
+    hash: 66172f2e028a9951
+    modified: false
+  - path: .bmad-kevin-creator/tasks/refine-messaging.md
+    hash: 7d663f0e59f2cc2b
+    modified: false
+  - path: .bmad-kevin-creator/tasks/kb-mode-interaction.md
+    hash: 4d6b921c24ba4999
+    modified: false
+  - path: .bmad-kevin-creator/tasks/execute-checklist.md
+    hash: ccf8bd08aa01e607
+    modified: false
+  - path: .bmad-kevin-creator/tasks/develop-content-idea.md
+    hash: 77c7d9c2216ffd69
+    modified: false
+  - path: .bmad-kevin-creator/tasks/create-doc.md
+    hash: 0a6aeba58cd7a3e4
+    modified: false
+  - path: .bmad-kevin-creator/tasks/create-blog-article.md
+    hash: 1716dd8c03b61f7c
+    modified: false
+  - path: .bmad-kevin-creator/tasks/craft-microsaas-narrative.md
+    hash: bf33c46ea7041eb6
+    modified: false
+  - path: .bmad-kevin-creator/tasks/build-thought-leadership.md
+    hash: b0c3a9033a77f5c2
+    modified: false
+  - path: .bmad-kevin-creator/tasks/advanced-elicitation.md
+    hash: d39118bf32237a21
+    modified: false
+  - path: .bmad-kevin-creator/data/swipe-file.md
+    hash: c2f0e6e6c4e30b15
+    modified: false
+  - path: .bmad-kevin-creator/data/kevin-writing-principles.md
+    hash: 242eb438a583a8d9
+    modified: false
+  - path: .bmad-kevin-creator/data/elicitation-methods.md
+    hash: 8c3ca9b84c8784c9
+    modified: false
+  - path: .bmad-kevin-creator/data/bmad-kb.md
+    hash: 57f0e9ae0e54b8e3
+    modified: false
+  - path: .bmad-kevin-creator/checklists/thought-development-checklist.md
+    hash: d86cb3e0aa1a9a47
+    modified: false
+  - path: .bmad-kevin-creator/checklists/linkedin-optimization-checklist.md
+    hash: 074ba42782939d41
+    modified: false
+  - path: .bmad-kevin-creator/checklists/humanization-checklist.md
+    hash: 17b8e83490f1dbb6
+    modified: false
+  - path: .bmad-kevin-creator/checklists/content-quality-checklist.md
+    hash: dc26914ec23ac07c
+    modified: false
+  - path: .bmad-kevin-creator/checklists/blog-readiness-checklist.md
+    hash: 3f661c8440437771
+    modified: false
+  - path: .bmad-kevin-creator/agent-teams/kevin-creator-ide-minimal.yaml
+    hash: a0b45c1630cbea87
+    modified: false
+  - path: .bmad-kevin-creator/agents/thought-partner.md
+    hash: 3bf807118211fd96
+    modified: false
+  - path: .bmad-kevin-creator/agents/narrative-architect.md
+    hash: b4548f45c34103a8
+    modified: false
+  - path: .bmad-kevin-creator/agents/microsaas-advisor.md
+    hash: 23dbe43332857e82
+    modified: false
+  - path: .bmad-kevin-creator/agents/linkedin-writer.md
+    hash: 0e50037f46574bfe
+    modified: false
+  - path: .bmad-kevin-creator/agents/hook-optimizer.md
+    hash: 4e893d4923476053
+    modified: false
+  - path: .bmad-kevin-creator/agents/data-product-writer.md
+    hash: f1175b73ff0ac2f9
+    modified: false
+  - path: .bmad-kevin-creator/agents/content-editor.md
+    hash: 8617ae40e5600b08
+    modified: false
+  - path: .bmad-kevin-creator/agents/bmad-orchestrator.md
+    hash: 17e8f8ef0d3e72d5
+    modified: false
+  - path: .bmad-kevin-creator/agents/blog-writer.md
+    hash: d0f9672c623bbd8f
+    modified: false

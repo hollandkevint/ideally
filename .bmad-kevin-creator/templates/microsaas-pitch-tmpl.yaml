@@ -1,0 +1,210 @@
+name: microsaas-pitch
+description: Template for crafting compelling MicroSaaS product stories and pitches
+version: 1.0.0
+sections:
+  - name: origin_story
+    description: "Why Kevin built this product"
+    required: true
+    elements:
+      - personal_pain: "The problem Kevin experienced firsthand"
+      - market_gap: "What existing solutions missed"
+      - aha_moment: "When the solution became clear"
+      - decision_trigger: "Why he decided to build it"
+    structure:
+      - "I kept running into this problem..."
+      - "Existing tools didn't solve X because..."
+      - "Then I realized the real issue was..."
+      - "So I decided to build exactly what I needed"
+    authenticity_checks:
+      - "Real problem Kevin actually faced"
+      - "Specific to his expertise domain"
+      - "Not manufactured for market appeal"
+      - "Vulnerable about the struggle"
+
+  - name: target_customer
+    description: "Who this solves problems for"
+    required: true
+    define:
+      - specific_role: "Data PMs, healthcare tech leaders, etc."
+      - company_size: "Startup, enterprise, etc."
+      - pain_level: "How urgent is this problem"
+      - current_alternatives: "What they use now"
+    avoid:
+      - "Everyone who..."
+      - "All companies that..."
+      - "Anyone struggling with..."
+    include:
+      - "Specifically helps [exact role]"
+      - "At companies doing [specific thing]"
+      - "Who currently [current bad solution]"
+
+  - name: solution_overview
+    description: "What the product actually does"
+    required: true
+    components:
+      - core_functionality: "Primary job it performs"
+      - key_differentiator: "What makes it unique"
+      - technical_approach: "How it works (high level)"
+      - user_experience: "What it feels like to use"
+    format:
+      - "Instead of [current painful process]"
+      - "You can now [simple new process]"
+      - "It works by [technical differentiation]"
+      - "The experience is [user benefit]"
+    kevin_angle:
+      - "Leverages his data product expertise"
+      - "Solves healthcare/B2B specific challenges"
+      - "Technical depth without complexity"
+
+  - name: validation_evidence
+    description: "Proof this is worth building"
+    required: true
+    types:
+      - customer_interviews: "Direct feedback from prospects"
+      - market_research: "Industry data supporting need"
+      - prototype_testing: "Early user validation"
+      - competitive_analysis: "Gap in existing solutions"
+    credibility_builders:
+      - "Talked to X people who confirmed..."
+      - "Industry reports show Y% struggle with..."
+      - "Early prototype got Z response..."
+      - "No existing tool does [specific thing]"
+    avoid:
+      - "I think there's a market"
+      - "Lots of people have this problem"
+      - "Market research says..."
+    include:
+      - "Specific conversations with real people"
+      - "Quantified pain points"
+      - "Concrete validation moments"
+
+  - name: traction_and_progress
+    description: "Current status and momentum"
+    required: true
+    metrics:
+      - development_progress: "What's built vs planned"
+      - user_feedback: "Early customer responses"
+      - revenue_indicators: "Paying customers or pre-orders"
+      - growth_trajectory: "Month-over-month progress"
+    transparency_levels:
+      early_stage: "Honest about being early"
+      revenue_sharing: "Transparent about numbers"
+      challenges_included: "Real obstacles faced"
+      learning_documented: "What didn't work"
+    format:
+      - "Currently at [specific milestone]"
+      - "Users are telling me [direct quotes]"
+      - "Revenue is [exact numbers or 'pre-revenue']"
+      - "Biggest learning so far: [insight]"
+
+  - name: technical_differentiation
+    description: "Why this is technically superior"
+    required: true
+    leverage_kevin_expertise:
+      - healthcare_data_knowledge: "FHIR, HL7, clinical workflows"
+      - b2b_product_experience: "Enterprise needs understanding"
+      - technical_implementation: "Architecture and scaling"
+      - compliance_awareness: "HIPAA, governance, security"
+    positioning:
+      - "Built by someone who actually used these tools"
+      - "Understands the real technical challenges"
+      - "Not just another dashboard or API"
+      - "Solves problems others don't even see"
+
+  - name: business_model
+    description: "How this makes money sustainably"
+    required: true
+    elements:
+      - pricing_strategy: "How customers pay"
+      - unit_economics: "Cost to serve vs revenue"
+      - scalability: "How growth improves margins"
+      - defensibility: "Why competitors can't copy easily"
+    kevin_advantages:
+      - domain_expertise: "Deep healthcare/data knowledge"
+      - professional_network: "Industry connections"
+      - thought_leadership: "Brand recognition building"
+      - consulting_synergy: "Product + services model"
+
+  - name: future_vision
+    description: "Where this goes long-term"
+    required: true
+    roadmap:
+      - next_6_months: "Immediate priorities"
+      - year_1_goals: "Key milestones"
+      - year_3_vision: "Market position"
+      - exit_possibilities: "Acquisition or independence"
+    market_expansion:
+      - adjacent_problems: "Related pain points to solve"
+      - customer_growth: "Expanding within accounts"
+      - geographic_opportunities: "Beyond initial market"
+      - platform_evolution: "Ecosystem development"
+
+  - name: call_to_action
+    description: "What you want from the audience"
+    required: true
+    options:
+      feedback_request: "Help refining the approach"
+      customer_interviews: "Validate with your experience"
+      beta_signup: "Try early version"
+      partnership_exploration: "Collaborate or integrate"
+      investment_interest: "Fund the development"
+      network_introductions: "Connect with relevant people"
+    format:
+      - "I'd love your thoughts on [specific aspect]"
+      - "If you've faced this problem, I'd love to chat"
+      - "Interested in being an early user?"
+      - "Know anyone at [target company type]?"
+
+authenticity_principles:
+  vulnerability:
+    - "Share real struggles and setbacks"
+    - "Admit what you don't know yet"
+    - "Be honest about challenges ahead"
+  
+  credibility:
+    - "Leverage Kevin's real expertise"
+    - "Reference actual experience"
+    - "Provide specific examples"
+  
+  value_first:
+    - "Help audience regardless of product interest"
+    - "Share insights from building process"
+    - "Teach what you're learning"
+
+platform_adaptations:
+  linkedin_post:
+    - "Focus on one key insight"
+    - "Personal story prominent"
+    - "Clear discussion prompt"
+    - "150-300 words total"
+  
+  blog_article:
+    - "Full story with details"
+    - "Technical depth included"
+    - "Multiple sections developed"
+    - "1,200-2,000 words"
+  
+  pitch_deck:
+    - "Visual support for key points"
+    - "Data and metrics highlighted"
+    - "Clear problem/solution fit"
+    - "10-15 slides maximum"
+
+success_indicators:
+  engagement:
+    - "Generates meaningful questions"
+    - "Sparks discussions about similar problems"
+    - "Gets shares from target audience"
+    - "Leads to direct messages"
+  
+  business_impact:
+    - "Customer interview requests"
+    - "Beta signup interest"
+    - "Partnership inquiries"
+    - "Investment conversations"
+  
+  thought_leadership:
+    - "Positions Kevin as innovative builder"
+    - "Demonstrates technical expertise"
+    - "Shows entrepreneurial journey"
+    - "Builds audience for future launches"

@@ -1,0 +1,235 @@
+name: thought-leadership-development
+description: Systematic approach to building Kevin's authority and expertise recognition
+version: 1.0.0
+
+phases:
+  - name: foundation_building
+    description: "Establish credibility and consistent voice"
+    duration: "Months 1-3"
+    agents:
+      - thought-partner
+      - content-editor
+      - data-product-writer
+    objectives:
+      - establish_authentic_voice: "Develop Kevin's unique perspective"
+      - demonstrate_expertise: "Show depth in healthcare data"
+      - build_audience: "Attract relevant professionals"
+      - create_content_library: "Foundational pieces for reference"
+    
+    steps:
+      - id: voice_development
+        action: "Define and refine Kevin's unique perspective"
+        agent: thought-partner
+        command: "*framework"
+        deliverables:
+          - "Kevin's contrarian takes on industry trends"
+          - "Unique frameworks based on experience"
+          - "Personal story integration strategy"
+        
+      - id: expertise_demonstration
+        action: "Create content showcasing technical depth"
+        agent: data-product-writer
+        command: "*technical-story"
+        deliverables:
+          - "3-5 technical deep-dive articles"
+          - "Case studies from Kevin's experience"
+          - "Industry analysis pieces"
+        
+      - id: consistency_enforcement
+        action: "Ensure all content meets quality standards"
+        agent: content-editor
+        command: "*principle-score"
+        deliverables:
+          - "Content quality baseline established"
+          - "Voice consistency across pieces"
+          - "Brand recognition elements"
+
+  - name: authority_establishment
+    description: "Build recognition as industry expert"
+    duration: "Months 4-9"
+    agents:
+      - narrative-architect
+      - linkedin-writer
+      - blog-writer
+    objectives:
+      - thought_leadership: "Original insights and frameworks"
+      - industry_influence: "Cited by others in field"
+      - speaking_opportunities: "Conference and podcast invitations"
+      - network_growth: "Connections with industry leaders"
+    
+    steps:
+      - id: content_series_development
+        action: "Create systematic content series"
+        agent: narrative-architect
+        command: "*series-arc"
+        deliverables:
+          - "Healthcare Data Insights (weekly)"
+          - "Data Product Management Deep Dives (monthly)"
+          - "Building in Public series (weekly)"
+        
+      - id: platform_optimization
+        action: "Maximize reach and engagement"
+        agent: linkedin-writer
+        command: "*viral-check"
+        deliverables:
+          - "High-engagement LinkedIn posts"
+          - "Cross-platform content adaptation"
+          - "Community engagement strategy"
+        
+      - id: long_form_authority
+        action: "Establish expertise through in-depth content"
+        agent: blog-writer
+        command: "*create-article"
+        deliverables:
+          - "Comprehensive guides and tutorials"
+          - "Industry analysis and predictions"
+          - "Framework development pieces"
+
+  - name: influence_amplification
+    description: "Scale impact and recognition"
+    duration: "Months 10-12"
+    agents:
+      - narrative-architect
+      - microsaas-advisor
+      - hook-optimizer
+    objectives:
+      - industry_leadership: "Recognized expert and influencer"
+      - business_opportunities: "Consulting, speaking, partnerships"
+      - community_building: "Attract and nurture professional network"
+      - market_positioning: "Go-to person for healthcare data products"
+    
+    steps:
+      - id: thought_leadership_synthesis
+        action: "Develop comprehensive thought leadership narrative"
+        agent: narrative-architect
+        command: "*authority-build"
+        deliverables:
+          - "Kevin's definitive perspective on industry"
+          - "Signature frameworks and methodologies"
+          - "Future vision and predictions"
+        
+      - id: business_narrative_integration
+        action: "Connect thought leadership to business goals"
+        agent: microsaas-advisor
+        command: "*authenticity-check"
+        deliverables:
+          - "Solopreneur journey documentation"
+          - "Product development narratives"
+          - "Consulting expertise positioning"
+        
+      - id: viral_content_strategy
+        action: "Maximize reach and impact"
+        agent: hook-optimizer
+        command: "*viral-check"
+        deliverables:
+          - "High-impact content for maximum reach"
+          - "Cross-platform viral strategies"
+          - "Engagement amplification tactics"
+
+content_themes:
+  core_expertise:
+    - healthcare_data_products: "Clinical informatics, FHIR, HL7"
+    - b2b_data_strategy: "Enterprise data governance and quality"
+    - product_management: "Data PM vs traditional PM differences"
+    - regulatory_compliance: "HIPAA, data privacy, security"
+  
+  unique_perspectives:
+    - practitioner_insights: "Real implementation experience"
+    - contrarian_takes: "Challenge conventional wisdom"
+    - vulnerability_sharing: "Authentic struggles and learning"
+    - future_vision: "Industry trends and predictions"
+  
+  solopreneur_journey:
+    - building_in_public: "MicroSaaS development process"
+    - consulting_transition: "Corporate to independent"
+    - technical_entrepreneurship: "Data experts building businesses"
+    - community_building: "Helping other builders"
+
+content_calendar_framework:
+  weekly_cadence:
+    monday: "Industry insight or trend analysis"
+    wednesday: "Technical deep-dive or tutorial"
+    friday: "Personal journey or vulnerability share"
+  
+  monthly_themes:
+    month_1: "Healthcare data challenges"
+    month_2: "Product management insights"
+    month_3: "Solopreneur journey updates"
+    month_4: "Industry predictions and analysis"
+  
+  quarterly_focuses:
+    q1: "Foundation and expertise establishment"
+    q2: "Authority building and network growth"
+    q3: "Influence amplification and recognition"
+    q4: "Strategic positioning and future planning"
+
+success_metrics:
+  audience_growth:
+    linkedin_followers: "Target: 5,000+ relevant professionals"
+    blog_subscribers: "Target: 1,000+ email subscribers"
+    engagement_rate: "Target: 10%+ LinkedIn engagement"
+    profile_views: "Target: 500+ weekly profile views"
+  
+  authority_indicators:
+    speaking_invitations: "Target: 3+ conferences/year"
+    podcast_appearances: "Target: 12+ episodes/year"
+    industry_citations: "Target: Referenced by 10+ industry leaders"
+    consulting_inquiries: "Target: 5+ qualified leads/month"
+  
+  content_performance:
+    viral_posts: "Target: 1+ post >10k views/month"
+    thought_leadership: "Target: 2+ original frameworks/year"
+    industry_influence: "Target: Shape 1+ industry conversations"
+    community_building: "Target: 100+ meaningful professional relationships"
+
+escalation_triggers:
+  low_engagement:
+    threshold: "Engagement drops below 5% for 2 weeks"
+    action: "Reassess content strategy with hook-optimizer"
+  
+  voice_inconsistency:
+    threshold: "Content doesn't sound like Kevin"
+    action: "Review with content-editor using principles"
+  
+  expertise_questioning:
+    threshold: "Technical accuracy challenged"
+    action: "Validate with data-product-writer expertise"
+  
+  burnout_symptoms:
+    threshold: "Content quality declining due to volume"
+    action: "Reassess cadence and focus areas"
+
+long_term_vision:
+  year_1: "Recognized expert in healthcare data products"
+  year_2: "Industry influencer shaping conversations"
+  year_3: "Thought leader with speaking/consulting platform"
+  year_5: "Go-to authority for healthcare data product strategy"
+
+integration_points:
+  consulting_business:
+    - content_supports_credibility: "Demonstrates expertise to prospects"
+    - case_studies_from_work: "Real examples (appropriately anonymized)"
+    - thought_leadership_drives_leads: "Content marketing for consulting"
+  
+  microsaas_development:
+    - building_in_public: "Document product development journey"
+    - technical_credibility: "Show ability to build solutions"
+    - market_validation: "Use content to test ideas"
+  
+  professional_network:
+    - industry_connections: "Engage with peers and leaders"
+    - community_contribution: "Help others while building reputation"
+    - partnership_opportunities: "Content attracts collaboration"
+
+continuous_improvement:
+  monthly_review:
+    - "Analyze content performance metrics"
+    - "Review audience feedback and engagement"
+    - "Adjust content themes based on resonance"
+    - "Update thought leadership positioning"
+  
+  quarterly_strategy:
+    - "Assess progress toward annual goals"
+    - "Refine unique value proposition"
+    - "Plan major content initiatives"
+    - "Review and update success metrics"
