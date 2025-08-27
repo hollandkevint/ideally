@@ -61,9 +61,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       setWorkspaceState(null)
       setLoading(false)
     }
-  }, [user, authLoading])
+  }, [user, authLoading, loadWorkspace])
 
-  const loadWorkspace = async () => {
+  const loadWorkspace = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -90,9 +90,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, createInitialWorkspace])
 
-  const createInitialWorkspace = async () => {
+  const createInitialWorkspace = useCallback(async () => {
     const initialState: WorkspaceState = {
       chat_context: [{
         id: 'welcome-message',
@@ -118,9 +118,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
 
     setWorkspaceState(initialState)
-  }
+  }, [user])
 
-  const saveWorkspace = async () => {
+  const saveWorkspace = useCallback(async () => {
     if (!user || !workspaceState) return
 
     try {
@@ -139,7 +139,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       console.error('Error saving workspace:', err)
       setError('Failed to save workspace')
     }
-  }
+  }, [user, workspaceState])
 
   // Debounced auto-save function
   const debouncedSave = useCallback(() => {
@@ -152,7 +152,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }, 2000) // Auto-save 2 seconds after last change
 
     setAutoSaveTimeout(timeout)
-  }, [autoSaveTimeout, workspaceState])
+  }, [autoSaveTimeout, saveWorkspace])
 
   const updateWorkspace = async (updates: Partial<WorkspaceState>) => {
     if (!workspaceState) return

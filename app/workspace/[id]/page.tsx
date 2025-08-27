@@ -1,11 +1,12 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../../lib/auth/AuthContext'
 import { supabase } from '../../../lib/supabase/client'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import BmadInterface from '../../components/bmad/BmadInterface'
 
 interface ChatMessage {
   id: string
@@ -26,6 +27,8 @@ interface Workspace {
   user_id: string
 }
 
+type WorkspaceTab = 'chat' | 'bmad'
+
 export default function WorkspacePage() {
   const params = useParams()
   const { user, loading: authLoading, signOut } = useAuth()
@@ -34,14 +37,9 @@ export default function WorkspacePage() {
   const [error, setError] = useState('')
   const [messageInput, setMessageInput] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>('chat')
 
-  useEffect(() => {
-    if (user && params.id) {
-      fetchWorkspace()
-    }
-  }, [user, params.id])
-
-  const fetchWorkspace = async () => {
+  const fetchWorkspace = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('workspaces')
@@ -58,7 +56,13 @@ export default function WorkspacePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, user?.id])
+
+  useEffect(() => {
+    if (user && params.id) {
+      fetchWorkspace()
+    }
+  }, [user, params.id, fetchWorkspace])
 
   const addChatMessage = async (message: Omit<ChatMessage, 'id' | 'timestamp'>) => {
     if (!workspace) return
@@ -260,7 +264,7 @@ export default function WorkspacePage() {
 
   return (
     <div className="dual-pane-container">
-      {/* Chat Pane - 60% */}
+      {/* Main Content Pane - 60% */}
       <div className="chat-pane">
         <header className="mb-4 flex justify-between items-start">
           <div>
@@ -272,7 +276,7 @@ export default function WorkspacePage() {
               </Link>
               <h1 className="text-2xl font-bold text-primary">{workspace.name}</h1>
             </div>
-            <p className="text-secondary">AI-powered coaching with Mary</p>
+            <p className="text-secondary">AI-powered strategic workspace</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-secondary mb-2">Welcome, {user.email}</p>
@@ -293,105 +297,160 @@ export default function WorkspacePage() {
           </div>
         </header>
         
-        <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-          {workspace.chat_context.length === 0 && (
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-semibold text-sm">M</span>
-                </div>
-                <div>
-                  <p className="font-medium text-blue-900 mb-1">Welcome to your Strategic Session!</p>
-                  <p className="text-blue-700 text-sm">
-                    I&apos;m Mary, your AI strategic advisor. I&apos;m here to help you think through ideas, validate concepts, 
-                    and develop actionable plans. What challenge would you like to explore today?
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {workspace.chat_context.map((message) => (
-            <div 
-              key={message.id} 
-              className={
-                message.role === 'user' 
-                  ? 'chat-message-user' 
-                  : message.role === 'assistant' 
-                    ? 'chat-message-assistant' 
-                    : 'chat-message-system'
-              }
+        {/* Tab Navigation */}
+        <div className="mb-4 border-b border-divider">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'chat'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-secondary hover:text-primary hover:border-primary/50'
+              }`}
             >
-              {message.role === 'assistant' ? (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-semibold text-sm">M</span>
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Mary Chat
+                {workspace.chat_context.length > 0 && (
+                  <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                    {workspace.chat_context.length}
+                  </span>
+                )}
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('bmad')}
+              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'bmad'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-secondary hover:text-primary hover:border-primary/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">B</span>
+                </div>
+                BMad Method
+                <span className="bg-accent/10 text-accent text-xs px-2 py-0.5 rounded-full">
+                  NEW
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {activeTab === 'chat' ? (
+            <>
+              <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
+                {workspace.chat_context.length === 0 && (
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-semibold text-sm">M</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-blue-900 mb-1">Welcome to your Strategic Session!</p>
+                        <p className="text-blue-700 text-sm">
+                          I&apos;m Mary, your AI strategic advisor. I&apos;m here to help you think through ideas, validate concepts, 
+                          and develop actionable plans. What challenge would you like to explore today?
+                        </p>
+                      </div>
                     </div>
-                    <strong className="text-blue-900">Mary</strong>
                   </div>
-                  <div className="ml-10 prose prose-sm max-w-none">
-                    <ReactMarkdown
-                      components={{
-                        p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
-                        ul: ({ children }) => <ul className="mb-3 ml-4 space-y-1">{children}</ul>,
-                        ol: ({ children }) => <ol className="mb-3 ml-4 space-y-1">{children}</ol>,
-                        li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                        h1: ({ children }) => <h1 className="text-lg font-semibold mb-2 text-blue-900">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-md font-semibold mb-2 text-blue-800">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 text-blue-700">{children}</h3>,
-                        strong: ({ children }) => <strong className="font-semibold text-blue-900">{children}</strong>,
-                        code: ({ children }) => <code className="bg-blue-50 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                        blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-300 pl-4 italic my-2">{children}</blockquote>
-                      }}
-                    >
-                      {message.content}
-                    </ReactMarkdown>
+                )}
+                
+                {workspace.chat_context.map((message) => (
+                  <div 
+                    key={message.id} 
+                    className={
+                      message.role === 'user' 
+                        ? 'chat-message-user' 
+                        : message.role === 'assistant' 
+                          ? 'chat-message-assistant' 
+                          : 'chat-message-system'
+                    }
+                  >
+                    {message.role === 'assistant' ? (
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-semibold text-sm">M</span>
+                          </div>
+                          <strong className="text-blue-900">Mary</strong>
+                        </div>
+                        <div className="ml-10 prose prose-sm max-w-none">
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
+                              ul: ({ children }) => <ul className="mb-3 ml-4 space-y-1">{children}</ul>,
+                              ol: ({ children }) => <ol className="mb-3 ml-4 space-y-1">{children}</ol>,
+                              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                              h1: ({ children }) => <h1 className="text-lg font-semibold mb-2 text-blue-900">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-md font-semibold mb-2 text-blue-800">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 text-blue-700">{children}</h3>,
+                              strong: ({ children }) => <strong className="font-semibold text-blue-900">{children}</strong>,
+                              code: ({ children }) => <code className="bg-blue-50 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                              blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-300 pl-4 italic my-2">{children}</blockquote>
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>
+                        <strong>{message.role === 'user' ? 'You' : 'System'}:</strong> {message.content}
+                      </p>
+                    )}
+                    {message.metadata?.strategic_tags && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {message.metadata.strategic_tags.map((tag, i) => (
+                          <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                ))}
+                
+                {sendingMessage && (
+                  <div className="chat-message-assistant opacity-50">
+                    <p><strong>Mary:</strong> <span className="loading-shimmer h-4 w-32 inline-block rounded"></span></p>
+                  </div>
+                )}
+              </div>
+              
+              <form onSubmit={handleSendMessage} className="mt-4">
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    placeholder="Type your strategic question or challenge..."
+                    disabled={sendingMessage}
+                    className="flex-1 px-4 py-2 border border-divider rounded-lg focus:border-primary focus:outline-none disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!messageInput.trim() || sendingMessage}
+                    className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary transition-colors"
+                  >
+                    {sendingMessage ? 'Sending...' : 'Send'}
+                  </button>
                 </div>
-              ) : (
-                <p>
-                  <strong>{message.role === 'user' ? 'You' : 'System'}:</strong> {message.content}
-                </p>
-              )}
-              {message.metadata?.strategic_tags && (
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {message.metadata.strategic_tags.map((tag, i) => (
-                    <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          
-          {sendingMessage && (
-            <div className="chat-message-assistant opacity-50">
-              <p><strong>Mary:</strong> <span className="loading-shimmer h-4 w-32 inline-block rounded"></span></p>
+              </form>
+            </>
+          ) : (
+            <div className="flex-1 overflow-y-auto">
+              <BmadInterface workspaceId={workspace.id} className="w-full" />
             </div>
           )}
         </div>
-        
-        <form onSubmit={handleSendMessage} className="mt-4">
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              placeholder="Type your strategic question or challenge..."
-              disabled={sendingMessage}
-              className="flex-1 px-4 py-2 border border-divider rounded-lg focus:border-primary focus:outline-none disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={!messageInput.trim() || sendingMessage}
-              className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary transition-colors"
-            >
-              {sendingMessage ? 'Sending...' : 'Send'}
-            </button>
-          </div>
-        </form>
       </div>
 
       {/* Canvas Pane - 40% */}

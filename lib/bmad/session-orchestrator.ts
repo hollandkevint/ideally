@@ -5,7 +5,13 @@ import {
   BmadTemplate,
   BmadMethodError,
   SessionStateError,
-  PhaseTimeAllocation
+  PhaseTimeAllocation,
+  PhaseResult,
+  DatabaseSessionData,
+  InputAnalysis,
+  GeneratedDocument,
+  ActionItem,
+  SessionProgress
 } from './types';
 import { bmadTemplateEngine } from './template-engine';
 import { pathwayRouter } from './pathway-router';
@@ -43,15 +49,6 @@ export interface PhaseTransitionInfo {
   completionPercentage: number;
 }
 
-/**
- * Phase time allocation
- */
-export interface PhaseTimeAllocation {
-  phaseId: string;
-  allocatedMinutes: number;
-  actualMinutes: number;
-  overrunRisk: 'low' | 'medium' | 'high';
-}
 
 /**
  * BMad Method Session Orchestrator
@@ -104,7 +101,7 @@ export class SessionOrchestrator {
         startTime: new Date(),
         timeAllocations: this.calculateTimeAllocations(pathway.templateSequence),
         context: {
-          userResponses: config.initialContext || {},
+          userResponses: {},
           elicitationHistory: [],
           personaEvolution: [],
           knowledgeReferences: []
@@ -129,7 +126,7 @@ export class SessionOrchestrator {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to create BMad session: ${error.message}`,
+        `Failed to create BMad session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_CREATION_ERROR',
         { config, originalError: error }
       );
@@ -172,7 +169,10 @@ export class SessionOrchestrator {
       );
 
       // Update session context with user response
-      session.context.userResponses[`${currentPhase.id}_${Date.now()}`] = userInput;
+      session.context.userResponses[`${currentPhase.id}_${Date.now()}`] = {
+        text: userInput,
+        timestamp: new Date()
+      };
       
       // Update progress
       session.progress = await this.progressTracker.updateProgress(session, phaseResult);
@@ -190,7 +190,7 @@ export class SessionOrchestrator {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to advance session: ${error.message}`,
+        `Failed to advance session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_ADVANCEMENT_ERROR',
         { sessionId, userInput, originalError: error }
       );
@@ -220,7 +220,7 @@ export class SessionOrchestrator {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to load session: ${error.message}`,
+        `Failed to load session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_LOAD_ERROR',
         { sessionId, originalError: error }
       );
@@ -250,7 +250,7 @@ export class SessionOrchestrator {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to complete session: ${error.message}`,
+        `Failed to complete session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_COMPLETION_ERROR',
         { sessionId, originalError: error }
       );
@@ -294,9 +294,9 @@ export class SessionOrchestrator {
     // For now, return basic allocations
     return templateSequence.map(templateId => ({
       phaseId: templateId,
+      templateId: templateId,
       allocatedMinutes: 10,
-      actualMinutes: 0,
-      overrunRisk: 'low' as const
+      usedMinutes: 0
     }));
   }
 
@@ -306,7 +306,7 @@ export class SessionOrchestrator {
   private async determineNextAction(
     session: BmadSession,
     currentPhase: BmadPhase,
-    phaseResult: any
+    phaseResult: PhaseResult
   ): Promise<SessionAdvancement> {
     const currentTemplate = await bmadTemplateEngine.loadTemplate(session.currentTemplate);
     
@@ -374,8 +374,8 @@ export class SessionOrchestrator {
       return {
         session,
         nextAction: 'continue_phase',
-        message: phaseResult.continuationMessage || 'Let\'s continue working on this phase.',
-        elicitationNeeded: phaseResult.needsElicitation || false
+        message: 'Let\'s continue working on this phase.',
+        elicitationNeeded: false
       };
     }
   }
@@ -413,7 +413,7 @@ export class SessionOrchestrator {
       });
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to persist session: ${error.message}`,
+        `Failed to persist session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_PERSISTENCE_ERROR',
         { sessionId: session.id, originalError: error }
       );
@@ -423,7 +423,7 @@ export class SessionOrchestrator {
   /**
    * Deserialize session from database format
    */
-  private deserializeSession(data: any): BmadSession {
+  private deserializeSession(data: DatabaseSessionData): BmadSession {
     return {
       id: data.id,
       userId: data.user_id,
@@ -437,21 +437,22 @@ export class SessionOrchestrator {
       timeAllocations: data.session_config.timeAllocations,
       context: data.context,
       outputs: data.outputs,
-      metadata: data.session_config.metadata
+      metadata: data.metadata
     };
   }
 
   /**
    * Generate final session documents
    */
-  private async generateFinalDocuments(session: BmadSession): Promise<any[]> {
+  private async generateFinalDocuments(_session: BmadSession): Promise<GeneratedDocument[]> {
     // This would integrate with document generation system
     // For now, return placeholder
     return [{
       id: 'session-summary',
-      title: 'BMad Method Session Summary',
+      name: 'BMad Method Session Summary',
       type: 'summary',
       content: 'Generated session summary would go here',
+      format: 'markdown' as const,
       createdAt: new Date()
     }];
   }
@@ -459,15 +460,18 @@ export class SessionOrchestrator {
   /**
    * Extract action items from session
    */
-  private async extractActionItems(session: BmadSession): Promise<any[]> {
+  private async extractActionItems(_session: BmadSession): Promise<ActionItem[]> {
     // This would analyze session outputs to extract actionable items
     // For now, return placeholder
+    const now = new Date();
     return [{
       id: 'action-1',
       title: 'Implement top strategic recommendation',
-      priority: 'high',
-      estimatedTime: '2 hours',
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 1 week
+      priority: 'high' as const,
+      status: 'pending' as const,
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+      createdAt: now,
+      updatedAt: now
     }];
   }
 }
@@ -479,28 +483,31 @@ class PhaseManager {
   async processInput(
     phase: BmadPhase,
     userInput: string,
-    session: BmadSession
-  ): Promise<any> {
+    _session: BmadSession
+  ): Promise<PhaseResult> {
     // Analyze user input for phase progression
     const inputAnalysis = await this.analyzeInput(userInput, phase);
     
     // Check if phase completion criteria are met
-    const phaseComplete = await this.checkPhaseCompletion(phase, inputAnalysis, session);
+    const phaseComplete = await this.checkPhaseCompletion(phase, inputAnalysis, _session);
     
     return {
       phaseComplete,
-      inputAnalysis,
-      continuationMessage: this.generateContinuationMessage(phase, inputAnalysis),
-      needsElicitation: !phaseComplete
+      outputs: {
+        inputAnalysis,
+        continuationMessage: this.generateContinuationMessage(phase, inputAnalysis)
+      }
     };
   }
 
-  private async analyzeInput(userInput: string, phase: BmadPhase): Promise<any> {
+  private async analyzeInput(userInput: string, phase: BmadPhase): Promise<InputAnalysis> {
     // Simple analysis - could be enhanced with NLP
+    const keywords = this.getPhaseKeywords(phase);
     return {
-      wordCount: userInput.split(/\s+/).length,
-      containsKeywords: this.checkForPhaseKeywords(userInput, phase),
-      completeness: this.assessCompleteness(userInput, phase)
+      intent: this.extractIntent(userInput),
+      complexity: this.assessComplexity(userInput),
+      keywords: keywords.filter(keyword => userInput.toLowerCase().includes(keyword)),
+      suggestions: this.generateSuggestions(userInput, phase)
     };
   }
 
@@ -522,7 +529,34 @@ class PhaseManager {
     return keywordMap[phase.id] || [];
   }
 
-  private assessCompleteness(userInput: string, phase: BmadPhase): number {
+  private extractIntent(userInput: string): string {
+    // Simple intent extraction - could be enhanced with NLP
+    if (userInput.includes('?')) return 'question';
+    if (userInput.includes('need') || userInput.includes('want')) return 'need';
+    return 'statement';
+  }
+
+  private assessComplexity(userInput: string): number {
+    // Simple complexity assessment (0-1 scale)
+    const wordCount = userInput.split(/\s+/).length;
+    const sentenceCount = userInput.split(/[.!?]+/).length;
+    const complexityScore = (wordCount * 0.1) + (sentenceCount * 0.2);
+    return Math.min(complexityScore / 10, 1.0);
+  }
+
+  private generateSuggestions(userInput: string, phase: BmadPhase): string[] {
+    // Generate contextual suggestions based on phase and input
+    const suggestions: string[] = [];
+    if (userInput.length < 20) {
+      suggestions.push('Consider providing more detail');
+    }
+    if (!userInput.includes(phase.name.toLowerCase())) {
+      suggestions.push(`Consider how this relates to ${phase.name}`);
+    }
+    return suggestions;
+  }
+
+  private assessCompleteness(userInput: string, _phase: BmadPhase): number {
     // Simple completeness assessment
     const minWords = 10;
     const wordCount = userInput.split(/\s+/).length;
@@ -531,15 +565,15 @@ class PhaseManager {
 
   private async checkPhaseCompletion(
     phase: BmadPhase,
-    inputAnalysis: any,
-    session: BmadSession
+    inputAnalysis: InputAnalysis,
+    _session: BmadSession
   ): Promise<boolean> {
     // Simple completion logic - could be enhanced
-    return inputAnalysis.completeness >= 0.8 && inputAnalysis.containsKeywords;
+    return inputAnalysis.complexity >= 0.5 && inputAnalysis.keywords.length > 0;
   }
 
-  private generateContinuationMessage(phase: BmadPhase, inputAnalysis: any): string {
-    if (inputAnalysis.completeness < 0.5) {
+  private generateContinuationMessage(phase: BmadPhase, inputAnalysis: InputAnalysis): string {
+    if (inputAnalysis.complexity < 0.5) {
       return "Let's explore this further. Can you provide more details?";
     } else {
       return "Good progress! Let's continue developing this aspect.";
@@ -551,7 +585,7 @@ class PhaseManager {
  * Tracks session progress and completion
  */
 class ProgressTracker {
-  async updateProgress(session: BmadSession, phaseResult: any): Promise<SessionProgress> {
+  async updateProgress(session: BmadSession, phaseResult: PhaseResult): Promise<SessionProgress> {
     const progress = { ...session.progress };
     
     // Update current phase completion

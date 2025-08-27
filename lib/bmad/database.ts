@@ -7,7 +7,8 @@ import {
   PhaseTimeAllocation,
   ActionItem,
   GeneratedDocument,
-  BmadMethodError
+  BmadMethodError,
+  UserResponse
 } from './types';
 
 // Database row types that match Supabase schema
@@ -99,6 +100,47 @@ export interface ActionItemRow {
   updated_at: string;
 }
 
+export interface KnowledgeReferenceRow {
+  id: string;
+  session_id: string;
+  entry_id: string;
+  title: string;
+  relevance_score: number;
+  applied_in_phase: string;
+  timestamp: string;
+}
+
+export interface PhaseOutputRow {
+  id: string;
+  session_id: string;
+  phase_id: string;
+  output_id: string;
+  output_name: string;
+  output_type: 'text' | 'list' | 'matrix' | 'canvas' | 'document';
+  output_data: Record<string, unknown>;
+  is_required: boolean;
+  created_at: string;
+}
+
+export interface TemplateOutputRow {
+  id: string;
+  session_id: string;
+  template_id: string;
+  output_data: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface GeneratedDocumentRow {
+  id: string;
+  session_id: string;
+  document_name: string;
+  document_type: string;
+  content: string;
+  format: 'markdown' | 'html' | 'pdf' | 'docx';
+  file_path?: string;
+  created_at: string;
+}
+
 /**
  * BMad Method Database Access Layer
  */
@@ -136,7 +178,7 @@ export class BmadDatabase {
       return data.id;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to create BMad session: ${error.message}`,
+        `Failed to create BMad session: ${error instanceof Error ? error instanceof Error ? error.message : 'Unknown error' : 'Unknown error'}`,
         'SESSION_CREATION_ERROR',
         { sessionData, originalError: error }
       );
@@ -202,7 +244,7 @@ export class BmadDatabase {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to retrieve BMad session: ${error.message}`,
+        `Failed to retrieve BMad session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_RETRIEVAL_ERROR',
         { sessionId, originalError: error }
       );
@@ -242,7 +284,7 @@ export class BmadDatabase {
       if (error) throw error;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to update session progress: ${error.message}`,
+        `Failed to update session progress: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_UPDATE_ERROR',
         { sessionId, updates, originalError: error }
       );
@@ -279,7 +321,7 @@ export class BmadDatabase {
       if (error) throw error;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to record user response: ${error.message}`,
+        `Failed to record user response: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'RESPONSE_RECORDING_ERROR',
         { sessionId, phaseId, promptId, originalError: error }
       );
@@ -294,10 +336,10 @@ export class BmadDatabase {
     elicitation: {
       phaseId: string;
       templateId: string;
-      options: any;
+      options: Record<string, unknown>;
       userSelection: string;
       selectedPath: string;
-      generatedContext?: any;
+      generatedContext?: Record<string, unknown>;
       nextPhaseHint?: string;
     }
   ): Promise<void> {
@@ -320,7 +362,7 @@ export class BmadDatabase {
       if (error) throw error;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to record elicitation: ${error.message}`,
+        `Failed to record elicitation: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'ELICITATION_RECORDING_ERROR',
         { sessionId, elicitation, originalError: error }
       );
@@ -359,7 +401,7 @@ export class BmadDatabase {
       if (error) throw error;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to record persona evolution: ${error.message}`,
+        `Failed to record persona evolution: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'PERSONA_RECORDING_ERROR',
         { sessionId, evolution, originalError: error }
       );
@@ -376,7 +418,7 @@ export class BmadDatabase {
       outputId: string;
       outputName: string;
       outputType: 'text' | 'list' | 'matrix' | 'canvas' | 'document';
-      outputData: any;
+      outputData: Record<string, unknown>;
       isRequired: boolean;
     }
   ): Promise<void> {
@@ -400,7 +442,7 @@ export class BmadDatabase {
       if (error) throw error;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to save phase output: ${error.message}`,
+        `Failed to save phase output: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'OUTPUT_SAVE_ERROR',
         { sessionId, output, originalError: error }
       );
@@ -438,7 +480,7 @@ export class BmadDatabase {
       return data || [];
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to retrieve user sessions: ${error.message}`,
+        `Failed to retrieve user sessions: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_LIST_ERROR',
         { userId, workspaceId, status, originalError: error }
       );
@@ -456,10 +498,10 @@ export class BmadDatabase {
       responses: UserResponseRow[];
       elicitationHistory: ElicitationHistoryRow[];
       personaEvolution: PersonaEvolutionRow[];
-      knowledgeRefs: any[];
-      phaseOutputs: any[];
-      templateOutputs: any[];
-      documents: any[];
+      knowledgeRefs: KnowledgeReferenceRow[];
+      phaseOutputs: PhaseOutputRow[];
+      templateOutputs: TemplateOutputRow[];
+      documents: GeneratedDocumentRow[];
       actionItems: ActionItemRow[];
     }
   ): BmadSession {
@@ -489,7 +531,7 @@ export class BmadDatabase {
     }));
 
     // Transform user responses into context
-    const userResponses: { [key: string]: any } = {};
+    const userResponses: { [key: string]: UserResponse } = {};
     relatedData.responses.forEach(r => {
       const key = `${r.phase_id}.${r.prompt_id}`;
       userResponses[key] = {
@@ -504,11 +546,11 @@ export class BmadDatabase {
     const elicitationHistory: ElicitationHistory[] = relatedData.elicitationHistory.map(e => ({
       phaseId: e.phase_id,
       timestamp: new Date(e.timestamp),
-      options: e.options,
+      options: Array.isArray(e.options) ? e.options : [],
       userSelection: e.user_selection,
       result: {
         selectedPath: e.selected_path,
-        generatedContext: e.generated_context,
+        generatedContext: e.generated_context || {},
         nextPhaseHint: e.next_phase_hint
       }
     }));
@@ -525,7 +567,7 @@ export class BmadDatabase {
     }));
 
     // Transform outputs
-    const phaseOutputs: { [phaseId: string]: any } = {};
+    const phaseOutputs: { [phaseId: string]: Record<string, unknown> } = {};
     relatedData.phaseOutputs.forEach(o => {
       if (!phaseOutputs[o.phase_id]) {
         phaseOutputs[o.phase_id] = {};
@@ -533,7 +575,7 @@ export class BmadDatabase {
       phaseOutputs[o.phase_id][o.output_id] = o.output_data;
     });
 
-    const templateOutputs: { [templateId: string]: any } = {};
+    const templateOutputs: { [templateId: string]: Record<string, unknown> } = {};
     relatedData.templateOutputs.forEach(o => {
       templateOutputs[o.template_id] = o.output_data;
     });

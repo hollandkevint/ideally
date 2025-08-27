@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../lib/auth/AuthContext'
 import { supabase } from '../../lib/supabase/client'
 import Link from 'next/link'
@@ -26,14 +26,7 @@ export default function DashboardPage() {
   const [newWorkspaceDescription, setNewWorkspaceDescription] = useState('')
   const router = useRouter()
 
-
-  useEffect(() => {
-    if (user) {
-      fetchWorkspaces()
-    }
-  }, [user])
-
-  const fetchWorkspaces = async () => {
+  const fetchWorkspaces = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('workspaces')
@@ -48,7 +41,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.id])
+
+  useEffect(() => {
+    if (user) {
+      fetchWorkspaces()
+    }
+  }, [user, fetchWorkspaces])
 
   const createWorkspace = async () => {
     if (!newWorkspaceName.trim() || creating) return

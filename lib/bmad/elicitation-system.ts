@@ -4,7 +4,8 @@ import {
   BmadPhase, 
   BmadSession,
   BmadMethodError,
-  SessionContext 
+  SessionContext,
+  UserResponse
 } from './types';
 
 /**
@@ -174,28 +175,28 @@ export class ElicitationSystem {
    * Generate elicitation options for a specific session context and phase
    */
   async generateElicitationOptions(
-    session: BmadSession,
+    _session: BmadSession,
     currentPhase: BmadPhase
   ): Promise<ElicitationResponse> {
     try {
       // Analyze user patterns for personalization
-      const userPatterns = await this.getUserPatterns(session.userId);
+      const userPatterns = await this.getUserPatterns(_session.userId);
       
       // Select optimal technique based on phase and user patterns
-      const technique = await this.selectOptimalTechnique(currentPhase, userPatterns, session.context);
+      const technique = await this.selectOptimalTechnique(currentPhase, userPatterns, _session.context);
       
       // Generate contextual options
       const contextualOptions = await this.optionGenerator.generateContextualOptions(
         technique,
         currentPhase,
-        session.context
+        _session.context
       );
       
       // Create custom option prompt
       const customOption = this.generateCustomOptionPrompt(technique, currentPhase);
       
       // Generate contextual prompts for Mary
-      const contextualPrompts = this.generateContextualPrompts(technique, currentPhase, session);
+      const contextualPrompts = this.generateContextualPrompts(technique, currentPhase, _session);
 
       return {
         technique,
@@ -207,9 +208,9 @@ export class ElicitationSystem {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to generate elicitation options: ${error.message}`,
+        `Failed to generate elicitation options: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'ELICITATION_GENERATION_ERROR',
-        { sessionId: session.id, phaseId: currentPhase.id, originalError: error }
+        { sessionId: _session.id, phaseId: currentPhase.id, originalError: error }
       );
     }
   }
@@ -220,27 +221,27 @@ export class ElicitationSystem {
   async processUserSelection(
     selection: number | string,
     elicitationResponse: ElicitationResponse,
-    session: BmadSession
+    _session: BmadSession
   ): Promise<ElicitationResult> {
     try {
       let result: ElicitationResult;
 
       if (typeof selection === 'number') {
-        result = await this.processNumberedSelection(selection, elicitationResponse, session);
+        result = await this.processNumberedSelection(selection, elicitationResponse, _session);
       } else {
-        result = await this.processCustomResponse(selection, elicitationResponse, session);
+        result = await this.processCustomResponse(selection, elicitationResponse, _session);
       }
 
       // Update user patterns based on selection
-      await this.updateUserPatterns(session.userId, selection, elicitationResponse, result);
+      await this.updateUserPatterns(_session.userId, selection, elicitationResponse, result);
 
       return result;
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to process user selection: ${error.message}`,
+        `Failed to process user selection: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SELECTION_PROCESSING_ERROR',
-        { sessionId: session.id, selection, originalError: error }
+        { sessionId: _session.id, selection, originalError: error }
       );
     }
   }
@@ -251,7 +252,7 @@ export class ElicitationSystem {
   private async processNumberedSelection(
     selection: number,
     elicitationResponse: ElicitationResponse,
-    session: BmadSession
+    _session: BmadSession
   ): Promise<ElicitationResult> {
     const selectedOption = elicitationResponse.options.find(opt => opt.number === selection);
     
@@ -281,7 +282,7 @@ export class ElicitationSystem {
   private async processCustomResponse(
     response: string,
     elicitationResponse: ElicitationResponse,
-    session: BmadSession
+    _session: BmadSession
   ): Promise<ElicitationResult> {
     // Analyze custom response to extract intent and category
     const analysis = await this.analyzeCustomResponse(response, elicitationResponse.technique);
@@ -303,13 +304,13 @@ export class ElicitationSystem {
    * Select optimal elicitation technique based on phase and user patterns
    */
   private async selectOptimalTechnique(
-    phase: BmadPhase,
+    _phase: BmadPhase,
     userPatterns: UserPatterns,
-    sessionContext: SessionContext
+    _sessionContext: SessionContext
   ): Promise<ElicitationTechnique> {
     // Get techniques applicable to this phase
     const applicableTechniques = Array.from(this.techniques.values())
-      .filter(technique => technique.applicablePhases.includes(phase.id));
+      .filter(technique => technique.applicablePhases.includes(_phase.id));
 
     if (applicableTechniques.length === 0) {
       // Fallback to analytical technique
@@ -319,7 +320,7 @@ export class ElicitationSystem {
     // Score techniques based on user patterns and session context
     const scores = applicableTechniques.map(technique => ({
       technique,
-      score: this.scoreTechniqueForUser(technique, userPatterns, sessionContext)
+      score: this.scoreTechniqueForUser(technique, userPatterns, _sessionContext)
     }));
 
     // Sort by score and return best match
@@ -331,19 +332,19 @@ export class ElicitationSystem {
    * Score technique suitability for user
    */
   private scoreTechniqueForUser(
-    technique: ElicitationTechnique,
+    _technique: ElicitationTechnique,
     userPatterns: UserPatterns,
-    sessionContext: SessionContext
+    _sessionContext: SessionContext
   ): number {
     let score = 0;
 
     // User preference weighting
-    if (userPatterns.preferredTechniques.includes(technique.id)) {
+    if (userPatterns.preferredTechniques.includes(_technique.id)) {
       score += 0.4;
     }
 
     // Response pattern alignment
-    const userCategoryScore = userPatterns.responsePatterns[technique.category] || 0;
+    const userCategoryScore = userPatterns.responsePatterns[_technique.category] || 0;
     score += userCategoryScore * 0.3;
 
     // Recent engagement success
@@ -392,15 +393,15 @@ export class ElicitationSystem {
    * Generate custom option prompt
    */
   private generateCustomOptionPrompt(
-    technique: ElicitationTechnique,
-    phase: BmadPhase
+    _technique: ElicitationTechnique,
+    _phase: BmadPhase
   ): CustomOptionPrompt {
-    const prompts = technique.customPrompts;
+    const prompts = _technique.customPrompts;
     const selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     return {
       text: selectedPrompt,
-      placeholder: `Describe your specific ${technique.category} approach...`,
+      placeholder: `Describe your specific ${_technique.category} approach...`,
       followUpQuestions: [
         'What specific outcome are you hoping to achieve?',
         'What constraints or considerations should I keep in mind?',
@@ -413,17 +414,17 @@ export class ElicitationSystem {
    * Generate contextual prompts for Mary
    */
   private generateContextualPrompts(
-    technique: ElicitationTechnique,
-    phase: BmadPhase,
-    session: BmadSession
+    _technique: ElicitationTechnique,
+    _phase: BmadPhase,
+    _session: BmadSession
   ): string[] {
     const basePrompts = [
-      `Based on your ${phase.name.toLowerCase()} work so far, I recommend using ${technique.name}.`,
-      `Let's apply a ${technique.category} approach to make progress on ${phase.name.toLowerCase()}.`
+      `Based on your ${_phase.name.toLowerCase()} work so far, I recommend using ${_technique.name}.`,
+      `Let's apply a ${_technique.category} approach to make progress on ${_phase.name.toLowerCase()}.`
     ];
 
     // Add technique-specific prompts
-    switch (technique.category) {
+    switch (_technique.category) {
       case 'analytical':
         basePrompts.push(
           'We\'ll work systematically through the data and frameworks to build a solid foundation.',
@@ -461,12 +462,12 @@ export class ElicitationSystem {
    */
   private async analyzeCustomResponse(
     response: string,
-    technique: ElicitationTechnique
+    _technique: ElicitationTechnique
   ): Promise<{ intent: string; category: string; estimatedTime: number }> {
     // Simple analysis - could be enhanced with NLP
     const words = response.toLowerCase().split(/\s+/);
     
-    const category = technique.category;
+    const category = _technique.category;
     let estimatedTime = 5; // Default
     
     // Adjust based on response complexity
@@ -504,23 +505,23 @@ export class ElicitationSystem {
    * Generate reasoning for technique selection
    */
   private generateSelectionReasoning(
-    technique: ElicitationTechnique,
-    phase: BmadPhase,
+    _technique: ElicitationTechnique,
+    _phase: BmadPhase,
     userPatterns: UserPatterns
   ): string {
-    let reasoning = `I selected ${technique.name} because `;
+    let reasoning = `I selected ${_technique.name} because `;
     
     // Phase alignment reasoning
-    reasoning += `it's particularly effective for ${phase.name.toLowerCase()} activities. `;
+    reasoning += `it's particularly effective for ${_phase.name.toLowerCase()} activities. `;
     
     // User pattern reasoning
-    if (userPatterns.preferredTechniques.includes(technique.id)) {
+    if (userPatterns.preferredTechniques.includes(_technique.id)) {
       reasoning += `You've had success with this approach before. `;
     }
     
-    const categoryScore = userPatterns.responsePatterns[technique.category];
+    const categoryScore = userPatterns.responsePatterns[_technique.category];
     if (categoryScore > 0.7) {
-      reasoning += `Your ${technique.category} thinking style aligns well with this technique. `;
+      reasoning += `Your ${_technique.category} thinking style aligns well with this _technique. `;
     }
     
     return reasoning;
@@ -531,7 +532,7 @@ export class ElicitationSystem {
    */
   private generateNextPhaseHint(
     selectedOption: NumberedOption,
-    technique: ElicitationTechnique
+    _technique: ElicitationTechnique
   ): string {
     return `After completing this ${selectedOption.category} work (estimated ${selectedOption.estimatedTime} minutes), we'll likely move to synthesis and planning phases.`;
   }
@@ -541,7 +542,7 @@ export class ElicitationSystem {
    */
   private generateCustomResponseHint(
     analysis: { intent: string; category: string; estimatedTime: number },
-    technique: ElicitationTechnique
+    _technique: ElicitationTechnique
   ): string {
     return `Your ${analysis.intent} approach will take approximately ${analysis.estimatedTime} minutes. Let's dive in and see what insights we uncover.`;
   }
@@ -553,7 +554,7 @@ export class ElicitationSystem {
     userId: string,
     selection: number | string,
     elicitationResponse: ElicitationResponse,
-    result: ElicitationResult
+    _result: ElicitationResult
   ): Promise<void> {
     const patterns = await this.getUserPatterns(userId);
     
@@ -583,15 +584,15 @@ export class ElicitationSystem {
  */
 class ElicitationOptionGenerator {
   async generateContextualOptions(
-    technique: ElicitationTechnique,
-    phase: BmadPhase,
-    sessionContext: SessionContext
+    _technique: ElicitationTechnique,
+    _phase: BmadPhase,
+    _sessionContext: SessionContext
   ): Promise<NumberedOption[]> {
     // Start with technique default options
-    let options = [...technique.defaultOptions];
+    let options = [..._technique.defaultOptions];
 
     // Customize options based on session context
-    options = this.customizeOptionsForContext(options, sessionContext);
+    options = this.customizeOptionsForContext(options, _sessionContext);
 
     // Limit to 6 options maximum for usability
     options = options.slice(0, 6);
@@ -609,13 +610,13 @@ class ElicitationOptionGenerator {
    */
   private customizeOptionsForContext(
     options: NumberedOption[],
-    sessionContext: SessionContext
+    _sessionContext: SessionContext
   ): NumberedOption[] {
     // Simple context-based filtering and customization
     // In production, this would be more sophisticated
     
     // If user has shown preference for certain categories, prioritize those
-    const responses = sessionContext.userResponses || {};
+    const responses = _sessionContext.userResponses || {};
     
     // Sort options by relevance (simplified scoring)
     return options.sort((a, b) => {
@@ -629,7 +630,7 @@ class ElicitationOptionGenerator {
   /**
    * Calculate option relevance based on user responses
    */
-  private calculateOptionRelevance(option: NumberedOption, responses: any): number {
+  private calculateOptionRelevance(option: NumberedOption, responses: Record<string, UserResponse>): number {
     let relevance = 0;
     
     const responseText = JSON.stringify(responses).toLowerCase();

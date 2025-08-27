@@ -1,5 +1,4 @@
-import { BmadKnowledgeEntry, KnowledgeReference, BmadMethodError } from './types';
-import { BmadDatabase } from './database';
+import { BmadKnowledgeEntry, BmadMethodError } from './types';
 
 /**
  * BMad Method Knowledge Base System
@@ -47,7 +46,7 @@ export class BmadKnowledgeBase {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Knowledge search failed: ${error.message}`,
+        `Knowledge search failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'KNOWLEDGE_SEARCH_ERROR',
         { query, filters, originalError: error }
       );
@@ -75,7 +74,7 @@ export class BmadKnowledgeBase {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to retrieve knowledge entry: ${error.message}`,
+        `Failed to retrieve knowledge entry: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'KNOWLEDGE_RETRIEVAL_ERROR',
         { entryId, originalError: error }
       );
@@ -94,7 +93,7 @@ export class BmadKnowledgeBase {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to retrieve phase knowledge: ${error.message}`,
+        `Failed to retrieve phase knowledge: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'PHASE_KNOWLEDGE_ERROR',
         { phaseId, originalError: error }
       );
@@ -108,7 +107,7 @@ export class BmadKnowledgeBase {
     sessionId: string,
     entryId: string,
     phaseId: string,
-    relevanceScore: number = 0.8
+    _relevanceScore: number = 0.8
   ): Promise<void> {
     try {
       const entry = await this.getKnowledgeEntry(entryId);
@@ -122,7 +121,7 @@ export class BmadKnowledgeBase {
 
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to record knowledge reference: ${error.message}`,
+        `Failed to record knowledge reference: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'KNOWLEDGE_REFERENCE_ERROR',
         { sessionId, entryId, phaseId, originalError: error }
       );

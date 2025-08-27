@@ -48,8 +48,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('BMad API Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500 }
     );
   }
@@ -76,7 +77,7 @@ export async function GET(request: NextRequest) {
         return await handleSearchKnowledge({ query });
         
       case 'sessions':
-        const workspaceId = searchParams.get('workspaceId');
+        const workspaceId = searchParams.get('workspaceId') || undefined;
         return await handleGetUserSessions(user.id, { workspaceId });
 
       default:
@@ -85,8 +86,9 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('BMad API Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500 }
     );
   }

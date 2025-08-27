@@ -12,7 +12,6 @@ export default function AccountPage() {
   const { workspaceState, saveWorkspace } = useWorkspace()
   const router = useRouter()
   
-  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -49,11 +48,10 @@ export default function AccountPage() {
         setError(error.message)
       } else {
         setMessage('Password updated successfully!')
-        setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to update password')
     } finally {
       setLoading(false)
@@ -77,7 +75,7 @@ export default function AccountPage() {
         signOut()
         router.push('/')
       }, 2000)
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to delete account')
     } finally {
       setDeletingAccount(false)
@@ -88,7 +86,7 @@ export default function AccountPage() {
     try {
       await saveWorkspace()
       setMessage('Workspace saved successfully!')
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to save workspace')
     }
   }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function SignUpPage() {
@@ -46,7 +45,7 @@ export default function SignUpPage() {
       } else {
         setMessage('Check your email for a confirmation link!')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)

@@ -38,7 +38,7 @@ export class BmadTemplateEngine {
       return validatedTemplate;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to load template ${templateId}: ${error.message}`,
+        `Failed to load template ${templateId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'TEMPLATE_LOAD_ERROR',
         { templateId, originalError: error }
       );
@@ -59,7 +59,7 @@ export class BmadTemplateEngine {
       return this.transformYamlToTemplate(parsed);
     } catch (error) {
       throw new BmadMethodError(
-        `YAML parsing failed: ${error.message}`,
+        `YAML parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'YAML_PARSE_ERROR',
         { originalError: error }
       );
@@ -76,22 +76,22 @@ export class BmadTemplateEngine {
     }
 
     const template: BmadTemplate = {
-      id: yamlData.id || yamlData.metadata.name.toLowerCase().replace(/\s+/g, '-'),
-      name: yamlData.metadata.name,
-      version: yamlData.metadata.version || '1.0.0',
+      id: yamlData.id as string || ((yamlData.metadata as any)?.name as string)?.toLowerCase().replace(/\s+/g, '-') || 'unknown-template',
+      name: (yamlData.metadata as any)?.name as string || 'Unknown Template',
+      version: (yamlData.metadata as any)?.version as string || '1.0.0',
       metadata: {
-        name: yamlData.metadata.name,
-        version: yamlData.metadata.version || '1.0.0',
-        description: yamlData.metadata.description || '',
-        author: yamlData.metadata.author || 'BMad Method',
-        timeEstimate: yamlData.metadata.timeEstimate || 30,
-        category: yamlData.metadata.category || 'analysis',
-        difficulty: yamlData.metadata.difficulty || 'intermediate',
-        tags: yamlData.metadata.tags || []
+        name: (yamlData.metadata as any)?.name as string || 'Unknown Template',
+        version: (yamlData.metadata as any)?.version as string || '1.0.0',
+        description: (yamlData.metadata as any)?.description as string || '',
+        author: (yamlData.metadata as any)?.author as string || 'BMad Method',
+        timeEstimate: (yamlData.metadata as any)?.timeEstimate as number || 30,
+        category: (yamlData.metadata as any)?.category as string || 'analysis',
+        difficulty: (yamlData.metadata as any)?.difficulty as 'beginner' | 'intermediate' | 'advanced' || 'intermediate',
+        tags: (yamlData.metadata as any)?.tags as string[] || []
       },
       phases: this.transformPhases(yamlData.phases),
       outputs: this.transformOutputs(yamlData.outputs || []),
-      dependencies: yamlData.dependencies || []
+      dependencies: yamlData.dependencies as string[] || []
     };
 
     return template;

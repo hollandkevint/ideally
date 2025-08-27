@@ -1,7 +1,6 @@
 import { 
   PathwayType, 
   BmadPathway, 
-  PersonaConfiguration, 
   BmadMethodError 
 } from './types';
 
@@ -157,7 +156,7 @@ export class PathwayRouter {
       return this.generateRecommendation(pathwayScores, intentAnalysis);
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to analyze user intent: ${error.message}`,
+        `Failed to analyze user intent: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'INTENT_ANALYSIS_ERROR',
         { userInput, originalError: error }
       );
@@ -268,7 +267,7 @@ export class PathwayRouter {
   private generateReasoningForPathway(
     pathway: PathwayType,
     score: number,
-    intentAnalysis: IntentAnalysis
+    _intentAnalysis: IntentAnalysis
   ): string {
     const pathwayInfo = this.pathways.get(pathway)!;
     const confidenceLevel = score > 0.7 ? 'high' : score > 0.4 ? 'medium' : 'low';
@@ -381,7 +380,7 @@ class IntentClassifier {
       planning: this.countKeywords(text, planningKeywords)
     };
 
-    return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b) as any;
+    return (Object.keys(scores) as Array<keyof typeof scores>).reduce((a, b) => scores[a] > scores[b] ? a : b);
   }
 
   private classifyUrgency(text: string): 'low' | 'medium' | 'high' {
@@ -406,7 +405,7 @@ class IntentClassifier {
       market: this.countKeywords(text, marketKeywords)
     };
 
-    return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b) as any;
+    return (Object.keys(scores) as Array<keyof typeof scores>).reduce((a, b) => scores[a] > scores[b] ? a : b);
   }
 
   private countKeywords(text: string, keywords: string[]): number {

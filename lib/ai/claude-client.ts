@@ -87,10 +87,20 @@ FORMATTING GUIDELINES:
 Remember: You're helping users think through strategic challenges in their ideally.co workspace. Focus on practical insights and actionable guidance with clear, well-formatted responses.`;
   }
 
-  private async *processStream(stream: unknown): AsyncIterable<string> {
+  private async *processStream(stream: AsyncIterable<unknown>): AsyncIterable<string> {
     try {
       for await (const chunk of stream) {
-        if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+        if (
+          typeof chunk === 'object' && 
+          chunk !== null && 
+          'type' in chunk &&
+          chunk.type === 'content_block_delta' && 
+          'delta' in chunk &&
+          typeof chunk.delta === 'object' &&
+          chunk.delta !== null &&
+          'text' in chunk.delta &&
+          typeof chunk.delta.text === 'string'
+        ) {
           yield chunk.delta.text;
         }
       }

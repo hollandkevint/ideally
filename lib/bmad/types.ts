@@ -268,3 +268,35 @@ export interface SkipCondition {
   type: string;
   value: string | number | boolean;
 }
+
+export interface PhaseResult {
+  phaseComplete: boolean;
+  outputs: Record<string, unknown>;
+  errors?: string[];
+  warnings?: string[];
+  nextPhaseRecommendation?: string;
+}
+
+export interface DatabaseSessionData {
+  id: string;
+  user_id: string;
+  workspace_id: string;
+  pathway_type: PathwayType;
+  current_phase: string;
+  started_at: string;
+  session_config: {
+    templates: string[];
+    timeAllocations: PhaseTimeAllocation[];
+  };
+  progress: SessionProgress;
+  context: SessionContext;
+  outputs: SessionOutputs;
+  metadata: SessionMetadata;
+}
+
+export interface InputAnalysis {
+  intent: string;
+  complexity: number;
+  keywords: string[];
+  suggestions: string[];
+}

@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
       if (!error && data.user) {
         user = data.user
       }
-    } catch (err) {
+    } catch (_err) {
       // Auth cookie verification failed, fallback to default method
     }
   }
