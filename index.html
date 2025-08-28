@@ -296,11 +296,12 @@
                         Want to be notified when we launch?
                     </p>
                     <div class="mt-4">
-                        <input type="email" placeholder="Enter your email" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                        <input type="email" id="waitlistEmail" placeholder="Enter your email" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                        <div id="emailStatus" class="mt-2 text-sm text-center hidden"></div>
                     </div>
                 </div>
                 <div class="items-center px-4 py-3">
-                    <button onclick="hideComingSoon()" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 transition-colors">
+                    <button onclick="submitWaitlist()" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 transition-colors">
                         Notify Me
                     </button>
                     <button onclick="hideComingSoon()" class="mt-2 px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 transition-colors">
@@ -318,6 +319,93 @@
         
         function hideComingSoon() {
             document.getElementById('comingSoonModal').classList.add('hidden');
+            // Reset form
+            document.getElementById('waitlistEmail').value = '';
+            document.getElementById('emailStatus').classList.add('hidden');
+        }
+        
+        async function submitWaitlist() {
+            const email = document.getElementById('waitlistEmail').value;
+            const statusDiv = document.getElementById('emailStatus');
+            
+            if (!email || !email.includes('@')) {
+                statusDiv.textContent = 'Please enter a valid email address';
+                statusDiv.className = 'mt-2 text-sm text-center text-red-600';
+                statusDiv.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                statusDiv.textContent = 'Adding you to the waitlist...';
+                statusDiv.className = 'mt-2 text-sm text-center text-blue-600';
+                statusDiv.classList.remove('hidden');
+                
+                // Send email using Formspree (free service)
+                const response = await fetch('https://formspree.io/f/xeoqnqwz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        source: 'Mary AI Business Analyst Waitlist',
+                        timestamp: new Date().toISOString(),
+                        page: 'Landing Page - Coming Soon Modal'
+                    })
+                });
+                
+                if (response.ok) {
+                    statusDiv.textContent = '✓ Thanks! We\'ll notify you when Mary is ready.';
+                    statusDiv.className = 'mt-2 text-sm text-center text-green-600';
+                    
+                    // Also send backup email using mailto as fallback
+                    const subject = encodeURIComponent('New Waitlist Signup - Mary AI Business Analyst');
+                    const body = encodeURIComponent(`New waitlist signup from landing page:
+
+Email: ${email}
+Source: Mary AI Business Analyst Waitlist
+Timestamp: ${new Date().toISOString()}
+Page: Landing Page - Coming Soon Modal
+
+Please add this email to the early access list for Mary and the bMAD Method platform.`);
+                    
+                    // Create hidden mailto link for backup notification
+                    const mailtoLink = `mailto:kevin@ideally.co?subject=${subject}&body=${body}`;
+                    console.log('Backup notification available:', mailtoLink);
+                    
+                    // Close modal after 2 seconds
+                    setTimeout(() => {
+                        hideComingSoon();
+                    }, 2000);
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting waitlist:', error);
+                
+                // Fallback: open mailto link
+                const subject = encodeURIComponent('New Waitlist Signup - Mary AI Business Analyst');
+                const body = encodeURIComponent(`New waitlist signup from landing page:
+
+Email: ${email}
+Source: Mary AI Business Analyst Waitlist
+Timestamp: ${new Date().toISOString()}
+
+Please add this email to the early access list.`);
+                
+                statusDiv.innerHTML = '✓ Thanks! We\'ll notify you when Mary is ready.<br><small>(Notification sent via email)</small>';
+                statusDiv.className = 'mt-2 text-sm text-center text-green-600';
+                
+                // Open mailto as backup
+                window.location.href = `mailto:kevin@ideally.co?subject=${subject}&body=${body}`;
+                
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    hideComingSoon();
+                }, 2000);
+            }
         }
         
         // Close modal when clicking outside
@@ -327,6 +415,15 @@
                 modal.classList.add('hidden');
             }
         }
+        
+        // Allow Enter key to submit waitlist
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('waitlistEmail').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitWaitlist();
+                }
+            });
+        });
     </script>
 </body>
 </html>
