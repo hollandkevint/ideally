@@ -4,8 +4,30 @@ import {
   TemplateValidationError, 
   BmadMethodError,
   ValidationRule,
-  BmadPhase 
+  BmadPhase,
+  TemplateOutput,
+  PhaseOutput,
+  PhaseTransition
 } from './types';
+
+interface YamlMetadata {
+  name?: string
+  version?: string
+  description?: string
+  author?: string
+  timeEstimate?: number
+  category?: 'brainstorming' | 'analysis' | 'planning' | 'validation'
+  difficulty?: 'beginner' | 'intermediate' | 'advanced'
+  tags?: string[]
+}
+
+interface YamlData {
+  id?: string
+  metadata?: YamlMetadata
+  phases?: unknown
+  outputs?: Record<string, unknown>[]
+  dependencies?: string[]
+}
 
 /**
  * BMad Method YAML Template Engine
@@ -50,7 +72,7 @@ export class BmadTemplateEngine {
    */
   private async parseTemplateYaml(yamlContent: string): Promise<BmadTemplate> {
     try {
-      const parsed = yaml.load(yamlContent) as Record<string, unknown>;
+      const parsed = yaml.load(yamlContent) as YamlData;
       
       if (!parsed || typeof parsed !== 'object') {
         throw new Error('Invalid YAML structure');
@@ -69,29 +91,29 @@ export class BmadTemplateEngine {
   /**
    * Transform parsed YAML object into BmadTemplate structure
    */
-  private transformYamlToTemplate(yamlData: Record<string, unknown>): BmadTemplate {
+  private transformYamlToTemplate(yamlData: YamlData): BmadTemplate {
     // Validate required top-level fields
     if (!yamlData.metadata || !yamlData.phases) {
       throw new Error('Template missing required metadata or phases');
     }
 
     const template: BmadTemplate = {
-      id: yamlData.id as string || ((yamlData.metadata as any)?.name as string)?.toLowerCase().replace(/\s+/g, '-') || 'unknown-template',
-      name: (yamlData.metadata as any)?.name as string || 'Unknown Template',
-      version: (yamlData.metadata as any)?.version as string || '1.0.0',
+      id: yamlData.id || yamlData.metadata?.name?.toLowerCase().replace(/\s+/g, '-') || 'unknown-template',
+      name: yamlData.metadata?.name || 'Unknown Template',
+      version: yamlData.metadata?.version || '1.0.0',
       metadata: {
-        name: (yamlData.metadata as any)?.name as string || 'Unknown Template',
-        version: (yamlData.metadata as any)?.version as string || '1.0.0',
-        description: (yamlData.metadata as any)?.description as string || '',
-        author: (yamlData.metadata as any)?.author as string || 'BMad Method',
-        timeEstimate: (yamlData.metadata as any)?.timeEstimate as number || 30,
-        category: (yamlData.metadata as any)?.category as string || 'analysis',
-        difficulty: (yamlData.metadata as any)?.difficulty as 'beginner' | 'intermediate' | 'advanced' || 'intermediate',
-        tags: (yamlData.metadata as any)?.tags as string[] || []
+        name: yamlData.metadata?.name || 'Unknown Template',
+        version: yamlData.metadata?.version || '1.0.0',
+        description: yamlData.metadata?.description || '',
+        author: yamlData.metadata?.author || 'BMad Method',
+        timeEstimate: yamlData.metadata?.timeEstimate || 30,
+        category: yamlData.metadata?.category || 'analysis',
+        difficulty: yamlData.metadata?.difficulty || 'intermediate',
+        tags: yamlData.metadata?.tags || []
       },
       phases: this.transformPhases(yamlData.phases),
       outputs: this.transformOutputs(yamlData.outputs || []),
-      dependencies: yamlData.dependencies as string[] || []
+      dependencies: yamlData.dependencies || []
     };
 
     return template;
@@ -115,28 +137,28 @@ export class BmadTemplateEngine {
     }
 
     return normalizedPhases.map((phaseData) => ({
-      id: phaseData.id,
-      name: phaseData.name,
-      description: phaseData.description || '',
-      timeAllocation: phaseData.timeAllocation || 5,
-      prompts: Array.isArray(phaseData.prompts) ? phaseData.prompts : [phaseData.prompts || ''],
-      elicitationOptions: phaseData.elicitationOptions || {},
-      validationRules: this.transformValidationRules(phaseData.validationRules || []),
-      outputs: phaseData.outputs || [],
-      nextPhaseLogic: phaseData.nextPhaseLogic || []
+      id: phaseData.id as string,
+      name: phaseData.name as string,
+      description: (phaseData.description as string) || '',
+      timeAllocation: (phaseData.timeAllocation as number) || 5,
+      prompts: Array.isArray(phaseData.prompts) ? (phaseData.prompts as string[]) : [(phaseData.prompts as string) || ''],
+      elicitationOptions: (phaseData.elicitationOptions as { [key: number]: string }) || {},
+      validationRules: this.transformValidationRules((phaseData.validationRules as Record<string, unknown>[]) || []),
+      outputs: (phaseData.outputs as PhaseOutput[]) || [],
+      nextPhaseLogic: (phaseData.nextPhaseLogic as PhaseTransition[]) || []
     }));
   }
 
   /**
    * Transform outputs configuration
    */
-  private transformOutputs(outputsData: Record<string, unknown>[]): Record<string, unknown>[] {
+  private transformOutputs(outputsData: Record<string, unknown>[]): TemplateOutput[] {
     return outputsData.map(output => ({
-      id: output.id,
-      name: output.name,
-      type: output.type || 'document',
-      template: output.template || '',
-      includePhases: output.includePhases || []
+      id: output.id as string,
+      name: output.name as string,
+      type: (output.type as 'document' | 'framework' | 'analysis' | 'plan') || 'document',
+      template: (output.template as string) || '',
+      includePhases: (output.includePhases as string[]) || []
     }));
   }
 
@@ -145,9 +167,9 @@ export class BmadTemplateEngine {
    */
   private transformValidationRules(rulesData: Record<string, unknown>[]): ValidationRule[] {
     return rulesData.map(rule => ({
-      type: rule.type,
-      value: rule.value,
-      errorMessage: rule.errorMessage || `Validation failed for ${rule.type}`
+      type: rule.type as 'required' | 'minLength' | 'maxLength' | 'pattern' | 'custom',
+      value: rule.value as string | number | boolean | RegExp,
+      errorMessage: (rule.errorMessage as string) || `Validation failed for ${rule.type}`
     }));
   }
 

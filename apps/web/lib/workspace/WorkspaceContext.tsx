@@ -51,17 +51,33 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null)
 
-  // Load workspace state when user is authenticated
-  useEffect(() => {
-    if (authLoading) return
-    
-    if (user) {
-      loadWorkspace()
-    } else {
-      setWorkspaceState(null)
-      setLoading(false)
+  const createInitialWorkspace = useCallback(async () => {
+    const initialState: WorkspaceState = {
+      chat_context: [{
+        id: 'welcome-message',
+        role: 'assistant',
+        content: "Welcome to your strategic thinking workspace! I'm Mary, your AI business analyst. What strategic challenge would you like to explore today?",
+        timestamp: new Date()
+      }],
+      canvas_elements: [],
+      last_session_progress: 0,
+      initialized: true,
+      created_at: new Date().toISOString()
     }
-  }, [user, authLoading, loadWorkspace])
+
+    const { error } = await supabase
+      .from('user_workspace')
+      .insert({
+        user_id: user!.id,
+        workspace_state: initialState
+      })
+
+    if (error) {
+      throw error
+    }
+
+    setWorkspaceState(initialState)
+  }, [user])
 
   const loadWorkspace = useCallback(async () => {
     try {
@@ -92,33 +108,17 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, createInitialWorkspace])
 
-  const createInitialWorkspace = useCallback(async () => {
-    const initialState: WorkspaceState = {
-      chat_context: [{
-        id: 'welcome-message',
-        role: 'assistant',
-        content: "Welcome to your strategic thinking workspace! I'm Mary, your AI business analyst. What strategic challenge would you like to explore today?",
-        timestamp: new Date()
-      }],
-      canvas_elements: [],
-      last_session_progress: 0,
-      initialized: true,
-      created_at: new Date().toISOString()
+  // Load workspace state when user is authenticated
+  useEffect(() => {
+    if (authLoading) return
+    
+    if (user) {
+      loadWorkspace()
+    } else {
+      setWorkspaceState(null)
+      setLoading(false)
     }
-
-    const { error } = await supabase
-      .from('user_workspace')
-      .insert({
-        user_id: user!.id,
-        workspace_state: initialState
-      })
-
-    if (error) {
-      throw error
-    }
-
-    setWorkspaceState(initialState)
-  }, [user])
+  }, [user, authLoading, loadWorkspace])
 
   const saveWorkspace = useCallback(async () => {
     if (!user || !workspaceState) return

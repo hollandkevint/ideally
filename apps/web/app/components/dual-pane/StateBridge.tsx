@@ -19,7 +19,7 @@ export default function StateBridge({ workspaceId, className = '' }: StateBridge
   } = useDualPaneStore()
   
   const lastUpdateRef = useRef(sync.lastUpdate)
-  const syncTimeoutRef = useRef<NodeJS.Timeout>()
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Debounced sync handler to prevent excessive operations
   const debouncedSync = (callback: () => void) => {
