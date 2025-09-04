@@ -1,10 +1,23 @@
+import { CoachingContext } from './mary-persona';
+
 export interface StreamChunk {
-  type: 'content' | 'complete' | 'error';
+  type: 'metadata' | 'content' | 'complete' | 'error' | 'typing';
   content?: string;
   error?: string;
+  metadata?: {
+    coachingContext?: CoachingContext;
+    messageId?: string;
+    timestamp?: string;
+  };
+  errorDetails?: {
+    retryable?: boolean;
+    suggestion?: string;
+  };
   usage?: {
     input_tokens: number;
     output_tokens: number;
+    total_tokens: number;
+    cost_estimate_usd: number;
   };
 }
 
@@ -16,8 +29,23 @@ export class StreamEncoder {
     return this.encoder.encode(`data: ${data}\n\n`);
   }
 
-  encodeError(error: string): Uint8Array {
-    const chunk: StreamChunk = { type: 'error', error };
+  encodeMetadata(metadata: StreamChunk['metadata']): Uint8Array {
+    const chunk: StreamChunk = { type: 'metadata', metadata };
+    return this.encodeChunk(chunk);
+  }
+
+  encodeContent(content: string): Uint8Array {
+    const chunk: StreamChunk = { type: 'content', content };
+    return this.encodeChunk(chunk);
+  }
+
+  encodeTyping(isTyping: boolean = true): Uint8Array {
+    const chunk: StreamChunk = { type: 'typing', content: isTyping ? 'start' : 'stop' };
+    return this.encodeChunk(chunk);
+  }
+
+  encodeError(error: string, errorDetails?: StreamChunk['errorDetails']): Uint8Array {
+    const chunk: StreamChunk = { type: 'error', error, errorDetails };
     return this.encodeChunk(chunk);
   }
 
@@ -26,9 +54,8 @@ export class StreamEncoder {
     return this.encodeChunk(chunk);
   }
 
-  encodeContent(content: string): Uint8Array {
-    const chunk: StreamChunk = { type: 'content', content };
-    return this.encodeChunk(chunk);
+  encodeDone(): Uint8Array {
+    return this.encoder.encode('data: [DONE]\n\n');
   }
 }
 
@@ -44,15 +71,94 @@ export class StreamDecoder {
     const chunks: StreamChunk[] = [];
     for (const line of lines) {
       if (line.startsWith('data: ')) {
+        const data = line.slice(6);
+        
+        // Check for completion signal
+        if (data === '[DONE]') {
+          chunks.push({ type: 'complete' });
+          continue;
+        }
+        
         try {
-          const chunk = JSON.parse(line.slice(6)) as StreamChunk;
+          const chunk = JSON.parse(data) as StreamChunk;
           chunks.push(chunk);
         } catch (error) {
           console.error('Failed to parse stream chunk:', error);
+          // Skip malformed chunks rather than failing
         }
       }
     }
     return chunks;
+  }
+
+  reset(): void {
+    this.buffer = '';
+  }
+}
+
+// Connection retry utilities
+export interface RetryConfig {
+  maxRetries: number;
+  baseDelay: number;
+  maxDelay: number;
+  backoffMultiplier: number;
+}
+
+export class StreamConnectionManager {
+  private config: RetryConfig;
+  private abortController?: AbortController;
+
+  constructor(config: Partial<RetryConfig> = {}) {
+    this.config = {
+      maxRetries: 3,
+      baseDelay: 1000,
+      maxDelay: 10000,
+      backoffMultiplier: 2,
+      ...config
+    };
+  }
+
+  async connectWithRetry<T>(
+    fetchFn: (signal: AbortSignal) => Promise<T>,
+    onRetry?: (attempt: number, error: Error) => void
+  ): Promise<T> {
+    let lastError: Error;
+    
+    for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
+      try {
+        this.abortController = new AbortController();
+        return await fetchFn(this.abortController.signal);
+      } catch (error) {
+        lastError = error as Error;
+        
+        // Don't retry on abort or auth errors
+        if (error instanceof Error) {
+          if (error.name === 'AbortError') {
+            throw error;
+          }
+          if (error.message.toLowerCase().includes('unauthorized') || 
+              error.message.toLowerCase().includes('forbidden')) {
+            throw error;
+          }
+        }
+        
+        if (attempt < this.config.maxRetries) {
+          const delay = Math.min(
+            this.config.baseDelay * Math.pow(this.config.backoffMultiplier, attempt - 1),
+            this.config.maxDelay
+          );
+          
+          onRetry?.(attempt, lastError);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    throw lastError!;
+  }
+
+  abort(): void {
+    this.abortController?.abort();
   }
 }
 
