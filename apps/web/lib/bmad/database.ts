@@ -100,6 +100,20 @@ export interface ActionItemRow {
   updated_at: string;
 }
 
+export interface PathwayAnalyticsRow {
+  id: string;
+  user_id: string;
+  workspace_id: string;
+  original_input: string;
+  recommended_pathway: string;
+  selected_pathway: string;
+  confidence_score: number;
+  reasoning?: string;
+  alternative_pathways: string[];
+  session_id?: string;
+  created_at: string;
+}
+
 export interface KnowledgeReferenceRow {
   id: string;
   session_id: string;
@@ -145,6 +159,11 @@ export interface GeneratedDocumentRow {
  * BMad Method Database Access Layer
  */
 export class BmadDatabase {
+  // Test mode flag - can be set via environment or for testing
+  private static isTestMode(): boolean {
+    return process.env.BMAD_TEST_MODE === 'true' || 
+           (typeof global !== 'undefined' && (global as any).BMAD_TEST_MODE === true);
+  }
   
   /**
    * Create a new BMad Method session
@@ -157,6 +176,13 @@ export class BmadDatabase {
     currentPhase: string;
     currentTemplate: string;
   }): Promise<string> {
+    // Return mock data for test mode
+    if (this.isTestMode()) {
+      const mockSessionId = `test-session-${Date.now()}`;
+      console.log('BmadDatabase: Creating mock session with ID:', mockSessionId);
+      return mockSessionId;
+    }
+    
     try {
       const supabase = await createClient();
       
@@ -457,6 +483,12 @@ export class BmadDatabase {
     workspaceId?: string,
     status?: 'active' | 'paused' | 'completed' | 'abandoned'
   ): Promise<BmadSessionRow[]> {
+    // Return mock data for test mode
+    if (this.isTestMode()) {
+      console.log('BmadDatabase: Returning mock user sessions for userId:', userId);
+      return []; // Return empty array for test mode
+    }
+    
     try {
       const supabase = await createClient();
       
@@ -638,5 +670,102 @@ export class BmadDatabase {
         endTime: sessionRow.end_time ? new Date(sessionRow.end_time) : undefined
       }
     };
+  }
+
+  /**
+   * Record pathway analytics for intent analysis tracking
+   */
+  static async recordPathwayAnalytics(
+    userId: string,
+    workspaceId: string,
+    originalInput: string,
+    recommendedPathway: PathwayType,
+    selectedPathway: PathwayType,
+    confidence: number,
+    reasoning?: string,
+    alternatives?: PathwayType[],
+    sessionId?: string
+  ): Promise<void> {
+    try {
+      if ((global as { BMAD_TEST_MODE?: boolean }).BMAD_TEST_MODE) {
+        console.log('Test mode: Skipping pathway analytics recording');
+        return;
+      }
+
+      const supabase = await createClient();
+
+      const { error } = await supabase
+        .from('bmad_pathway_analytics')
+        .insert({
+          user_id: userId,
+          workspace_id: workspaceId,
+          original_input: originalInput,
+          recommended_pathway: recommendedPathway,
+          selected_pathway: selectedPathway,
+          confidence_score: confidence,
+          reasoning,
+          alternative_pathways: alternatives || [],
+          session_id: sessionId
+        });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      throw new BmadMethodError(
+        `Failed to record pathway analytics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'PATHWAY_ANALYTICS_ERROR',
+        { 
+          userId, 
+          workspaceId, 
+          recommendedPathway, 
+          selectedPathway, 
+          originalError: error 
+        }
+      );
+    }
+  }
+
+  /**
+   * Get pathway analytics for user or workspace
+   */
+  static async getPathwayAnalytics(
+    userId: string,
+    workspaceId?: string,
+    limit: number = 50
+  ): Promise<PathwayAnalyticsRow[]> {
+    try {
+      if ((global as { BMAD_TEST_MODE?: boolean }).BMAD_TEST_MODE) {
+        console.log('Test mode: Returning empty pathway analytics');
+        return [];
+      }
+
+      const supabase = await createClient();
+
+      let query = supabase
+        .from('bmad_pathway_analytics')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (workspaceId) {
+        query = query.eq('workspace_id', workspaceId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    } catch (error) {
+      throw new BmadMethodError(
+        `Failed to retrieve pathway analytics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'PATHWAY_ANALYTICS_RETRIEVAL_ERROR',
+        { userId, workspaceId, originalError: error }
+      );
+    }
   }
 }

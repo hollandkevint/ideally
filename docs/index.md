@@ -14,6 +14,58 @@ Comprehensive 1-2 week implementation plan for adding analytics foundation to th
 
 Step-by-step implementation guide for deploying the BMad Analytics Foundation. Provides detailed integration instructions, code examples, environment configuration, and troubleshooting guidance.
 
+### [BMad Implementation Complete](./BMAD_IMPLEMENTATION_COMPLETE.md)
+
+Comprehensive documentation of the completed BMad Method backend system including type definitions, template engine, pathway router, session orchestration, and database schema with 12 interconnected tables.
+
+### [Git Deployment Strategy](./git-deployment-strategy.md)
+
+Strategic git workflow documentation for landing page mockup deployment with commit strategies, push options, risk assessment, and rollback procedures.
+
+### [GitHub Pages Deployment Plan](./github-pages-deployment-plan.md)
+
+Technical implementation guide for deploying the enhanced landing page to GitHub Pages using Next.js static export, including workflow configuration, repository settings, and post-deployment checklist.
+
+### [MVP Deployment & Demo Guide](./MVP-DEPLOYMENT-DEMO-GUIDE.md)
+
+Complete guide for sharing MVP with PMs and consultants for feedback. Includes production readiness checklist, structured demo script, target audience positioning, and comprehensive feedback collection strategy.
+
+### [Product Requirements Document](./prd.md)
+
+Main PRD document for the bMAD Method Analyst Web Platform with hybrid foundation and brownfield enhancement approach. Organized into sharded components for better maintainability and agent access.
+
+## PRD
+
+Documents within the `prd/` directory:
+
+### [Goals & Background Context](./prd/1-goals-context.md)
+
+Product vision, goals, and foundational context for the innovative "Choose-Your-Adventure" AI coaching platform using bMAD Method with extensible coaching techniques.
+
+### [Requirements](./prd/2-requirements.md)
+
+Functional, non-functional, and compatibility requirements including dual-pane interface specifications, strategic thinking capabilities, and system performance criteria.
+
+### [User Interface Design Goals](./prd/3-ui-goals.md)
+
+UI/UX vision and interaction paradigms embodying "Intelligent Simplicity" with conversational fluidity and visual integration for strategic thinking workflows.
+
+### [Technical Architecture](./prd/4-technical-architecture.md)
+
+Current tech stack and integration approach for transforming the Next.js foundation into a fully functional AI-powered strategic coaching platform.
+
+### [Epic Structure](./prd/5-epic-structure.md)
+
+Epic breakdown and story organization for structured development planning and implementation management.
+
+### [Current Implementation Status](./prd/6-implementation-status.md)
+
+Brownfield analysis and current state documentation of existing system components and implementation gaps.
+
+### [Integration Requirements](./prd/7-integration-requirements.md)
+
+Claude Sonnet 4 integration specifics and technical implementation requirements for AI-powered coaching capabilities.
+
 ## Archive
 
 Documents within the `archive/` directory:
@@ -182,6 +234,42 @@ Documents within the `future/` directory:
 
 Future enhancement planning and roadmap for post-MVP features including canvas integration, export features, analytics, and enterprise collaboration capabilities.
 
+## Stories
+
+Documents within the `stories/` directory:
+
+### [Story 2.1: Pathway Selection & Routing Interface](./stories/2.1.pathway-selection-routing-interface.md)
+
+Implementation guide for BMad Method pathway selection system with routing interface and session state management.
+
+### [Story 2.2: New Idea Creative Expansion Pathway](./stories/2.2.new-idea-creative-expansion-pathway.md)
+
+Comprehensive pathway for expanding creative ideas through structured analysis, market validation, and strategic development planning.
+
+### [Story 2.3: Business Model Problem Revenue Analysis Pathway - COMPLETED ✅](./stories/2.3.business-model-problem-revenue-analysis-pathway-COMPLETED.md)
+
+**COMPLETED** - Comprehensive monetization strategy engine with 4 integrated analysis systems: pricing model analyzer (12 pricing models), revenue optimization engine, competitive pricing analyzer, and growth strategy engine. Includes 4,300+ lines of sophisticated business analysis code.
+
+### [Story 2.4: Feature Refinement User-Centered Design Pathway](./stories/2.4.feature-refinement-user-centered-design-pathway.md)
+
+User-centered design methodology for refining product features through customer research, usability testing, and iterative improvement.
+
+### [Story 2.5: Pathway Integration & Session State Management](./stories/2.5.pathway-integration-session-state-management.md)
+
+Technical implementation for integrating multiple BMad pathways with comprehensive session state management and cross-pathway data sharing.
+
+### [Story 5.1: Business Model Assumption Testing Framework](./stories/5.1.business-model-assumption-testing-framework.md)
+
+Structured framework for testing and validating business model assumptions through hypothesis-driven experimentation and data collection.
+
+## Integration Documentation
+
+Documents within the `integration/` directory:
+
+### [Monetization Strategy Engine Integration Guide](./integration/monetization-strategy-engine.md)
+
+Comprehensive integration guide for the 4-engine monetization strategy system including data flow architecture, usage patterns, performance considerations, and testing strategies. Covers pricing analysis, competitive intelligence, revenue optimization, and growth strategy planning.
+
 ## QA
 
 Documents within the `qa/` directory:
@@ -192,4 +280,12 @@ Documents within the `qa/gates/` directory:
 
 #### [Epic 1.3 Dual Pane Interface Foundation](./qa/gates/epic1.3-dual-pane-interface-foundation.yml)
 
-Quality assurance gate definition for Epic 1.3 dual-pane interface implementation validation.
+Quality assurance gate configuration file (YAML format) defining validation criteria and acceptance tests for Epic 1.3 dual-pane interface implementation.
+
+#### [Story 1.2 Quality Gate](./qa/gates/story-1.2-quality-gate.yml)
+
+Quality gate decision document for Story 1.2 - Improve User Interface State Management. Contains comprehensive acceptance criteria validation and technical implementation quality assessment with APPROVED status.
+
+#### [Story 1.3 Quality Gate](./qa/gates/1.3-enhance-user-experience-error-handling.yml)
+
+Quality gate assessment for Story 1.3 - Enhance User Experience and Error Handling. YAML format configuration with CONCERNS status identifying incomplete tasks and recommendations for production readiness.

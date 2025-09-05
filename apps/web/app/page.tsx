@@ -68,7 +68,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Curiosity-Driven Inquiry</h3>
               <p className="text-gray-600 text-sm">
-                Mary asks probing "why" questions to uncover underlying truths and challenge assumptions systematically
+                Mary asks probing &ldquo;why&rdquo; questions to uncover underlying truths and challenge assumptions systematically
               </p>
             </div>
             

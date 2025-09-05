@@ -128,7 +128,15 @@ async function handleAnalyzeIntent(params: { userInput: string }) {
     return NextResponse.json({ error: 'userInput is required' }, { status: 400 });
   }
 
-  const recommendation = await pathwayRouter.analyzeUserIntent(userInput);
+  const pathwayRecommendation = await pathwayRouter.analyzeUserIntent(userInput);
+  
+  // Transform PathwayRecommendation to expected format
+  const recommendation = {
+    recommendedPathway: pathwayRecommendation.primary,
+    confidence: pathwayRecommendation.confidence,
+    reasoning: pathwayRecommendation.reasoning,
+    alternativePathways: pathwayRecommendation.alternatives.map(alt => alt.pathway)
+  };
   
   return NextResponse.json({
     success: true,
@@ -165,6 +173,37 @@ async function handleCreateSession(
     pathway,
     initialContext
   });
+
+  // Record pathway analytics if we have user input from initial context
+  if (initialContext?.userInput && initialContext?.recommendation) {
+    try {
+      await BmadDatabase.recordPathwayAnalytics(
+        userId,
+        workspaceId,
+        initialContext.userInput as string,
+        (initialContext.recommendation as {
+          recommendedPathway: PathwayType;
+          confidence: number;
+          reasoning: string;
+          alternativePathways: PathwayType[];
+        }).recommendedPathway,
+        pathway,
+        (initialContext.recommendation as {
+          confidence: number;
+        }).confidence,
+        (initialContext.recommendation as {
+          reasoning: string;
+        }).reasoning,
+        (initialContext.recommendation as {
+          alternativePathways: PathwayType[];
+        }).alternativePathways,
+        session.id
+      );
+    } catch (error) {
+      // Don't fail session creation if analytics fail
+      console.error('Failed to record pathway analytics:', error);
+    }
+  }
 
   return NextResponse.json({
     success: true,

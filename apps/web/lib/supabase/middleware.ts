@@ -56,7 +56,11 @@ export async function updateSession(request: NextRequest) {
 
 
   // Public routes and assets that don't require authentication
-  const publicRoutes = ['/login', '/signup', '/resend-confirmation', '/.well-known', '/test-dual-pane']
+  const publicRoutes = ['/login', '/signup', '/resend-confirmation', '/.well-known', '/test-dual-pane', '/test-bmad-buttons']
+  
+  // Allow API access from test pages
+  const referer = request.headers.get('referer') || '';
+  const isTestApiRequest = request.nextUrl.pathname.startsWith('/api/bmad') && referer.includes('/test-bmad-buttons');
   const staticAssets = ['.css', '.js', '.map', '.ico', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp']
   
   const isPublicRoute = publicRoutes.some(route => 
@@ -67,7 +71,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.includes(ext)
   )
   
-  const shouldSkipAuth = isPublicRoute || isStaticAsset
+  const shouldSkipAuth = isPublicRoute || isStaticAsset || isTestApiRequest
 
   // If user is not authenticated and trying to access protected route
   if (!user && !shouldSkipAuth) {

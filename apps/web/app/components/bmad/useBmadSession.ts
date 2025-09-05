@@ -2,12 +2,24 @@
 
 import { useState, useCallback } from 'react'
 import { BmadSession, PathwayType } from '@/lib/bmad/types'
+import { BmadErrorHandler } from '@/lib/bmad/error-handler'
+import { BmadErrorMonitor } from '@/lib/bmad/error-monitor'
 
 interface UseBmadSessionReturn {
   currentSession: BmadSession | null
   isLoading: boolean
   error: string | null
-  createSession: (workspaceId: string, pathway: PathwayType, userInput?: string) => Promise<void>
+  createSession: (
+    workspaceId: string, 
+    pathway: PathwayType, 
+    userInput?: string, 
+    recommendation?: {
+      recommendedPathway: PathwayType;
+      confidence: number;
+      reasoning: string;
+      alternativePathways: PathwayType[];
+    }
+  ) => Promise<void>
   advanceSession: (sessionId: string, userInput: string) => Promise<void>
   getSession: (sessionId: string) => Promise<void>
   pauseSession: () => void
@@ -23,11 +35,22 @@ export function useBmadSession(): UseBmadSessionReturn {
   const createSession = useCallback(async (
     workspaceId: string, 
     pathway: PathwayType, 
-    userInput?: string
+    userInput?: string,
+    recommendation?: {
+      recommendedPathway: PathwayType;
+      confidence: number;
+      reasoning: string;
+      alternativePathways: PathwayType[];
+    }
   ) => {
     try {
       setIsLoading(true)
       setError(null)
+
+      const initialContext = userInput || recommendation ? {
+        ...(userInput && { userInput }),
+        ...(recommendation && { recommendation })
+      } : undefined;
 
       const response = await fetch('/api/bmad', {
         method: 'POST',
@@ -38,7 +61,7 @@ export function useBmadSession(): UseBmadSessionReturn {
           action: 'create_session',
           workspaceId,
           pathway,
-          initialContext: userInput ? { userInput } : undefined
+          initialContext
         })
       })
 
@@ -54,9 +77,16 @@ export function useBmadSession(): UseBmadSessionReturn {
         throw new Error(result.error || 'Failed to create session')
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Error creating BMad session:', err)
+      // Monitor error for analytics and debugging
+      BmadErrorMonitor.captureSessionError(err as Error, {
+        workspaceId,
+        pathway,
+        action: 'create-session'
+      })
+
+      const userError = BmadErrorHandler.handleError(err, 'session-creation')
+      setError(userError.message)
+      console.error('BMad Session Creation Error:', BmadErrorHandler.formatErrorForLogging(err, 'session-creation'))
       throw err
     } finally {
       setIsLoading(false)
@@ -111,9 +141,15 @@ export function useBmadSession(): UseBmadSessionReturn {
         throw new Error(result.error || 'Failed to advance session')
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Error advancing BMad session:', err)
+      // Monitor error for analytics and debugging
+      BmadErrorMonitor.captureSessionError(err as Error, {
+        sessionId,
+        action: 'advance-session'
+      })
+
+      const userError = BmadErrorHandler.handleError(err, 'session-advance')
+      setError(userError.message)
+      console.error('BMad Session Advance Error:', BmadErrorHandler.formatErrorForLogging(err, 'session-advance'))
       throw err
     } finally {
       setIsLoading(false)
@@ -148,9 +184,15 @@ export function useBmadSession(): UseBmadSessionReturn {
         throw new Error(result.error || 'Failed to get session')
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      console.error('Error getting BMad session:', err)
+      // Monitor error for analytics and debugging
+      BmadErrorMonitor.captureSessionError(err as Error, {
+        sessionId,
+        action: 'get-session'
+      })
+
+      const userError = BmadErrorHandler.handleError(err, 'session-retrieval')
+      setError(userError.message)
+      console.error('BMad Session Retrieval Error:', BmadErrorHandler.formatErrorForLogging(err, 'session-retrieval'))
       throw err
     } finally {
       setIsLoading(false)

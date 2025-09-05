@@ -170,7 +170,7 @@ export class PathwayRouter {
     intentAnalysis: IntentAnalysis,
     userInput: string
   ): Promise<Map<PathwayType, number>> {
-    const scores = new Map<PathwayType, number>();
+    const rawScores = new Map<PathwayType, number>();
 
     // New Idea Pathway scoring
     let newIdeaScore = 0;
@@ -189,7 +189,7 @@ export class PathwayRouter {
     // Urgency factor (new ideas often have lower urgency)
     if (intentAnalysis.urgency === 'low') newIdeaScore += 0.1;
 
-    scores.set(PathwayType.NEW_IDEA, Math.min(newIdeaScore, 1.0));
+    rawScores.set(PathwayType.NEW_IDEA, newIdeaScore);
 
     // Business Model Pathway scoring
     let businessModelScore = 0;
@@ -206,7 +206,7 @@ export class PathwayRouter {
     if (intentAnalysis.scope === 'business') businessModelScore += 0.2;
     if (intentAnalysis.urgency === 'high') businessModelScore += 0.1;
 
-    scores.set(PathwayType.BUSINESS_MODEL, Math.min(businessModelScore, 1.0));
+    rawScores.set(PathwayType.BUSINESS_MODEL, businessModelScore);
 
     // Strategic Optimization Pathway scoring
     let optimizationScore = 0;
@@ -221,9 +221,73 @@ export class PathwayRouter {
     if (intentAnalysis.scope === 'feature' || intentAnalysis.scope === 'product') optimizationScore += 0.2;
     if (intentAnalysis.urgency === 'medium' || intentAnalysis.urgency === 'high') optimizationScore += 0.1;
 
-    scores.set(PathwayType.STRATEGIC_OPTIMIZATION, Math.min(optimizationScore, 1.0));
+    rawScores.set(PathwayType.STRATEGIC_OPTIMIZATION, optimizationScore);
 
-    return scores;
+    // Normalize scores to ensure meaningful confidence levels (50%+ for top recommendation)
+    return this.normalizeScores(rawScores, intentAnalysis);
+  }
+
+  /**
+   * Normalize scores to provide meaningful confidence levels
+   * Ensures top recommendation has >50% confidence with reasonable spread
+   */
+  private normalizeScores(
+    rawScores: Map<PathwayType, number>, 
+    intentAnalysis: IntentAnalysis
+  ): Map<PathwayType, number> {
+    const scores = Array.from(rawScores.entries()).sort(([,a], [,b]) => b - a);
+    const normalizedScores = new Map<PathwayType, number>();
+    
+    if (scores.length === 0) {
+      // Fallback: Equal distribution if no scores
+      const defaultScore = 0.33;
+      normalizedScores.set(PathwayType.NEW_IDEA, defaultScore);
+      normalizedScores.set(PathwayType.BUSINESS_MODEL, defaultScore);
+      normalizedScores.set(PathwayType.STRATEGIC_OPTIMIZATION, defaultScore);
+      return normalizedScores;
+    }
+
+    const [topPathway, topScore] = scores[0];
+    const [secondPathway, secondScore] = scores[1] || [null, 0];
+    const [thirdPathway] = scores[2] || [null, 0];
+
+    // Calculate confidence based on relative differences and absolute scores
+    const hasStrongSignals = topScore > 0.4; // Strong keyword/category matches
+    const hasModerateSignals = topScore > 0.2; // Moderate signals
+    const hasClearWinner = topScore - secondScore > 0.1; // Clear differentiation
+    
+    let topConfidence: number;
+    let secondConfidence: number;
+    let thirdConfidence: number;
+
+    if (hasStrongSignals && hasClearWinner) {
+      // Strong signals with clear winner: 70-85% confidence
+      topConfidence = Math.min(0.70 + (topScore - 0.4) * 0.5, 0.85);
+      secondConfidence = Math.max(0.25 - (topScore - secondScore) * 0.5, 0.15);
+      thirdConfidence = Math.max(0.10, 1.0 - topConfidence - secondConfidence);
+    } else if (hasModerateSignals && hasClearWinner) {
+      // Moderate signals with clear winner: 55-70% confidence  
+      topConfidence = 0.55 + (topScore - 0.2) * 0.75;
+      secondConfidence = Math.max(0.30 - (topScore - secondScore) * 0.5, 0.20);
+      thirdConfidence = Math.max(0.15, 1.0 - topConfidence - secondConfidence);
+    } else if (hasModerateSignals) {
+      // Moderate signals but close race: 50-60% confidence
+      topConfidence = 0.50 + topScore * 0.25;
+      secondConfidence = 0.30 + secondScore * 0.20;
+      thirdConfidence = Math.max(0.20, 1.0 - topConfidence - secondConfidence);
+    } else {
+      // Weak signals: Default to most likely pathway with 50% confidence
+      topConfidence = 0.50 + intentAnalysis.confidence * 0.1; // Use intent confidence
+      secondConfidence = 0.30;
+      thirdConfidence = 0.20;
+    }
+
+    // Assign normalized scores
+    normalizedScores.set(topPathway, topConfidence);
+    if (secondPathway) normalizedScores.set(secondPathway, secondConfidence);
+    if (thirdPathway) normalizedScores.set(thirdPathway, thirdConfidence);
+
+    return normalizedScores;
   }
 
   /**

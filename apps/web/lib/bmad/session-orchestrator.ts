@@ -16,6 +16,10 @@ import {
 import { bmadTemplateEngine } from './template-engine';
 import { pathwayRouter } from './pathway-router';
 import { BmadDatabase } from './database';
+import { NewIdeaPathway, createNewIdeaPathway } from './pathways/new-idea-pathway';
+import { NEW_IDEA_TEMPLATE } from './templates/new-idea-templates';
+import { MarketPositioningAnalyzer, createMarketPositioningAnalyzer } from './analysis/market-positioning';
+import { ConceptDocumentGenerator, createConceptDocumentGenerator } from './generators/concept-document-generator';
 
 /**
  * Session configuration for initialization
@@ -58,6 +62,9 @@ export class SessionOrchestrator {
   private activeSessions = new Map<string, BmadSession>();
   private phaseManager = new PhaseManager();
   private progressTracker = new ProgressTracker();
+  private newIdeaPathways = new Map<string, NewIdeaPathway>();
+  private marketAnalyzer = createMarketPositioningAnalyzer();
+  private documentGenerator = createConceptDocumentGenerator();
 
   /**
    * Create new BMad Method session
@@ -74,16 +81,29 @@ export class SessionOrchestrator {
         );
       }
 
-      // Load initial template
-      const firstTemplate = await bmadTemplateEngine.loadTemplate(pathway.templateSequence[0]);
-      const firstPhase = firstTemplate.phases[0];
+      // Load initial template - for New Idea pathway, use specialized template
+      let firstTemplate: BmadTemplate;
+      let firstPhase: BmadPhase;
+      
+      if (config.pathway === PathwayType.NEW_IDEA) {
+        firstTemplate = NEW_IDEA_TEMPLATE;
+        firstPhase = firstTemplate.phases[0];
+        
+        // Initialize New Idea pathway orchestrator
+        const newIdeaPathway = createNewIdeaPathway();
+        newIdeaPathway.startPhase(0);
+        this.newIdeaPathways.set(`${config.userId}_${config.workspaceId}`, newIdeaPathway);
+      } else {
+        firstTemplate = await bmadTemplateEngine.loadTemplate(pathway.templateSequence[0]);
+        firstPhase = firstTemplate.phases[0];
+      }
 
       // Create session in database
       const sessionId = await BmadDatabase.createSession({
         userId: config.userId,
         workspaceId: config.workspaceId,
         pathway: config.pathway,
-        templates: pathway.templateSequence,
+        templates: config.pathway === PathwayType.NEW_IDEA ? [firstTemplate.id] : pathway.templateSequence,
         currentPhase: firstPhase.id,
         currentTemplate: firstTemplate.id
       });
@@ -154,11 +174,13 @@ export class SessionOrchestrator {
       }
 
       // Process user input in context of current phase
-      const phaseResult = await this.phaseManager.processInput(
-        currentPhase,
-        userInput,
-        session
-      );
+      let phaseResult: PhaseResult;
+      
+      if (session.pathway === PathwayType.NEW_IDEA) {
+        phaseResult = await this.processNewIdeaInput(session, currentPhase, userInput);
+      } else {
+        phaseResult = await this.phaseManager.processInput(currentPhase, userInput, session);
+      }
 
       // Record user response in database
       await BmadDatabase.recordUserResponse(
@@ -442,19 +464,140 @@ export class SessionOrchestrator {
   }
 
   /**
+   * Process New Idea pathway input
+   */
+  private async processNewIdeaInput(
+    session: BmadSession,
+    currentPhase: BmadPhase,
+    userInput: string
+  ): Promise<PhaseResult> {
+    const pathwayKey = `${session.userId}_${session.workspaceId}`;
+    const newIdeaPathway = this.newIdeaPathways.get(pathwayKey);
+    
+    if (!newIdeaPathway) {
+      throw new SessionStateError('New Idea pathway not found', session.id);
+    }
+
+    // Get analysis from market positioning analyzer
+    const analysisRequest = {
+      phase: currentPhase.id as 'ideation' | 'market_exploration' | 'concept_refinement' | 'positioning',
+      userInput,
+      sessionData: newIdeaPathway.getSessionData()
+    };
+
+    let analysisResponse;
+    try {
+      switch (currentPhase.id) {
+        case 'ideation':
+          analysisResponse = await this.marketAnalyzer.analyzeIdeation(analysisRequest);
+          newIdeaPathway.updateSessionData({
+            rawIdea: userInput,
+            ideationInsights: analysisResponse.insights
+          });
+          break;
+        case 'market_exploration':
+          analysisResponse = await this.marketAnalyzer.analyzeMarketExploration(analysisRequest);
+          newIdeaPathway.updateSessionData({
+            marketOpportunities: this.marketAnalyzer.generateMarketOpportunities(analysisResponse)
+          });
+          break;
+        case 'concept_refinement':
+          analysisResponse = await this.marketAnalyzer.analyzeConceptRefinement(analysisRequest);
+          newIdeaPathway.updateSessionData({
+            uniqueValueProps: analysisResponse.recommendations
+          });
+          break;
+        case 'positioning':
+          analysisResponse = await this.marketAnalyzer.analyzePositioning(analysisRequest);
+          newIdeaPathway.updateSessionData({
+            competitiveLandscape: this.marketAnalyzer.generateCompetitorAnalysis(analysisResponse)
+          });
+          break;
+      }
+    } catch (error) {
+      // Fallback to basic processing
+      analysisResponse = {
+        insights: ['Processing your input...'],
+        recommendations: ['Continue developing this concept'],
+        questions: ['What would you like to explore next?'],
+        confidence: 0.5
+      };
+    }
+
+    // Check if phase can be completed
+    const { timeSpent, canAdvance } = newIdeaPathway.completeCurrentPhase();
+    const phaseComplete = canAdvance || timeSpent > (currentPhase.timeAllocation * 60 * 1000 * 0.8);
+
+    return {
+      phaseComplete,
+      outputs: {
+        analysisResponse,
+        sessionData: newIdeaPathway.getSessionData(),
+        timeSpent,
+        remainingTime: newIdeaPathway.getRemainingPhaseTime()
+      }
+    };
+  }
+
+  /**
    * Generate final session documents
    */
-  private async generateFinalDocuments(_session: BmadSession): Promise<GeneratedDocument[]> {
-    // This would integrate with document generation system
-    // For now, return placeholder
-    return [{
-      id: 'session-summary',
-      name: 'BMad Method Session Summary',
-      type: 'summary',
-      content: 'Generated session summary would go here',
-      format: 'markdown' as const,
-      createdAt: new Date()
-    }];
+  private async generateFinalDocuments(session: BmadSession): Promise<GeneratedDocument[]> {
+    const documents: GeneratedDocument[] = [];
+
+    if (session.pathway === PathwayType.NEW_IDEA) {
+      const pathwayKey = `${session.userId}_${session.workspaceId}`;
+      const newIdeaPathway = this.newIdeaPathways.get(pathwayKey);
+      
+      if (newIdeaPathway) {
+        const sessionData = newIdeaPathway.getSessionData();
+        
+        // Generate business concept document
+        const conceptDoc = this.documentGenerator.generateBusinessConcept(sessionData);
+        documents.push({
+          id: 'business-concept',
+          name: conceptDoc.title,
+          type: 'concept-document',
+          content: conceptDoc.content,
+          format: conceptDoc.format as 'markdown',
+          createdAt: conceptDoc.metadata.generatedAt
+        });
+
+        // Generate market analysis report
+        const marketDoc = this.documentGenerator.generateMarketAnalysisReport(sessionData);
+        documents.push({
+          id: 'market-analysis',
+          name: marketDoc.title,
+          type: 'market-analysis',
+          content: marketDoc.content,
+          format: marketDoc.format as 'markdown',
+          createdAt: marketDoc.metadata.generatedAt
+        });
+
+        // Generate implementation roadmap
+        const roadmapDoc = this.documentGenerator.generateImplementationRoadmap(sessionData);
+        documents.push({
+          id: 'implementation-roadmap',
+          name: roadmapDoc.title,
+          type: 'roadmap',
+          content: roadmapDoc.content,
+          format: roadmapDoc.format as 'markdown',
+          createdAt: roadmapDoc.metadata.generatedAt
+        });
+      }
+    } else {
+      // Fallback for other pathways
+      documents.push({
+        id: 'session-summary',
+        name: 'BMad Method Session Summary',
+        type: 'summary',
+        content: 'Generated session summary would go here',
+        format: 'markdown' as const,
+        createdAt: new Date()
+      });
+    }
+
+    return documents;
   }
 
   /**

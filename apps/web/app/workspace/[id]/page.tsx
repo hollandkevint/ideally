@@ -9,6 +9,7 @@ import ReactMarkdown from 'react-markdown'
 import BmadInterface from '../../components/bmad/BmadInterface'
 import StateBridge from '../../components/dual-pane/StateBridge'
 import { PaneErrorBoundary, LoadingPane, OfflineIndicator, useOnlineStatus } from '../../components/dual-pane/PaneErrorBoundary'
+import { useSharedInput } from '../../components/workspace/useSharedInput'
 
 interface ChatMessage {
   id: string
@@ -41,6 +42,7 @@ export default function WorkspacePage() {
   const [sendingMessage, setSendingMessage] = useState(false)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('chat')
   const isOnline = useOnlineStatus()
+  const { preserveInput, hasPreservedInput, peekPreservedInput, clearPreservedInput } = useSharedInput(params.id as string)
 
   const fetchWorkspace = useCallback(async () => {
     try {
@@ -226,6 +228,22 @@ export default function WorkspacePage() {
     })
   }
 
+  const handleTabSwitch = (tab: WorkspaceTab) => {
+    // Preserve input when switching from chat to BMad Method
+    if (activeTab === 'chat' && tab === 'bmad' && messageInput.trim()) {
+      preserveInput(messageInput)
+    }
+    
+    setActiveTab(tab)
+  }
+
+  // Restore preserved input when returning to chat tab
+  useEffect(() => {
+    if (activeTab === 'chat' && hasPreservedInput() && !messageInput) {
+      setMessageInput(peekPreservedInput())
+    }
+  }, [activeTab, hasPreservedInput, peekPreservedInput, messageInput])
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -311,7 +329,7 @@ export default function WorkspacePage() {
         <div className="mb-4 border-b border-divider">
           <div className="flex gap-4">
             <button
-              onClick={() => setActiveTab('chat')}
+              onClick={() => handleTabSwitch('chat')}
               className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'chat'
                   ? 'border-primary text-primary'
@@ -331,7 +349,7 @@ export default function WorkspacePage() {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('bmad')}
+              onClick={() => handleTabSwitch('bmad')}
               className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'bmad'
                   ? 'border-primary text-primary'
@@ -457,7 +475,12 @@ export default function WorkspacePage() {
             </>
           ) : (
             <div className="flex-1 overflow-y-auto">
-              <BmadInterface workspaceId={workspace.id} className="w-full" />
+              <BmadInterface 
+                workspaceId={workspace.id} 
+                className="w-full"
+                preservedInput={hasPreservedInput() ? peekPreservedInput() : undefined}
+                onInputConsumed={clearPreservedInput}
+              />
             </div>
           )}
         </div>

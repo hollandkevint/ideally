@@ -3,22 +3,21 @@
 export interface BmadTemplate {
   id: string;
   name: string;
+  description: string;
   version: string;
-  metadata: TemplateMetadata;
+  pathway: string;
+  totalDuration: number; // minutes
   phases: BmadPhase[];
   outputs: TemplateOutput[];
+  metadata: TemplateMetadata;
   dependencies?: string[];
 }
 
 export interface TemplateMetadata {
-  name: string;
-  version: string;
-  description: string;
   author: string;
-  timeEstimate: number; // minutes
-  category: 'brainstorming' | 'analysis' | 'planning' | 'validation';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  createdAt: Date;
   tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
 export interface BmadPhase {
@@ -26,11 +25,34 @@ export interface BmadPhase {
   name: string;
   description: string;
   timeAllocation: number; // minutes
-  prompts: string[];
-  elicitationOptions: { [key: number]: string };
-  validationRules: ValidationRule[];
-  outputs: PhaseOutput[];
+  prompts?: BmadPrompt[];
+  elicitation?: ElicitationConfig;
+  outputs?: PhaseOutput[];
   nextPhaseLogic?: PhaseTransition[];
+}
+
+export interface BmadPrompt {
+  id: string;
+  text: string;
+  type: 'open-ended' | 'structured' | 'multiple-choice';
+  required: boolean;
+  helpText?: string;
+  options?: string[];
+  structure?: {
+    fields: string[];
+  };
+}
+
+export enum ElicitationType {
+  NUMBERED_OPTIONS = 'numbered-options',
+  GUIDED_QUESTIONS = 'guided-questions',
+  FRAMEWORK_CANVAS = 'framework-canvas'
+}
+
+export interface ElicitationConfig {
+  type: ElicitationType;
+  prompt: string;
+  options: NumberedOption[];
 }
 
 export interface PhaseOutput {
@@ -70,6 +92,8 @@ export interface TransitionCondition {
 export enum PathwayType {
   NEW_IDEA = 'new-idea',
   BUSINESS_MODEL = 'business-model',
+  BUSINESS_MODEL_PROBLEM = 'business-model-problem',
+  FEATURE_REFINEMENT = 'feature-refinement',
   STRATEGIC_OPTIMIZATION = 'strategic-optimization'
 }
 
@@ -263,6 +287,8 @@ export interface SessionMetadata {
   updatedAt: Date;
   endTime?: Date;
 }
+
+export type SessionPhaseStatus = 'pending' | 'active' | 'completed' | 'skipped';
 
 export interface SkipCondition {
   type: string;
