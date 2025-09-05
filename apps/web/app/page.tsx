@@ -2,11 +2,29 @@
 
 import { useAuth } from '../lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const handleEmailCapture = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Integrate with Supabase to store email
+    console.log('Email captured:', email)
+    setIsSubmitted(true)
+    // Reset after 3 seconds
+    setTimeout(() => {
+      setIsSubmitted(false)
+      setEmail('')
+    }, 3000)
+  }
 
   useEffect(() => {
     if (!loading) {
@@ -45,9 +63,9 @@ export default function Home() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-4">
-            <span className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+            <Badge variant="secondary" className="px-4 py-2 text-sm font-semibold">
               🧠 Meet Mary: Your AI Business Analyst
-            </span>
+            </Badge>
           </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Strategic Analysis
@@ -60,57 +78,84 @@ export default function Home() {
           
           {/* Value Proposition Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Curiosity-Driven Inquiry</h3>
-              <p className="text-gray-600 text-sm">
-                Mary asks probing &ldquo;why&rdquo; questions to uncover underlying truths and challenge assumptions systematically
-              </p>
-            </div>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Curiosity-Driven Inquiry</h3>
+                <p className="text-gray-600 text-sm">
+                  Mary asks probing &ldquo;why&rdquo; questions to uncover underlying truths and challenge assumptions systematically
+                </p>
+              </CardContent>
+            </Card>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Evidence-Based Analysis</h3>
-              <p className="text-gray-600 text-sm">
-                Ground all findings in verifiable data and credible sources with structured research methodologies
-              </p>
-            </div>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Evidence-Based Analysis</h3>
+                <p className="text-gray-600 text-sm">
+                  Ground all findings in verifiable data and credible sources with structured research methodologies
+                </p>
+              </CardContent>
+            </Card>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Numbered Options Protocol</h3>
-              <p className="text-gray-600 text-sm">
-                Navigate complex decisions through clear, structured choices that maintain analytical rigor
-              </p>
-            </div>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Numbered Options Protocol</h3>
+                <p className="text-gray-600 text-sm">
+                  Navigate complex decisions through clear, structured choices that maintain analytical rigor
+                </p>
+              </CardContent>
+            </Card>
           </div>
+
+          {/* Interest Capture Form */}
+          <Card className="max-w-md mx-auto mb-8">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-center mb-4">Get Early Access</h3>
+              {!isSubmitted ? (
+                <form onSubmit={handleEmailCapture} className="space-y-4">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                  <Button type="submit" className="w-full" size="lg">
+                    🧠 Get Notified When Available
+                  </Button>
+                </form>
+              ) : (
+                <div className="text-center" data-testid="success-message">
+                  <div className="text-green-600 font-semibold mb-2">✅ Thank you!</div>
+                  <p className="text-sm text-gray-600">We'll notify you when Mary is ready to transform your strategic analysis.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="/signup"
-              className="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
+            <Button size="lg" className="px-8 py-4">
               🧠 Meet Mary Today
-            </a>
-            <a
-              href="/login"
-              className="px-8 py-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            >
+            </Button>
+            <Button variant="outline" size="lg" className="px-8 py-4">
               🎬 Watch Method Demo
-            </a>
+            </Button>
           </div>
 
           <p className="text-sm text-gray-500 mt-4">
@@ -193,18 +238,22 @@ export default function Home() {
               Trusted by Strategic Thinkers Who Value Methodology
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white p-6 rounded-xl shadow-sm">
-                <p className="text-gray-700 mb-4 italic">
-                  &quot;Mary&apos;s structured brainstorming techniques helped me discover insights I never would have found through traditional approaches. The numbered options keep everything organized.&quot;
-                </p>
-                <p className="text-gray-600 font-medium">- Senior Business Analyst</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm">
-                <p className="text-gray-700 mb-4 italic">
-                  &quot;The bMAD Method brings scientific rigor to strategic thinking. My analysis is more thorough and my recommendations are better supported.&quot;
-                </p>
-                <p className="text-gray-600 font-medium">- Strategy Consultant</p>
-              </div>
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-gray-700 mb-4 italic">
+                    &quot;Mary&apos;s structured brainstorming techniques helped me discover insights I never would have found through traditional approaches. The numbered options keep everything organized.&quot;
+                  </p>
+                  <p className="text-gray-600 font-medium">- Senior Business Analyst</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-gray-700 mb-4 italic">
+                    &quot;The bMAD Method brings scientific rigor to strategic thinking. My analysis is more thorough and my recommendations are better supported.&quot;
+                  </p>
+                  <p className="text-gray-600 font-medium">- Strategy Consultant</p>
+                </CardContent>
+              </Card>
             </div>
             
             <div className="grid md:grid-cols-4 gap-4 mt-12">
@@ -240,18 +289,12 @@ export default function Home() {
               Join strategic thinkers who have discovered systematic approaches to complex problem-solving with Mary&apos;s analytical partnership.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a
-                href="/signup"
-                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
+              <Button size="lg" variant="secondary" className="px-8 py-4">
                 🧠 Meet Mary Today
-              </a>
-              <a
-                href="/login"
-                className="px-8 py-4 border-2 border-blue-300 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
+              </Button>
+              <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700">
                 🎬 Watch Method Demo
-              </a>
+              </Button>
             </div>
             <p className="text-blue-200 text-sm mt-4">
               Zero Risk: 14-day free trial • 30-day money-back guarantee • Cancel anytime
