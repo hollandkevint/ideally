@@ -24,20 +24,43 @@ export default function DashboardPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newWorkspaceName, setNewWorkspaceName] = useState('')
   const [newWorkspaceDescription, setNewWorkspaceDescription] = useState('')
+  const [error, setError] = useState<string>('')
+  const [retryCount, setRetryCount] = useState(0)
   const router = useRouter()
 
   const fetchWorkspaces = useCallback(async () => {
     try {
+      setError('')
       const { data, error } = await supabase
         .from('workspaces')
         .select('*')
         .eq('user_id', user?.id)
         .order('updated_at', { ascending: false })
 
-      if (error) throw error
-      setWorkspaces(data || [])
+      if (error) {
+        console.error('Error fetching workspaces:', error)
+        
+        // Handle specific database errors
+        if (error.code === 'PGRST205' || error.message.includes('schema')) {
+          setError('Database schema error detected. Please try again or contact support.')
+        } else if (error.code === 'PGRST001' || error.message.includes('authentication')) {
+          setError('Authentication error. Please sign out and sign in again.')
+        } else {
+          setError(`Database error: ${error.message}`)
+        }
+        
+        // Don't redirect on database errors - show error state instead
+        setWorkspaces([])
+      } else {
+        console.log('Dashboard: Successfully fetched workspaces:', data?.length || 0)
+        setWorkspaces(data || [])
+        setRetryCount(0) // Reset retry count on success
+      }
     } catch (error) {
       console.error('Error fetching workspaces:', error)
+      setError('Network error. Please check your connection and try again.')
+      // Graceful fallback - empty workspace list instead of crash
+      setWorkspaces([])
     } finally {
       setLoading(false)
     }
@@ -105,7 +128,13 @@ export default function DashboardPage() {
   }
 
   if (!user) {
-    router.push('/login')
+    // Only redirect if auth is fully loaded and user is definitely not authenticated
+    if (!authLoading) {
+      console.log('Dashboard: No authenticated user found after auth loaded, redirecting to login')
+      router.push('/login')
+    } else {
+      console.log('Dashboard: No user yet but auth still loading, waiting...')
+    }
     return null
   }
 
@@ -221,11 +250,47 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Error Display */}
+        {error && (
+          <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-red-800 mb-2">Connection Issue</h3>
+                <p className="text-red-700 mb-4">{error}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setRetryCount(prev => prev + 1)
+                  setLoading(true)
+                  fetchWorkspaces()
+                }}
+                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+            {retryCount > 2 && (
+              <div className="mt-4 p-4 bg-red-100 rounded border">
+                <p className="text-red-800 text-sm">
+                  <strong>Multiple retry attempts detected.</strong> This may be a temporary service issue. 
+                  Try signing out and signing back in, or contact support if the problem persists.
+                </p>
+                <button
+                  onClick={signOut}
+                  className="mt-2 text-red-600 hover:text-red-800 underline text-sm"
+                >
+                  Sign out and try again
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Existing Workspaces */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Your Strategic Sessions</h2>
           
-          {workspaces.length === 0 ? (
+          {workspaces.length === 0 && !error ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

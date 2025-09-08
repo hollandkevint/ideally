@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '../lib/auth/AuthContext';
 import { WorkspaceProvider } from '../lib/workspace/WorkspaceContext';
+import Navigation from './components/ui/navigation';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <WorkspaceProvider>
+          <Navigation />
+          {/* WorkspaceProvider temporarily disabled - missing user_workspace table */}
+          {/* <WorkspaceProvider> */}
             {children}
-          </WorkspaceProvider>
+          {/* </WorkspaceProvider> */}
         </AuthProvider>
       </body>
     </html>

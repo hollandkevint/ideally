@@ -8,6 +8,8 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   signOut: () => Promise<void>
+  signInWithGoogle: () => Promise<void>
+  signInWithEmail: (email: string, password: string) => Promise<{ error: any }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -38,10 +40,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
+  const signInWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard`
+      }
+    })
+  }
+
+  const signInWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    return { error }
+  }
+
   const value = {
     user,
     loading,
     signOut,
+    signInWithGoogle,
+    signInWithEmail,
   }
 
   return (

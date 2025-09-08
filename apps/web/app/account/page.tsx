@@ -2,14 +2,16 @@
 
 import { useState } from 'react'
 import { useAuth } from '../../lib/auth/AuthContext'
-import { useWorkspace } from '../../lib/workspace/WorkspaceContext'
+// import { useWorkspace } from '../../lib/workspace/WorkspaceContext' // Temporarily disabled
 import { supabase } from '../../lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function AccountPage() {
   const { user, signOut } = useAuth()
-  const { workspaceState, saveWorkspace } = useWorkspace()
+  // const { workspaceState, saveWorkspace } = useWorkspace() // Temporarily disabled
+  const workspaceState = null // Mock empty state
+  const saveWorkspace = async () => { console.log('Workspace save disabled') } // Mock function
   const router = useRouter()
   
   const [newPassword, setNewPassword] = useState('')

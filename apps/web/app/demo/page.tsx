@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '../../lib/auth/AuthContext'
 import { demoScenarios } from '../../lib/demo/demoData'
 import { Clock, MessageCircle, Target } from 'lucide-react'
 
 export default function DemoHub() {
   const router = useRouter()
+  const { user, loading } = useAuth()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -21,7 +23,7 @@ export default function DemoHub() {
                 Strategic Analysis Demo
               </h1>
               <p className="text-gray-600">
-                Experience Mary's BMad Method in action - No signup required
+                Experience Mary's BMad Method in action{user ? ' - Welcome back!' : ' - No signup required'}
               </p>
             </div>
             <Button 
@@ -163,9 +165,15 @@ export default function DemoHub() {
                 to unlock insights for your own business challenges.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/signup')}>
-                  🚀 Start Free Strategic Session
-                </Button>
+                {user ? (
+                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/dashboard')}>
+                    🚀 Access Your Dashboard
+                  </Button>
+                ) : (
+                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/signup')}>
+                    🚀 Start Free Strategic Session
+                  </Button>
+                )}
                 <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => window.open('mailto:kevin@kevintholland.com', '_blank')}>
                   💬 Talk to Our Team
                 </Button>
