@@ -29,9 +29,11 @@ export default function Home() {
   useEffect(() => {
     if (!loading) {
       if (user) {
+        console.log('Landing page: Authenticated user detected, redirecting to dashboard')
         router.push('/dashboard')
+      } else {
+        console.log('Landing page: No authenticated user, staying on landing page')
       }
-      // If no user, stay on landing page
     }
   }, [user, loading, router])
 
@@ -64,7 +66,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-4">
             <Badge variant="secondary" className="px-4 py-2 text-sm font-semibold">
-              🧠 Meet Mary: Your AI Business Analyst
+              🎯 Live Demo Available - No Signup Required
             </Badge>
           </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
@@ -150,8 +152,8 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="px-8 py-4">
-              🧠 Meet Mary Today
+            <Button size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
+              🎯 View Live Demo - No Signup Required
             </Button>
             <Button variant="outline" size="lg" className="px-8 py-4">
               🎬 Watch Method Demo
@@ -289,8 +291,8 @@ export default function Home() {
               Join strategic thinkers who have discovered systematic approaches to complex problem-solving with Mary&apos;s analytical partnership.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" variant="secondary" className="px-8 py-4">
-                🧠 Meet Mary Today
+              <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/demo')}>
+                🎯 Try Before You Buy - View Demo
               </Button>
               <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700">
                 🎬 Watch Method Demo
