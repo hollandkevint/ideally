@@ -268,7 +268,7 @@ export default function DemoScenarioViewer() {
                       <p className="text-sm text-blue-700 mb-4">
                         Start your strategic analysis with Mary's guidance
                       </p>
-                      <Button size="sm" className="w-full">
+                      <Button size="sm" className="w-full" onClick={() => router.push('/signup')}>
                         Begin Strategic Session
                       </Button>
                     </CardContent>
@@ -293,7 +293,7 @@ export default function DemoScenarioViewer() {
                 This is just one example of systematic strategic thinking. Get personalized analysis for your business challenge.
               </p>
               <div className="space-y-3">
-                <Button className="w-full" size="lg">
+                <Button className="w-full" size="lg" onClick={() => router.push('/signup')}>
                   🚀 Start My Strategic Session
                 </Button>
                 <Button 

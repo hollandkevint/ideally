@@ -163,10 +163,10 @@ export default function DemoHub() {
                 to unlock insights for your own business challenges.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" variant="secondary" className="px-8 py-4">
+                <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/signup')}>
                   🚀 Start Free Strategic Session
                 </Button>
-                <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700">
+                <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => window.open('mailto:kevin@ideally.co', '_blank')}>
                   💬 Talk to Our Team
                 </Button>
               </div>
