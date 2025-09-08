@@ -166,7 +166,7 @@ export default function DemoHub() {
                 <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/signup')}>
                   🚀 Start Free Strategic Session
                 </Button>
-                <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => window.open('mailto:kevin@ideally.co', '_blank')}>
+                <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => window.open('mailto:kevin@kevintholland.com', '_blank')}>
                   💬 Talk to Our Team
                 </Button>
               </div>

@@ -315,7 +315,7 @@ export default function Home() {
                 Built with bMAD Method • Powered by AI • Designed for Strategic Thinkers
               </p>
               <div className="space-y-2">
-                <p className="text-sm text-gray-400">📧 kevin@ideally.co</p>
+                <p className="text-sm text-gray-400">📧 kevin@kevintholland.com</p>
                 <p className="text-sm text-gray-400">📍 San Francisco, CA</p>
               </div>
             </div>
