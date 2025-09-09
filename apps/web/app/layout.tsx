@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Strategic Workspace | Ideally.co",
+  title: "Thinkhaven",
   description: "AI-powered strategic thinking workspace with dual-pane interface for coaching and visual exploration",
 };
 

@@ -42,7 +42,7 @@ export default function Home() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Loading Strategic Workspace...</p>
+          <p className="text-secondary">Loading Thinkhaven...</p>
         </div>
       </div>
     )
@@ -310,7 +310,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
-              <h3 className="text-xl font-bold mb-4">Strategic Thinking Workspace</h3>
+              <h3 className="text-xl font-bold mb-4">Thinkhaven</h3>
               <p className="text-gray-400 mb-4">
                 Built with bMAD Method • Powered by AI • Designed for Strategic Thinkers
               </p>
@@ -339,7 +339,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Strategic Thinking Workspace. All rights reserved.</p>
+            <p>&copy; 2025 Thinkhaven. All rights reserved.</p>
           </div>
         </div>
       </div>

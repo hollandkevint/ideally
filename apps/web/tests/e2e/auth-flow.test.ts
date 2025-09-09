@@ -14,7 +14,7 @@ test.describe('Authentication Flow E2E Tests', () => {
     await page.goto('/login')
     
     // Check page elements
-    await expect(page.locator('h1')).toContainText('Strategic Workspace')
+    await expect(page.locator('h1')).toContainText('Thinkhaven')
     await expect(page.locator('h2')).toContainText('Sign in to your account')
     await expect(page.locator('input[name="email"]')).toBeVisible()
     await expect(page.locator('input[name="password"]')).toBeVisible()

@@ -4,7 +4,7 @@ test.describe('Landing Page', () => {
   test('should display hero section', async ({ page }) => {
     await page.goto('/');
     
-    await expect(page).toHaveTitle(/ideally/i);
+    await expect(page).toHaveTitle(/Thinkhaven/i);
     
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   });

@@ -28,7 +28,7 @@ describe('Login Page', () => {
   it('renders login form with email and password fields', () => {
     render(<LoginPage />)
     
-    expect(screen.getByText('Strategic Workspace')).toBeInTheDocument()
+    expect(screen.getByText('Thinkhaven')).toBeInTheDocument()
     expect(screen.getByText('Sign in to your account')).toBeInTheDocument()
     expect(screen.getByLabelText('Email address')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()

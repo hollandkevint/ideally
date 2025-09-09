@@ -38,7 +38,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
   if (loading) {
     return (
       <nav className={`flex items-center justify-between p-4 bg-white border-b ${className}`}>
-        <div className="font-bold text-xl text-gray-900">ideally.co</div>
+        <div className="font-bold text-xl text-gray-900">Thinkhaven</div>
         <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
       </nav>
     )
@@ -51,7 +51,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
         className="font-bold text-xl text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
         onClick={() => router.push('/')}
       >
-        ideally.co
+        Thinkhaven
       </div>
 
       {/* Desktop Navigation */}

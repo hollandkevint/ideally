@@ -29,7 +29,7 @@ describe('Navigation Component', () => {
 
     render(<Navigation />)
     
-    expect(screen.getByText('ideally.co')).toBeInTheDocument()
+    expect(screen.getByText('Thinkhaven')).toBeInTheDocument()
     expect(screen.getByRole('generic')).toHaveClass('animate-pulse')
   })
 
@@ -42,7 +42,7 @@ describe('Navigation Component', () => {
 
     render(<Navigation />)
     
-    expect(screen.getByText('ideally.co')).toBeInTheDocument()
+    expect(screen.getByText('Thinkhaven')).toBeInTheDocument()
     expect(screen.getByText('Demo')).toBeInTheDocument()
     expect(screen.getByText('Login')).toBeInTheDocument()
     expect(screen.getByText('Sign Up')).toBeInTheDocument()
@@ -57,7 +57,7 @@ describe('Navigation Component', () => {
 
     render(<Navigation />)
     
-    expect(screen.getByText('ideally.co')).toBeInTheDocument()
+    expect(screen.getByText('Thinkhaven')).toBeInTheDocument()
     expect(screen.getByText('Demo')).toBeInTheDocument()
     expect(screen.getByText('test')).toBeInTheDocument() // Username from email
   })
@@ -110,7 +110,7 @@ describe('Navigation Component', () => {
 
     render(<Navigation />)
     
-    fireEvent.click(screen.getByText('ideally.co'))
+    fireEvent.click(screen.getByText('Thinkhaven'))
     expect(mockPush).toHaveBeenCalledWith('/')
   })
 

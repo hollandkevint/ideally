@@ -75,7 +75,7 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full space-y-8 p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary">Strategic Workspace</h1>
+          <h1 className="text-3xl font-bold text-primary">Thinkhaven</h1>
           <h2 className="mt-6 text-2xl font-semibold">Create your account</h2>
           <p className="mt-2 text-secondary">
             Join the AI-powered strategic thinking workspace

@@ -309,7 +309,7 @@ Ready to dive deeper into any aspect of this product strategy?"
 1. **Create demo user account** with pre-loaded workspaces
 2. **Seed conversation data** for all 3 scenarios  
 3. **Design demo-specific landing page** highlighting video scenarios
-4. **Deploy demo branch** to separate URL (demo.ideally.co)
+4. **Deploy demo branch** to separate URL (demo.thinkhaven.co)
 
 ### **Phase 2: Video Production Setup**  
 1. **Screen recording optimization** - clean browser setup

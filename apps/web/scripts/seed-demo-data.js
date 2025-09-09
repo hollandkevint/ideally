@@ -6,7 +6,7 @@
 const { createClient } = require('@supabase/supabase-js')
 
 // Configure demo environment
-const DEMO_EMAIL = 'demo@ideally.co'
+const DEMO_EMAIL = 'demo@thinkhaven.co'
 const DEMO_PASSWORD = 'DemoUser2024!'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

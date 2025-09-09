@@ -20,7 +20,7 @@ node scripts/seed-demo-data.js
 ```
 
 ### **Step 2: Demo Login Credentials**
-- **Email:** `demo@ideally.co`
+- **Email:** `demo@thinkhaven.co`
 - **Password:** `DemoUser2024!`
 
 ### **Step 3: Access Demo Environment**
@@ -186,7 +186,7 @@ vercel --prod --alias demo-ideally.vercel.app
 
 # Option 2: Use existing deployment with demo login
 # Current: https://ideally-66ayuwa03-hollandkevints-projects.vercel.app
-# Login with demo@ideally.co / DemoUser2024!
+# Login with demo@thinkhaven.co / DemoUser2024!
 ```
 
 ### **Demo Account Management**
