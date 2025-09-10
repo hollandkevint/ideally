@@ -29,11 +29,11 @@ export default function Home() {
   useEffect(() => {
     if (!loading) {
       if (user) {
-        console.log('Landing page: Authenticated user detected, redirecting to dashboard')
-        // Small delay to ensure auth state is fully synced
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, 100)
+        console.log('Landing page: Authenticated user detected, NOT auto-redirecting to dashboard (temporarily disabled)')
+        // Temporarily disable auto-redirect to troubleshoot dashboard redirect loop
+        // setTimeout(() => {
+        //   router.push('/dashboard')
+        // }, 100)
       } else {
         console.log('Landing page: No authenticated user, staying on landing page')
       }
@@ -51,16 +51,16 @@ export default function Home() {
     )
   }
 
-  if (user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Redirecting to your dashboard...</p>
-        </div>
-      </div>
-    )
-  }
+  // if (user) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
+  //         <p className="text-secondary">Redirecting to your dashboard...</p>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
