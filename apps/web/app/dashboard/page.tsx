@@ -130,8 +130,11 @@ export default function DashboardPage() {
   if (!user) {
     // Only redirect if auth is fully loaded and user is definitely not authenticated
     if (!authLoading) {
-      console.log('Dashboard: No authenticated user found after auth loaded, redirecting to login')
-      router.push('/login')
+      console.log('Dashboard: No authenticated user found after auth loaded, user:', user, 'authLoading:', authLoading)
+      // Prevent redirect loop - don't redirect if we came from OAuth
+      if (!window.location.search.includes('code=')) {
+        router.push('/login')
+      }
     } else {
       console.log('Dashboard: No user yet but auth still loading, waiting...')
     }
