@@ -85,14 +85,14 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is authenticated and trying to access login/signup (but not home page or demo), redirect to dashboard
-  const allowedAuthenticatedRoutes = ['/', '/demo']
-  if (user && isPublicRoute && !isStaticAsset && !allowedAuthenticatedRoutes.includes(request.nextUrl.pathname)) {
-    console.log('Middleware: Redirecting authenticated user to dashboard from:', request.nextUrl.pathname)
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
-  }
+  // TEMPORARILY DISABLE: If user is authenticated and trying to access login/signup (but not home page or demo), redirect to dashboard
+  // const allowedAuthenticatedRoutes = ['/', '/demo']
+  // if (user && isPublicRoute && !isStaticAsset && !allowedAuthenticatedRoutes.includes(request.nextUrl.pathname)) {
+  //   console.log('Middleware: Redirecting authenticated user to dashboard from:', request.nextUrl.pathname)
+  //   const url = request.nextUrl.clone()
+  //   url.pathname = '/dashboard'
+  //   return NextResponse.redirect(url)
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
