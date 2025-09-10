@@ -131,14 +131,26 @@ export default function DashboardPage() {
     // Only redirect if auth is fully loaded and user is definitely not authenticated
     if (!authLoading) {
       console.log('Dashboard: No authenticated user found after auth loaded, user:', user, 'authLoading:', authLoading)
-      // Prevent redirect loop - don't redirect if we came from OAuth
-      if (!window.location.search.includes('code=')) {
-        router.push('/login')
-      }
+      // Give a bit more time for auth to sync, especially after OAuth
+      setTimeout(() => {
+        if (!user && !authLoading && !window.location.search.includes('code=')) {
+          console.log('Dashboard: Still no user after delay, redirecting to login')
+          router.push('/login')
+        }
+      }, 500)
     } else {
       console.log('Dashboard: No user yet but auth still loading, waiting...')
     }
-    return null
+    
+    // Show loading state while waiting
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
+          <p className="text-secondary">Verifying authentication...</p>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

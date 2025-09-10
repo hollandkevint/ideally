@@ -30,7 +30,10 @@ export default function Home() {
     if (!loading) {
       if (user) {
         console.log('Landing page: Authenticated user detected, redirecting to dashboard')
-        router.push('/dashboard')
+        // Small delay to ensure auth state is fully synced
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 100)
       } else {
         console.log('Landing page: No authenticated user, staying on landing page')
       }
