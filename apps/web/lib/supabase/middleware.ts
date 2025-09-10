@@ -54,6 +54,8 @@ export async function updateSession(request: NextRequest) {
     user = defaultUser
   }
 
+  console.log('Middleware: Processing request to:', request.nextUrl.pathname, 'User:', user?.email || 'No user')
+
 
   // Public routes and assets that don't require authentication
   const publicRoutes = ['/', '/login', '/signup', '/resend-confirmation', '/.well-known', '/test-dual-pane', '/test-bmad-buttons', '/demo']
@@ -75,6 +77,7 @@ export async function updateSession(request: NextRequest) {
 
   // If user is not authenticated and trying to access protected route
   if (!user && !shouldSkipAuth) {
+    console.log('Middleware: Redirecting unauthenticated user to login from:', request.nextUrl.pathname)
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     // Store the attempted URL to redirect after login
@@ -85,6 +88,7 @@ export async function updateSession(request: NextRequest) {
   // If user is authenticated and trying to access login/signup (but not home page or demo), redirect to dashboard
   const allowedAuthenticatedRoutes = ['/', '/demo']
   if (user && isPublicRoute && !isStaticAsset && !allowedAuthenticatedRoutes.includes(request.nextUrl.pathname)) {
+    console.log('Middleware: Redirecting authenticated user to dashboard from:', request.nextUrl.pathname)
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
