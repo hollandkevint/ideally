@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
 
 
   // Public routes and assets that don't require authentication
-  const publicRoutes = ['/', '/login', '/signup', '/resend-confirmation', '/.well-known', '/test-dual-pane', '/test-bmad-buttons']
+  const publicRoutes = ['/', '/login', '/signup', '/resend-confirmation', '/.well-known', '/test-dual-pane', '/test-bmad-buttons', '/demo']
   
   // Allow API access from test pages
   const referer = request.headers.get('referer') || '';
@@ -82,8 +82,9 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is authenticated and trying to access login/signup (but not home page), redirect to dashboard
-  if (user && isPublicRoute && !isStaticAsset && request.nextUrl.pathname !== '/') {
+  // If user is authenticated and trying to access login/signup (but not home page or demo), redirect to dashboard
+  const allowedAuthenticatedRoutes = ['/', '/demo']
+  if (user && isPublicRoute && !isStaticAsset && !allowedAuthenticatedRoutes.includes(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
