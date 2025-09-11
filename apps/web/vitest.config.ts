@@ -1,5 +1,6 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vitest/config'
-import { fileURLToPath, URL } from 'node:url'
+import * as path from 'path'
 
 export default defineConfig({
   test: {
@@ -7,12 +8,16 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.test.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next'],
-    globals: true
+    globals: true,
+    css: false
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('.', import.meta.url)),
-      '~': fileURLToPath(new URL('.', import.meta.url))
+      '@': path.resolve(__dirname, '.'),
+      '~': path.resolve(__dirname, '.')
     }
+  },
+  esbuild: {
+    target: 'node18'
   }
 })

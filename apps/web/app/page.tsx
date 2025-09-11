@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import GoogleOneTapSignin from './components/auth/GoogleOneTapSignin'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [googleSigninError, setGoogleSigninError] = useState<string | null>(null)
 
   const handleEmailCapture = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,6 +26,20 @@ export default function Home() {
       setIsSubmitted(false)
       setEmail('')
     }, 3000)
+  }
+
+  const handleGoogleSigninSuccess = () => {
+    console.log('Google signin successful, redirecting to dashboard')
+    router.push('/dashboard')
+  }
+
+  const handleGoogleSigninError = (error: string) => {
+    console.error('Google signin error:', error)
+    setGoogleSigninError(error)
+    // Clear error after 5 seconds
+    setTimeout(() => {
+      setGoogleSigninError(null)
+    }, 5000)
   }
 
   useEffect(() => {
@@ -126,10 +142,37 @@ export default function Home() {
             </Card>
           </div>
 
+          {/* Google Signin */}
+          {!user && (
+            <Card className="max-w-md mx-auto mb-6">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-center mb-4">Sign in with Google</h3>
+                <div className="flex flex-col items-center">
+                  <GoogleOneTapSignin 
+                    onSuccess={handleGoogleSigninSuccess}
+                    onError={handleGoogleSigninError}
+                  />
+                  {googleSigninError && (
+                    <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+                      {googleSigninError}
+                    </div>
+                  )}
+                  <div className="flex items-center my-4 w-full">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="px-3 text-gray-500 text-sm">or</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Interest Capture Form */}
           <Card className="max-w-md mx-auto mb-8">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-center mb-4">Get Early Access</h3>
+              <h3 className="text-lg font-semibold text-center mb-4">
+                {user ? 'Welcome back!' : 'Get Early Access'}
+              </h3>
               {!isSubmitted ? (
                 <form onSubmit={handleEmailCapture} className="space-y-4">
                   <Input
@@ -155,12 +198,25 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
-              🎯 View Live Demo - No Signup Required
-            </Button>
-            <Button variant="outline" size="lg" className="px-8 py-4">
-              🎬 Watch Method Demo
-            </Button>
+            {user ? (
+              <>
+                <Button size="lg" className="px-8 py-4" onClick={() => router.push('/dashboard')}>
+                  🚀 Go to Dashboard
+                </Button>
+                <Button variant="outline" size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
+                  🎯 View Demo
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
+                  🎯 View Live Demo - No Signup Required
+                </Button>
+                <Button variant="outline" size="lg" className="px-8 py-4">
+                  🎬 Watch Method Demo
+                </Button>
+              </>
+            )}
           </div>
 
           <p className="text-sm text-gray-500 mt-4">
@@ -294,12 +350,25 @@ export default function Home() {
               Join strategic thinkers who have discovered systematic approaches to complex problem-solving with Mary&apos;s analytical partnership.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/demo')}>
-                🎯 Try Before You Buy - View Demo
-              </Button>
-              <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700">
-                🎬 Watch Method Demo
-              </Button>
+              {user ? (
+                <>
+                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/dashboard')}>
+                    🚀 Start Strategic Analysis
+                  </Button>
+                  <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => router.push('/demo')}>
+                    🎯 View Demo
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/demo')}>
+                    🎯 Try Before You Buy - View Demo
+                  </Button>
+                  <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700">
+                    🎬 Watch Method Demo
+                  </Button>
+                </>
+              )}
             </div>
             <p className="text-blue-200 text-sm mt-4">
               Zero Risk: 14-day free trial • 30-day money-back guarantee • Cancel anytime

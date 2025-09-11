@@ -2,15 +2,56 @@
 
 ## Epic Approach
 
-**Epic Structure Decision:** **Single Comprehensive Epic** with rationale
+**Epic Structure Decision:** **Foundation + Enhancement Epics** with rationale
 
-Given the brownfield enhancement nature of this project, the Claude Sonnet 4 integration represents a single, cohesive enhancement that transforms the existing foundation into a functional AI-powered platform. While substantial, this work is logically connected and interdependent, making it most appropriate for a single comprehensive epic.
+Given the critical authentication foundation issues discovered during development, the project now requires a foundational Epic 0 to establish reliable authentication before proceeding with the Claude Sonnet 4 integration. This two-phase approach ensures a stable foundation before building advanced features.
 
 **Rationale:**
-- All enhancement work centers on Claude API integration and related AI features
-- Stories are sequential and build upon each other within the AI integration domain
-- Breaking into multiple epics would create artificial boundaries and dependencies
-- Single epic allows for cohesive testing and deployment of AI functionality
+- Epic 0 addresses critical production blocker preventing all user access
+- Epic 1+ enhancement work requires functional authentication foundation
+- Sequential dependency structure ensures stable platform progression
+- Authentication foundation enables all downstream user-dependent features
+
+## Epic 0: Google Authentication Foundation
+
+### Epic Goal
+Replace the broken Vercel-Supabase OAuth integration with Google's pre-built signin system, providing seamless Google-first authentication, cost controls, and scalable user management foundation.
+
+### Epic Value Proposition
+**For Users:** Familiar, reliable Google signin without redirect loops or authentication failures
+**For Business:** Unblocks all feature development and establishes user acquisition foundation  
+**For Development:** Simplified authentication architecture with fewer failure points
+
+### Epic Acceptance Criteria
+1. **Google One-Tap Signin:** Users can authenticate using Google's pre-built signin interface
+2. **Session Persistence:** User sessions reliably maintained across browser sessions
+3. **Cost Controls Ready:** User account foundation supports downstream monetization features
+4. **Zero Redirect Loops:** Complete elimination of ERR_TOO_MANY_REDIRECTS errors
+5. **Production Stable:** 95%+ authentication success rate in production environment
+
+### Story Breakdown
+
+#### **Story 0.1: Remove Complex OAuth Middleware** ✅ *Ready for Development*
+*As a* platform developer,
+*I want* to remove the complex Vercel middleware and OAuth callback routes causing redirect loops,
+*so that* we have a clean foundation for implementing Google's simplified authentication approach.
+
+#### **Story 0.2: Implement Google Pre-built Signin** ✅ *Ready for Development*
+*As a* user wanting to access Thinkhaven,
+*I want* to authenticate using Google's familiar One-Tap signin interface,
+*so that* I can quickly and reliably access my strategic thinking workspace without authentication errors.
+
+#### **Story 0.3: Update Supabase Configuration for ID Token Flow** ✅ *Ready for Development*
+*As a* platform developer,
+*I want* Supabase configured to accept Google ID tokens through signInWithIdToken flow,
+*so that* user authentication integrates seamlessly with our existing database and user management system.
+
+#### **Story 0.4: Authentication Testing & Validation** ✅ *Ready for Development*
+*As a* platform stakeholder,
+*I want* comprehensive testing of the new authentication flow across all environments,
+*so that* we can confidently deploy without regression and ensure 95%+ authentication success rate.
+
+---
 
 ## Epic 1: Claude Sonnet 4 AI Integration & Strategic Coaching Platform
 

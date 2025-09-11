@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null
   loading: boolean
   signOut: () => Promise<void>
-  signInWithGoogle: () => Promise<void>
+  signInWithGoogle: (idToken: string) => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<{ error: any }>
 }
 
@@ -30,13 +30,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('AuthContext: Auth state change:', event, session?.user?.email || 'No user')
+      console.log('AuthContext: Auth state change:', {
+        event,
+        user: session?.user?.email || 'No user',
+        provider: session?.user?.app_metadata?.provider,
+        timestamp: new Date().toISOString()
+      })
+      
       setUser(session?.user ?? null)
       setLoading(false)
       
-      // Handle OAuth callback
+      // Handle authentication events with detailed logging
       if (event === 'SIGNED_IN' && session) {
-        console.log('AuthContext: User signed in via OAuth')
+        console.log('AuthContext: User signed in successfully:', {
+          provider: session.user.app_metadata?.provider || 'email',
+          email: session.user.email,
+          id: session.user.id,
+          timestamp: new Date().toISOString()
+        })
+      } else if (event === 'SIGNED_OUT') {
+        console.log('AuthContext: User signed out:', {
+          timestamp: new Date().toISOString()
+        })
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('AuthContext: Token refreshed for user:', {
+          email: session?.user?.email,
+          timestamp: new Date().toISOString()
+        })
       }
     })
 
@@ -47,13 +67,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
-  const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/`
+  const signInWithGoogle = async (idToken: string) => {
+    try {
+      console.log('AuthContext: Starting Google ID token signin flow')
+      
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken
+      })
+      
+      if (error) {
+        console.error('AuthContext: Google ID token signin error:', {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+          timestamp: new Date().toISOString()
+        })
+        
+        // Provide specific error messages based on error type
+        let userMessage = 'Google signin failed'
+        if (error.message?.includes('Invalid token')) {
+          userMessage = 'Google signin token is invalid or expired'
+        } else if (error.message?.includes('Network')) {
+          userMessage = 'Network error during Google signin. Please try again.'
+        } else if (error.message?.includes('Provider')) {
+          userMessage = 'Google signin is not properly configured'
+        }
+        
+        throw new Error(userMessage)
       }
-    })
+      
+      if (!data.user) {
+        console.error('AuthContext: No user data received from Google signin')
+        throw new Error('No user information received from Google')
+      }
+      
+      console.log('AuthContext: Google signin successful:', {
+        email: data.user.email,
+        id: data.user.id,
+        provider: data.user.app_metadata?.provider,
+        timestamp: new Date().toISOString()
+      })
+      
+    } catch (err) {
+      console.error('AuthContext: Unexpected error during Google signin:', {
+        error: err,
+        timestamp: new Date().toISOString()
+      })
+      throw err
+    }
   }
 
   const signInWithEmail = async (email: string, password: string) => {
