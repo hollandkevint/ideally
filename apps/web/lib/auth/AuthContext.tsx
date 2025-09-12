@@ -1,15 +1,16 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User } from '@supabase/supabase-js'
+import { User, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../supabase/client'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   signOut: () => Promise<void>
-  signInWithGoogle: (idToken: string) => Promise<void>
-  signInWithEmail: (email: string, password: string) => Promise<{ error: any }>
+  signInWithGoogle: () => Promise<void>
+  signInWithGoogleIdToken: (idToken: string) => Promise<void>
+  signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -67,7 +68,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
-  const signInWithGoogle = async (idToken: string) => {
+  const signInWithGoogle = async () => {
+    try {
+      console.log('AuthContext: Starting Google OAuth signin flow')
+      console.log('AuthContext: Redirect URL:', `${window.location.origin}/auth/callback`)
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      })
+      
+      if (error) {
+        console.error('AuthContext: Google OAuth signin error:', {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+          timestamp: new Date().toISOString()
+        })
+        
+        throw new Error(error.message || 'Google signin failed')
+      }
+      
+      if (data?.url) {
+        console.log('AuthContext: Google OAuth redirect URL generated:', data.url)
+      }
+      
+      console.log('AuthContext: Google OAuth redirect initiated')
+      
+    } catch (err) {
+      console.error('AuthContext: Unexpected error during Google signin:', {
+        error: err,
+        timestamp: new Date().toISOString()
+      })
+      throw err
+    }
+  }
+
+  const signInWithGoogleIdToken = async (idToken: string) => {
     try {
       console.log('AuthContext: Starting Google ID token signin flow')
       
@@ -131,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     signOut,
     signInWithGoogle,
+    signInWithGoogleIdToken,
     signInWithEmail,
   }
 

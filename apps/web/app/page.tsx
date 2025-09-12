@@ -7,15 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import GoogleOneTapSignin from './components/auth/GoogleOneTapSignin'
+// Temporarily disabled Google One Tap
+// import GoogleOneTapSignin from './components/auth/GoogleOneTapSignin'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [googleSigninError, setGoogleSigninError] = useState<string | null>(null)
-
   const handleEmailCapture = async (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Integrate with Supabase to store email
@@ -26,20 +25,6 @@ export default function Home() {
       setIsSubmitted(false)
       setEmail('')
     }, 3000)
-  }
-
-  const handleGoogleSigninSuccess = () => {
-    console.log('Google signin successful, redirecting to dashboard')
-    router.push('/dashboard')
-  }
-
-  const handleGoogleSigninError = (error: string) => {
-    console.error('Google signin error:', error)
-    setGoogleSigninError(error)
-    // Clear error after 5 seconds
-    setTimeout(() => {
-      setGoogleSigninError(null)
-    }, 5000)
   }
 
   useEffect(() => {
@@ -142,21 +127,21 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* Google Signin */}
+          {/* Google Signin - Temporarily disabled */}
           {!user && (
             <Card className="max-w-md mx-auto mb-6">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-center mb-4">Sign in with Google</h3>
                 <div className="flex flex-col items-center">
-                  <GoogleOneTapSignin 
-                    onSuccess={handleGoogleSigninSuccess}
-                    onError={handleGoogleSigninError}
-                  />
-                  {googleSigninError && (
-                    <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                      {googleSigninError}
-                    </div>
-                  )}
+                  <div className="text-center py-4">
+                    <p className="text-gray-600 mb-4">Google Sign-in temporarily disabled</p>
+                    <Button 
+                      onClick={() => router.push('/login')}
+                      className="w-full"
+                    >
+                      Go to Login Page
+                    </Button>
+                  </div>
                   <div className="flex items-center my-4 w-full">
                     <div className="flex-1 border-t border-gray-300"></div>
                     <span className="px-3 text-gray-500 text-sm">or</span>

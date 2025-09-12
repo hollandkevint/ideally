@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../../components/ui/dropdown-menu'
-import { Menu, User, LogOut, LogIn, UserPlus } from 'lucide-react'
+import { Menu, User, LogOut, LogIn, UserPlus, ChevronDown } from 'lucide-react'
 
 interface NavigationProps {
   className?: string
@@ -70,6 +70,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
               <Button variant="outline" size="sm" className="gap-2">
                 <User className="w-4 h-4" />
                 {user.email?.split('@')[0] || 'User'}
+                <ChevronDown className="w-3 h-3 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
