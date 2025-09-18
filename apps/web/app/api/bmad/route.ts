@@ -4,7 +4,24 @@ import { sessionOrchestrator } from '@/lib/bmad/session-orchestrator';
 import { pathwayRouter } from '@/lib/bmad/pathway-router';
 import { bmadKnowledgeBase } from '@/lib/bmad/knowledge-base';
 import { BmadDatabase } from '@/lib/bmad/database';
-import { PathwayType } from '@/lib/bmad/types';
+import { PathwayType, FeatureInputData, PriorityScoring } from '@/lib/bmad/types';
+import {
+  validateFeatureInput,
+  createFeatureAnalysisPrompt,
+  analyzeFeatureInput,
+  generateAnalysisId
+} from '@/lib/bmad/pathways/feature-input';
+import {
+  selectBestQuestions,
+  getFallbackQuestions,
+  validateQuestions
+} from '@/lib/bmad/analysis/feature-questions';
+import {
+  calculatePriority,
+  validatePriorityScoring,
+  getPriorityRecommendations,
+  analyzePriority
+} from '@/lib/bmad/pathways/priority-scoring';
 
 /**
  * BMad Method API Endpoints
@@ -53,6 +70,18 @@ export async function POST(request: NextRequest) {
         
       case 'get_user_sessions':
         return await handleGetUserSessions(userId, params);
+
+      case 'analyze_feature_input':
+        return await handleAnalyzeFeatureInput(params);
+
+      case 'save_feature_input':
+        return await handleSaveFeatureInput(userId, params);
+
+      case 'calculate_priority':
+        return await handleCalculatePriority(params);
+
+      case 'save_priority_scoring':
+        return await handleSavePriorityScoring(userId, params);
 
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -323,4 +352,255 @@ async function handleGetPathways() {
     success: true,
     data: { pathways }
   });
+}
+
+/**
+ * Analyze feature input and generate validation questions
+ */
+async function handleAnalyzeFeatureInput(params: { featureData: FeatureInputData }) {
+  const { featureData } = params;
+
+  if (!featureData) {
+    return NextResponse.json({ error: 'featureData is required' }, { status: 400 });
+  }
+
+  // Validate the input
+  const validation = validateFeatureInput(featureData);
+  if (!validation.isValid) {
+    return NextResponse.json({
+      error: 'Invalid feature input',
+      details: validation.errors
+    }, { status: 400 });
+  }
+
+  try {
+    // Generate analysis ID
+    const analysisId = generateAnalysisId();
+
+    // Analyze the feature for insights
+    const insights = analyzeFeatureInput(featureData);
+
+    // Generate questions using AI fallback if needed
+    let questions: string[] = [];
+
+    try {
+      // Try to use the best question selection logic
+      questions = selectBestQuestions(featureData, 4);
+    } catch (error) {
+      console.warn('Question generation failed, using fallback:', error);
+      questions = getFallbackQuestions(featureData);
+    }
+
+    // Validate the generated questions
+    const questionValidation = validateQuestions(questions);
+    if (!questionValidation.isValid) {
+      console.warn('Question validation issues:', questionValidation.issues);
+      // Use fallback questions if validation fails
+      questions = getFallbackQuestions(featureData);
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        analysis_id: analysisId,
+        questions,
+        insights,
+        validation: {
+          warnings: validation.warnings
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Feature analysis error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+    return NextResponse.json(
+      { error: 'Feature analysis failed', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Save feature input data
+ */
+async function handleSaveFeatureInput(
+  userId: string,
+  params: {
+    sessionId: string;
+    featureData: FeatureInputData;
+    analysisId?: string;
+  }
+) {
+  const { sessionId, featureData, analysisId } = params;
+
+  if (!sessionId || !featureData) {
+    return NextResponse.json(
+      { error: 'sessionId and featureData are required' },
+      { status: 400 }
+    );
+  }
+
+  // Validate the input
+  const validation = validateFeatureInput(featureData);
+  if (!validation.isValid) {
+    return NextResponse.json({
+      error: 'Invalid feature input',
+      details: validation.errors
+    }, { status: 400 });
+  }
+
+  try {
+    // Save feature input data to bmad_user_responses table
+    await BmadDatabase.recordUserResponse(
+      sessionId,
+      'feature-input',
+      'feature-input-form',
+      {
+        data: {
+          ...featureData,
+          analysis_id: analysisId || generateAnalysisId(),
+          saved_at: new Date().toISOString(),
+          validation_warnings: validation.warnings
+        }
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        saved: true,
+        session_id: sessionId,
+        analysis_id: analysisId || generateAnalysisId(),
+        timestamp: new Date().toISOString(),
+        validation: {
+          warnings: validation.warnings
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Save feature input error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Save failed';
+    return NextResponse.json(
+      { error: 'Failed to save feature input', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Calculate priority score for a feature
+ */
+async function handleCalculatePriority(params: {
+  effort_score: number;
+  impact_score: number;
+  session_id?: string;
+}) {
+  const { effort_score, impact_score, session_id } = params;
+
+  if (effort_score === undefined || impact_score === undefined) {
+    return NextResponse.json(
+      { error: 'effort_score and impact_score are required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Validate scoring inputs
+    const validation = validatePriorityScoring({ effort_score, impact_score });
+    if (validation.length > 0) {
+      return NextResponse.json({
+        error: 'Invalid priority scoring inputs',
+        details: validation
+      }, { status: 400 });
+    }
+
+    // Calculate priority
+    const priorityScoring = calculatePriority(impact_score, effort_score);
+    const recommendations = getPriorityRecommendations(priorityScoring.quadrant);
+    const analysis = analyzePriority(impact_score, effort_score);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        priority_score: priorityScoring.calculated_priority,
+        category: priorityScoring.priority_category,
+        quadrant: priorityScoring.quadrant,
+        recommendations,
+        analysis,
+        scoring: priorityScoring
+      }
+    });
+
+  } catch (error) {
+    console.error('Priority calculation error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Calculation failed';
+    return NextResponse.json(
+      { error: 'Priority calculation failed', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Save priority scoring data to session
+ */
+async function handleSavePriorityScoring(
+  userId: string,
+  params: {
+    sessionId: string;
+    priorityScoring: PriorityScoring;
+  }
+) {
+  const { sessionId, priorityScoring } = params;
+
+  if (!sessionId || !priorityScoring) {
+    return NextResponse.json(
+      { error: 'sessionId and priorityScoring are required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Validate priority scoring data
+    const validation = validatePriorityScoring(priorityScoring);
+    if (validation.length > 0) {
+      return NextResponse.json({
+        error: 'Invalid priority scoring data',
+        details: validation
+      }, { status: 400 });
+    }
+
+    // Save priority scoring data to bmad_user_responses table
+    await BmadDatabase.recordUserResponse(
+      sessionId,
+      'priority-scoring',
+      'priority-scoring-form',
+      {
+        data: {
+          ...priorityScoring,
+          saved_at: new Date().toISOString()
+        }
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        saved: true,
+        session_id: sessionId,
+        priority_scoring: priorityScoring,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Save priority scoring error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Save failed';
+    return NextResponse.json(
+      { error: 'Failed to save priority scoring', details: errorMessage },
+      { status: 500 }
+    );
+  }
 }

@@ -1,4 +1,13 @@
-import { BmadPhase, BmadTemplate, ElicitationType } from '../types';
+import {
+  BmadPhase,
+  BmadTemplate,
+  ElicitationType,
+  MarketOpportunity,
+  CompetitorAnalysis,
+  TargetAudience,
+  BusinessModelElements,
+  BusinessConcept
+} from '../types';
 
 /**
  * New Idea Pathway Templates for BMad Method
@@ -15,54 +24,7 @@ export interface NewIdeaPhaseData {
   businessModelElements?: BusinessModelElements;
 }
 
-export interface MarketOpportunity {
-  id: string;
-  description: string;
-  marketSize: string;
-  growthPotential: 'low' | 'medium' | 'high';
-  confidence: number;
-  insights: string[];
-}
-
-export interface CompetitorAnalysis {
-  name: string;
-  strengths: string[];
-  weaknesses: string[];
-  marketPosition: string;
-  differentiators: string[];
-}
-
-export interface TargetAudience {
-  primarySegment: string;
-  demographics: string[];
-  psychographics: string[];
-  painPoints: string[];
-  desiredOutcomes: string[];
-}
-
-export interface BusinessModelElements {
-  revenueStreams: string[];
-  costStructure: string[];
-  keyActivities: string[];
-  keyResources: string[];
-  channels: string[];
-  customerRelationships: string[];
-}
-
-export interface BusinessConcept {
-  title: string;
-  executiveSummary: string;
-  problemStatement: string;
-  solution: string;
-  uniqueValueProposition: string;
-  targetMarket: TargetAudience;
-  competitiveAdvantage: string;
-  businessModel: BusinessModelElements;
-  marketOpportunity: MarketOpportunity[];
-  nextSteps: string[];
-  risks: string[];
-  successMetrics: string[];
-}
+// Note: Type definitions moved to ../types.ts for consistency
 
 // Phase definitions for New Idea pathway
 export const NEW_IDEA_PHASES: BmadPhase[] = [

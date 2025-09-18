@@ -10,6 +10,7 @@ import SessionHistoryManager from './SessionHistoryManager'
 import ElicitationPanel from './ElicitationPanel'
 import { SkeletonLoader } from './LoadingIndicator'
 import ErrorBoundary from './ErrorBoundary'
+import NewIdeaPathway from './pathways/NewIdeaPathway'
 
 interface BmadInterfaceProps {
   workspaceId: string
@@ -75,6 +76,7 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
 
   const getPathwayDisplayName = useCallback((pathway: string): string => {
     const pathwayNames: Record<string, string> = {
+      'NEW_IDEA': 'New Idea Creative Expansion',
       'new-idea': 'New Idea Creative Expansion',
       'business-model': 'Business Model Analysis',
       'business-model-problem': 'Business Model Problem Analysis',
@@ -355,6 +357,25 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
               <div className="bg-white rounded-lg border border-divider p-6">
                 <SkeletonLoader />
               </div>
+            </div>
+          )
+        }
+
+        // Check if this is a New Idea pathway and render accordingly
+        if (currentSession.pathway === PathwayType.NEW_IDEA) {
+          return (
+            <div className="space-y-6">
+              <ErrorBoundary component="NewIdeaPathway">
+                <NewIdeaPathway
+                  sessionId={currentSession.id}
+                  onSessionComplete={(sessionData) => {
+                    setCurrentStep('session-completed')
+                  }}
+                  onError={(error) => {
+                    console.error('New Idea pathway error:', error)
+                  }}
+                />
+              </ErrorBoundary>
             </div>
           )
         }

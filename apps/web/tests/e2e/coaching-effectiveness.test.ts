@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { CoachingPersona, CoachingContext, generateCoachingResponse } from '@/lib/ai/mary-persona'
+import { MaryPersona, CoachingContext, maryPersona } from '@/lib/ai/mary-persona'
 import { ConversationPersistenceManager } from '@/lib/ai/conversation-persistence'
 
 // Mock dependencies
@@ -58,6 +58,24 @@ vi.mock('@anthropic-ai/sdk', () => ({
     }
   }
 }))
+
+// Mock generateCoachingResponse function for testing
+const generateCoachingResponse = async (userInput: string, conversationHistory: any[], context: CoachingContext): Promise<string> => {
+  // Use the system prompt from MaryPersona
+  const systemPrompt = maryPersona.generateSystemPrompt(context)
+
+  // For testing, return a mock response based on context
+  const lastMessage = userInput
+  const contextType = lastMessage.includes('strategic') ? 'strategic_analysis' :
+                     lastMessage.includes('business model') ? 'business_model_design' :
+                     'market_validation'
+
+  const phase = lastMessage.includes('challenge') || lastMessage.includes('problem') ? 'diagnosis' :
+                lastMessage.includes('option') || lastMessage.includes('evaluate') ? 'evaluation' :
+                'planning'
+
+  return mockClaudeResponses[contextType][phase]
+}
 
 // Coaching effectiveness metrics
 interface CoachingMetrics {

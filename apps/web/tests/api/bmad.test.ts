@@ -1,41 +1,49 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { POST, GET } from '@/app/api/bmad/route';
+import { POST, GET } from '../../app/api/bmad/route';
 
 // Mock all dependencies
-const mockUser = { id: 'user-123', email: 'test@example.com' };
-const mockSupabaseClient = {
-  auth: {
-    getUser: vi.fn().mockResolvedValue({ 
-      data: { user: mockUser }, 
-      error: null 
-    })
-  }
-};
-
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(() => Promise.resolve(mockSupabaseClient))
+  createClient: vi.fn(() => Promise.resolve({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: 'user-123', email: 'test@example.com' } },
+        error: null
+      })
+    }
+  }))
 }));
-
-const mockSession = {
-  id: 'session-123',
-  userId: 'user-123',
-  workspaceId: 'workspace-123',
-  pathway: 'new_idea',
-  status: 'active'
-};
 
 vi.mock('@/lib/bmad/session-orchestrator', () => ({
   sessionOrchestrator: {
-    createSession: vi.fn().mockResolvedValue(mockSession),
-    getSession: vi.fn().mockResolvedValue(mockSession),
+    createSession: vi.fn().mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      workspaceId: 'workspace-123',
+      pathway: 'new_idea',
+      status: 'active'
+    }),
+    getSession: vi.fn().mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      workspaceId: 'workspace-123',
+      pathway: 'new_idea',
+      status: 'active'
+    }),
     advanceSession: vi.fn().mockResolvedValue({ nextStep: 'analysis' })
   }
 }));
 
 vi.mock('@/lib/bmad/database', () => ({
   BmadDatabase: {
-    getUserSessions: vi.fn().mockResolvedValue([mockSession])
+    getUserSessions: vi.fn().mockResolvedValue([{
+      id: 'session-123',
+      userId: 'user-123',
+      workspaceId: 'workspace-123',
+      pathway: 'new_idea',
+      status: 'active'
+    }]),
+    recordUserResponse: vi.fn().mockResolvedValue(undefined)
   }
 }));
 
@@ -59,6 +67,57 @@ vi.mock('@/lib/bmad/knowledge-base', () => ({
     ])
   }
 }));
+
+// Mock feature analysis functions
+vi.mock('@/lib/bmad/pathways/feature-input', () => ({
+  validateFeatureInput: vi.fn().mockReturnValue({
+    isValid: true,
+    errors: [],
+    warnings: []
+  }),
+  analyzeFeatureInput: vi.fn().mockReturnValue({
+    complexity_score: 5.0,
+    user_focus_score: 8.0,
+    feasibility_indicators: ['Mobile development considerations needed']
+  }),
+  generateAnalysisId: vi.fn().mockReturnValue('fa_123456_abcdef')
+}));
+
+vi.mock('@/lib/bmad/analysis/feature-questions', () => ({
+  selectBestQuestions: vi.fn().mockReturnValue([
+    'What specific user pain point does this feature solve?',
+    'How will you measure whether this feature is successful?',
+    'What are the main technical challenges in building this feature?',
+    'What user behavior changes would indicate this feature is working?'
+  ]),
+  getFallbackQuestions: vi.fn().mockReturnValue([
+    'What specific user pain point does this feature solve?',
+    'How will you measure whether this feature is successful?'
+  ]),
+  validateQuestions: vi.fn().mockReturnValue({
+    isValid: true,
+    issues: []
+  })
+}));
+
+// Test data constants
+const mockUser = { id: 'user-123', email: 'test@example.com' };
+const mockSession = {
+  id: 'session-123',
+  userId: 'user-123',
+  workspaceId: 'workspace-123',
+  pathway: 'new_idea',
+  status: 'active'
+};
+
+const mockSupabaseClient = {
+  auth: {
+    getUser: vi.fn().mockResolvedValue({
+      data: { user: mockUser },
+      error: null
+    })
+  }
+};
 
 describe('BMad API Routes', () => {
   beforeEach(() => {
@@ -224,6 +283,126 @@ describe('BMad API Routes', () => {
         expect(response.status).toBe(500);
         expect(data.error).toBe('Intent analysis failed: Processing error');
         expect(data.code).toBe('INTENT_ANALYSIS_ERROR');
+      });
+    });
+
+    describe('analyze_feature_input action', () => {
+      it('should analyze feature input successfully', async () => {
+        const featureData = {
+          feature_description: 'A mobile app that helps users track their daily water intake with smart reminders',
+          target_users: 'Health-conscious individuals aged 25-45',
+          current_problems: 'People forget to drink enough water throughout the day',
+          success_definition: '90% user retention after 30 days and 8+ glasses tracked daily',
+          analysis_questions: [],
+          input_timestamp: new Date()
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/bmad', {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'analyze_feature_input',
+            featureData
+          })
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(data.success).toBe(true);
+        expect(data.data.analysis_id).toBe('fa_123456_abcdef');
+        expect(data.data.questions).toHaveLength(4);
+        expect(data.data.insights.complexity_score).toBe(5.0);
+      });
+
+      it('should return 400 for missing featureData', async () => {
+        const request = new NextRequest('http://localhost:3000/api/bmad', {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'analyze_feature_input'
+          })
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe('featureData is required');
+      });
+
+      it('should return 400 for invalid feature input', async () => {
+        const { validateFeatureInput } = await import('@/lib/bmad/pathways/feature-input');
+        vi.mocked(validateFeatureInput).mockReturnValue({
+          isValid: false,
+          errors: ['Feature description is required'],
+          warnings: []
+        });
+
+        const featureData = {
+          feature_description: '',
+          analysis_questions: [],
+          input_timestamp: new Date()
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/bmad', {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'analyze_feature_input',
+            featureData
+          })
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe('Invalid feature input');
+        expect(data.details).toContain('Feature description is required');
+      });
+    });
+
+    describe('save_feature_input action', () => {
+      it('should save feature input successfully', async () => {
+        const featureData = {
+          feature_description: 'A mobile app that helps users track their daily water intake with smart reminders and personalized goals',
+          target_users: 'Health-conscious individuals',
+          analysis_questions: [],
+          input_timestamp: new Date()
+        };
+
+        const request = new NextRequest('http://localhost:3000/api/bmad', {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'save_feature_input',
+            sessionId: 'session-123',
+            featureData,
+            analysisId: 'fa_123456_abcdef'
+          })
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(200);
+        expect(data.success).toBe(true);
+        expect(data.data.saved).toBe(true);
+        expect(data.data.session_id).toBe('session-123');
+      });
+
+      it('should return 400 for missing sessionId', async () => {
+        const request = new NextRequest('http://localhost:3000/api/bmad', {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'save_feature_input',
+            featureData: { feature_description: 'test' }
+          })
+        });
+
+        const response = await POST(request);
+        const data = await response.json();
+
+        expect(response.status).toBe(400);
+        expect(data.error).toBe('sessionId and featureData are required');
       });
     });
 

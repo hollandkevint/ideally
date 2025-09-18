@@ -326,3 +326,111 @@ export interface InputAnalysis {
   keywords: string[];
   suggestions: string[];
 }
+
+// New Idea pathway specific types
+export interface NewIdeaSessionData {
+  rawIdea?: string;
+  ideationInsights: string[];
+  marketOpportunities: MarketOpportunity[];
+  uniqueValueProps: string[];
+  competitiveLandscape: CompetitorAnalysis[];
+  targetAudience?: TargetAudience;
+  businessModelElements?: BusinessModelElements;
+  conceptDocument?: BusinessConcept;
+  marketAnalysis?: MarketAnalysisReport;
+  actionRoadmap?: ActionRoadmap;
+}
+
+export interface MarketOpportunity {
+  id: string;
+  description: string;
+  marketSize: string;
+  growthPotential: 'low' | 'medium' | 'high';
+  confidence: number;
+  insights: string[];
+}
+
+export interface CompetitorAnalysis {
+  name: string;
+  strengths: string[];
+  weaknesses: string[];
+  marketPosition: string;
+  differentiators: string[];
+}
+
+export interface TargetAudience {
+  primarySegment: string;
+  demographics: string[];
+  psychographics: string[];
+  painPoints: string[];
+  desiredOutcomes: string[];
+}
+
+export interface BusinessModelElements {
+  revenueStreams: string[];
+  costStructure: string[];
+  keyActivities: string[];
+  keyResources: string[];
+  channels: string[];
+  customerRelationships: string[];
+}
+
+export interface BusinessConcept {
+  title: string;
+  executiveSummary: string;
+  problemStatement: string;
+  solution: string;
+  uniqueValueProposition: string;
+  targetMarket: TargetAudience;
+  competitiveAdvantage: string;
+  businessModel: BusinessModelElements;
+  marketOpportunity: MarketOpportunity[];
+  nextSteps: string[];
+  risks: string[];
+  successMetrics: string[];
+}
+
+export interface MarketAnalysisReport {
+  marketSize: string;
+  competitiveLandscape: CompetitorAnalysis[];
+  opportunities: MarketOpportunity[];
+  targetSegments: TargetAudience;
+  entryBarriers: string[];
+  recommendations: string[];
+}
+
+export interface ActionRoadmap {
+  immediate: string[];
+  shortTerm: string[];
+  longTerm: string[];
+  milestones: Array<{milestone: string, timeframe: string}>;
+  resources: string[];
+}
+
+// Feature Refinement pathway specific types
+export interface FeatureInputData {
+  feature_description: string;
+  target_users?: string;
+  current_problems?: string;
+  success_definition?: string;
+  analysis_questions: string[];
+  input_timestamp: Date;
+}
+
+export interface PriorityScoring {
+  effort_score: number; // 1-10
+  impact_score: number; // 1-10
+  calculated_priority: number; // impact/effort ratio
+  priority_category: 'Critical' | 'High' | 'Medium' | 'Low';
+  quadrant: 'Quick Wins' | 'Major Projects' | 'Fill-ins' | 'Time Wasters';
+  scoring_timestamp: Date;
+}
+
+export interface PriorityMatrix {
+  quadrants: {
+    quickWins: { minImpact: 7, maxEffort: 4 };
+    majorProjects: { minImpact: 7, minEffort: 5 };
+    fillIns: { maxImpact: 6, maxEffort: 4 };
+    timeWasters: { maxImpact: 6, minEffort: 5 };
+  };
+}

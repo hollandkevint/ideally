@@ -238,7 +238,7 @@ describe('BmadDatabase', () => {
       mockSupabaseClient.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
             data: mockSessions,
             error: null
           })
@@ -259,21 +259,21 @@ describe('BmadDatabase', () => {
         error: null
       });
 
-      const mockQuery = {
+      const mockQueryChain = {
         eq: vi.fn().mockReturnThis(),
-        order: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({
           data: [],
           error: null
         })
       };
 
       mockSupabaseClient.from.mockReturnValue({
-        select: vi.fn().mockReturnValue(mockQuery)
+        select: vi.fn().mockReturnValue(mockQueryChain)
       });
 
       await BmadDatabase.getUserSessions('user-123', 'workspace-123');
 
-      expect(mockQuery.eq).toHaveBeenCalledWith('workspace_id', 'workspace-123');
+      expect(mockQueryChain.eq).toHaveBeenCalledWith('workspace_id', 'workspace-123');
     });
 
     it('should filter by status when provided', async () => {
@@ -283,21 +283,21 @@ describe('BmadDatabase', () => {
         error: null
       });
 
-      const mockQuery = {
+      const mockQueryChain = {
         eq: vi.fn().mockReturnThis(),
-        order: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({
           data: [],
           error: null
         })
       };
 
       mockSupabaseClient.from.mockReturnValue({
-        select: vi.fn().mockReturnValue(mockQuery)
+        select: vi.fn().mockReturnValue(mockQueryChain)
       });
 
       await BmadDatabase.getUserSessions('user-123', undefined, 'active');
 
-      expect(mockQuery.eq).toHaveBeenCalledWith('status', 'active');
+      expect(mockQueryChain.eq).toHaveBeenCalledWith('status', 'active');
     });
 
     it('should validate required userId parameter', async () => {

@@ -176,16 +176,41 @@ export class BmadDatabase {
     currentPhase: string;
     currentTemplate: string;
   }): Promise<string> {
+    // Validate required parameters
+    if (!sessionData.userId || !sessionData.workspaceId) {
+      throw new BmadMethodError(
+        'userId and workspaceId are required for session creation',
+        'INVALID_PARAMETERS',
+        { sessionData }
+      );
+    }
+
+    if (!sessionData.pathway) {
+      throw new BmadMethodError(
+        'pathway is required for session creation',
+        'INVALID_PARAMETERS',
+        { sessionData }
+      );
+    }
+
+    if (!sessionData.currentPhase || !sessionData.currentTemplate) {
+      throw new BmadMethodError(
+        'currentPhase and currentTemplate are required for session creation',
+        'INVALID_PARAMETERS',
+        { sessionData }
+      );
+    }
+
     // Return mock data for test mode
     if (this.isTestMode()) {
       const mockSessionId = `test-session-${Date.now()}`;
       console.log('BmadDatabase: Creating mock session with ID:', mockSessionId);
       return mockSessionId;
     }
-    
+
     try {
       const supabase = await createClient();
-      
+
       const { data, error } = await supabase
         .from('bmad_sessions')
         .insert({
@@ -204,7 +229,7 @@ export class BmadDatabase {
       return data.id;
     } catch (error) {
       throw new BmadMethodError(
-        `Failed to create BMad session: ${error instanceof Error ? error instanceof Error ? error.message : 'Unknown error' : 'Unknown error'}`,
+        `Failed to create BMad session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_CREATION_ERROR',
         { sessionData, originalError: error }
       );
@@ -483,15 +508,35 @@ export class BmadDatabase {
     workspaceId?: string,
     status?: 'active' | 'paused' | 'completed' | 'abandoned'
   ): Promise<BmadSessionRow[]> {
+    // Validate required parameters
+    if (!userId) {
+      throw new BmadMethodError(
+        'Invalid parameters for session retrieval: userId is required',
+        'INVALID_PARAMETERS',
+        { userId, workspaceId, status }
+      );
+    }
+
     // Return mock data for test mode
     if (this.isTestMode()) {
       console.log('BmadDatabase: Returning mock user sessions for userId:', userId);
       return []; // Return empty array for test mode
     }
-    
+
     try {
       const supabase = await createClient();
-      
+
+      // Verify authentication before querying
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        throw new BmadMethodError(
+          'Authentication required for session retrieval',
+          'AUTH_REQUIRED',
+          { userId, authError }
+        );
+      }
+
       let query = supabase
         .from('bmad_sessions')
         .select('*')
@@ -508,9 +553,25 @@ export class BmadDatabase {
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        // Check for RLS policy errors
+        if (error.code === '42501' || error.message?.includes('permission denied')) {
+          throw new BmadMethodError(
+            'Database security policy prevented access to user sessions',
+            'RLS_POLICY_ERROR',
+            { userId, workspaceId, status, originalError: error }
+          );
+        }
+        throw error;
+      }
+
       return data || [];
     } catch (error) {
+      // Re-throw BmadMethodError instances without wrapping
+      if (error instanceof BmadMethodError) {
+        throw error;
+      }
+
       throw new BmadMethodError(
         `Failed to retrieve user sessions: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'SESSION_LIST_ERROR',
