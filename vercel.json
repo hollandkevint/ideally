@@ -1,9 +1,8 @@
 {
   "buildCommand": "cd apps/web && npm run build:prod",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install",
+  "installCommand": "cd apps/web && npm install",
   "framework": "nextjs",
-  "rootDirectory": "apps/web",
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
