@@ -1,0 +1,349 @@
+workflow:
+  id: zero-to-one-development
+  name: 0-1 Product Development Workflow
+  version: 1.0
+  description: >-
+    Systematic approach for taking products from concept to initial market fit
+    using lean startup principles, rapid experimentation, and customer development.
+    Optimized for high-uncertainty environments with resource constraints.
+
+phases:
+  - id: concept-validation
+    name: Product Concept Validation
+    description: >-
+      Validate core product concept through customer research and market analysis
+      before committing significant development resources.
+    agents:
+      - zero-to-one-product-builder
+      - product-exploration-lead
+    tasks:
+      - validate-product-concept
+      - design-discovery-plan
+    templates:
+      - product-concept-tmpl
+      - discovery-plan-tmpl
+    checklists:
+      - concept-validation-checklist
+    outputs:
+      - Validated product concept
+      - Customer problem documentation
+      - Market opportunity assessment
+      - Concept validation report
+    duration: 2-3 weeks
+    success_criteria:
+      - Strong evidence of customer problem
+      - Clear solution-problem fit
+      - Compelling market opportunity
+      - Stakeholder alignment on concept
+
+  - id: customer-development
+    name: Customer Development & Discovery
+    description: >-
+      Deep customer development to understand needs, validate assumptions,
+      and inform MVP feature prioritization through continuous customer interaction.
+    agents:
+      - zero-to-one-product-builder
+      - product-exploration-lead
+    tasks:
+      - plan-customer-development
+      - conduct-customer-interviews
+    templates:
+      - customer-development-tmpl
+      - customer-interview-guide-tmpl
+    checklists:
+      - customer-development-checklist
+    outputs:
+      - Customer interview insights
+      - Jobs-to-be-Done documentation
+      - Customer journey maps
+      - Problem validation results
+    duration: 3-4 weeks
+    success_criteria:
+      - 30+ customer interviews completed
+      - Clear customer segments identified
+      - Pain points validated and prioritized
+      - Solution requirements understood
+
+  - id: mvp-strategy
+    name: MVP Strategy & Design
+    description: >-
+      Define minimum viable product strategy focusing on core value hypothesis
+      testing with minimal feature set and maximum learning potential.
+    agents:
+      - zero-to-one-product-builder
+      - fractional-product-advisor
+    tasks:
+      - design-mvp-strategy
+      - assess-product-market-fit
+    templates:
+      - mvp-strategy-tmpl
+      - pmf-assessment-tmpl
+    checklists:
+      - mvp-readiness-checklist
+    outputs:
+      - MVP feature specification
+      - Success metrics definition
+      - Learning hypothesis framework
+      - Development timeline estimate
+    duration: 1-2 weeks
+    success_criteria:
+      - Clear MVP scope defined
+      - Testable hypotheses documented
+      - Success criteria established
+      - Resource requirements confirmed
+
+  - id: prototype-development
+    name: Prototype Development & Testing
+    description: >-
+      Build rapid prototypes and run validation experiments to test key assumptions
+      before committing to full MVP development.
+    agents:
+      - zero-to-one-product-builder
+      - product-exploration-lead
+    tasks:
+      - create-validation-experiments
+      - design-mvp-strategy
+    templates:
+      - validation-experiment-tmpl
+      - experiment-design-tmpl
+    checklists:
+      - experiment-design-checklist
+    outputs:
+      - Interactive prototypes
+      - Experiment results and learnings
+      - Feature validation decisions
+      - Iteration recommendations
+    duration: 2-3 weeks
+    success_criteria:
+      - Key hypotheses tested
+      - Prototype user feedback positive
+      - Feature priorities validated
+      - Technical feasibility confirmed
+
+  - id: mvp-development
+    name: MVP Development & Launch
+    description: >-
+      Build and launch minimum viable product with focus on rapid iteration
+      and continuous customer feedback integration.
+    agents:
+      - zero-to-one-product-builder
+      - product-operations-lead
+    tasks:
+      - build-product-team
+      - plan-product-iteration
+    templates:
+      - team-building-tmpl
+      - iteration-plan-tmpl
+    checklists:
+      - mvp-readiness-checklist
+    outputs:
+      - Functional MVP product
+      - Customer onboarding process
+      - Feedback collection system
+      - Usage analytics implementation
+    duration: 6-8 weeks
+    success_criteria:
+      - MVP successfully launched
+      - Initial customer acquisition
+      - Feedback loops operational
+      - Key metrics being tracked
+
+  - id: initial-traction
+    name: Initial Traction & Learning
+    description: >-
+      Drive initial customer acquisition and usage while systematically collecting
+      feedback and data to inform product iteration decisions.
+    agents:
+      - zero-to-one-product-builder
+      - growth-product-lead
+    tasks:
+      - assess-product-market-fit
+      - plan-product-iteration
+    templates:
+      - pmf-assessment-tmpl
+      - iteration-plan-tmpl
+    checklists:
+      - pmf-indicators-checklist
+    outputs:
+      - Customer acquisition results
+      - Usage and engagement data
+      - Customer feedback synthesis
+      - Product iteration backlog
+    duration: 4-6 weeks
+    success_criteria:
+      - 100+ active users acquired
+      - Positive usage trends
+      - Clear feedback patterns
+      - Iteration priorities identified
+
+  - id: product-market-fit
+    name: Product-Market Fit Achievement
+    description: >-
+      Systematically iterate toward product-market fit through rapid experimentation,
+      customer feedback integration, and metrics-driven optimization.
+    agents:
+      - zero-to-one-product-builder
+      - fractional-product-advisor
+      - growth-product-lead
+    tasks:
+      - assess-product-market-fit
+      - prepare-for-scaling
+    templates:
+      - pmf-assessment-tmpl
+      - scaling-readiness-tmpl
+    checklists:
+      - pmf-indicators-checklist
+    outputs:
+      - Product-market fit validation
+      - Retention and engagement optimization
+      - Growth strategy foundation
+      - Scaling preparation plan
+    duration: 8-12 weeks
+    success_criteria:
+      - Strong retention metrics (40%+ Day 7)
+      - Organic growth indicators
+      - High customer satisfaction (NPS >50)
+      - Clear path to growth scaling
+
+  - id: scaling-preparation
+    name: Scaling Foundation & Handoff
+    description: >-
+      Establish foundations for scaling including team structure, processes,
+      and product operations while preparing for growth phase transition.
+    agents:
+      - zero-to-one-product-builder
+      - product-operations-lead
+      - fractional-product-advisor
+    tasks:
+      - prepare-for-scaling
+      - build-product-team
+    templates:
+      - scaling-readiness-tmpl
+      - team-building-tmpl
+    outputs:
+      - Scaling readiness assessment
+      - Team structure recommendations
+      - Process documentation
+      - Growth strategy roadmap
+    duration: 2-3 weeks
+    success_criteria:
+      - Scaling infrastructure ready
+      - Team capabilities assessed
+      - Processes documented
+      - Growth strategy approved
+
+decision_points:
+  - id: concept-validation-gate
+    after_phase: concept-validation
+    criteria:
+      - Customer problem clearly validated
+      - Solution concept resonates with target customers
+      - Market opportunity is compelling
+      - Resource commitment justified
+    fail_action: Pivot concept or explore new opportunities
+
+  - id: customer-development-validation
+    after_phase: customer-development
+    criteria:
+      - Strong customer insights gathered
+      - Clear customer segments identified
+      - Problem-solution fit validated
+      - MVP scope can be defined
+    fail_action: Extended customer development or concept pivot
+
+  - id: mvp-scope-approval
+    after_phase: mvp-strategy
+    criteria:
+      - MVP scope is achievable with available resources
+      - Learning hypotheses are testable
+      - Success metrics are measurable
+      - Technical feasibility confirmed
+    fail_action: Adjust MVP scope or resource allocation
+
+  - id: prototype-validation-gate
+    after_phase: prototype-development
+    criteria:
+      - Prototype demonstrates core value proposition
+      - Customer feedback is positive
+      - Key assumptions validated
+      - Technical implementation path clear
+    fail_action: Iterate prototype or adjust MVP scope
+
+  - id: mvp-launch-readiness
+    after_phase: mvp-development
+    criteria:
+      - MVP meets quality standards
+      - Customer onboarding process tested
+      - Analytics and feedback systems operational
+      - Launch plan executed successfully
+    fail_action: Address quality or operational issues
+
+  - id: traction-validation
+    after_phase: initial-traction
+    criteria:
+      - Customer acquisition channels working
+      - Usage patterns indicate value delivery
+      - Feedback provides clear iteration direction
+      - Unit economics show potential viability
+    fail_action: Adjust customer acquisition or product positioning
+
+  - id: pmf-achievement-gate
+    after_phase: product-market-fit
+    criteria:
+      - Strong retention metrics achieved
+      - Organic growth indicators present
+      - Customer satisfaction high
+      - Repeatable growth model identified
+    fail_action: Continue iteration or consider pivot
+
+collaboration_points:
+  - Daily standups during development phases
+  - Weekly customer feedback review sessions
+  - Bi-weekly experiment results analysis
+  - Monthly stakeholder progress reviews
+  - Cross-functional prototype testing sessions
+
+tools_required:
+  - Customer interview and research tools
+  - Prototype development platforms
+  - Analytics and measurement tools
+  - Project management and collaboration systems
+  - Customer feedback collection tools
+
+success_metrics:
+  - Customer interview completion rate: 100%
+  - Concept validation strength: 4/5+
+  - MVP delivery timeline adherence: 90%+
+  - Customer acquisition cost: <$50 (B2C) or <$500 (B2B)
+  - Day 7 retention rate: 40%+
+  - Net Promoter Score: 50+
+  - Time to product-market fit: 6-9 months
+
+risk_factors:
+  - Customer problem may not be significant enough
+  - Solution may not adequately address customer needs
+  - Technical complexity may exceed initial estimates
+  - Customer acquisition may be more difficult than expected
+  - Competition may emerge during development
+  - Market conditions may change during development cycle
+
+mitigation_strategies:
+  - Invest heavily in customer development upfront
+  - Build learning-focused rather than feature-focused MVPs
+  - Plan for technical complexity with buffer time
+  - Test customer acquisition channels early
+  - Monitor competitive landscape continuously
+  - Maintain flexibility to adapt to market changes
+
+exit_criteria:
+  - Product-market fit clearly achieved and measurable
+  - Sustainable customer acquisition model established
+  - Product team and processes ready for scaling
+  - Growth strategy defined and resourced
+  - Foundation for next phase of growth established
+
+next_workflows:
+  - Growth strategy implementation workflow
+  - Product team scaling workflow
+  - Platform development workflow (if applicable)
+  - Market expansion workflow

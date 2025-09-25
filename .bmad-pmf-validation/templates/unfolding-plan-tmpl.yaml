@@ -1,0 +1,416 @@
+template:
+  id: unfolding-plan-template-v1
+  name: Case Study Evolution & Unfolding Strategy
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/unfolding-plan.md
+    title: "Case Study Unfolding Plan - {{current_date}}"
+
+workflow:
+  mode: guided
+  elicitation: unfolding-strategy-development
+
+sections:
+  - id: current-state-assessment
+    title: Current State Assessment
+    instruction: |
+      Document your current case study performance and market feedback.
+    template: |
+      # Case Study Unfolding Plan
+      
+      **Date**: {{current_date}}
+      **Analyst**: {{analyst_name}}
+      **Current Case Study Version**: {{current_version}}
+      **Analysis Period**: {{analysis_period}}
+      
+      ## Current Case Study Performance
+      
+      ### Quantitative Metrics
+      - **Close Rate**: {{current_close_rate}}%
+      - **Response Rate**: {{current_response_rate}}%
+      - **Sales Cycle Length**: {{current_cycle_length}} days
+      - **Average Deal Size**: ${{current_deal_size}}
+      - **Meetings per Week**: {{meetings_per_week}}
+      
+      ### Qualitative Feedback
+      **What's Working Well**:
+      {{positive_feedback}}
+      
+      **Common Objections**:
+      {{common_objections}}
+      
+      **Confusion Points**:
+      {{confusion_points}}
+      
+      **Energy Drops**:
+      {{energy_drop_points}}
+      
+      ## Market Context Assessment
+      
+      **Current Market Position**: {{market_position}}
+      **Competitive Landscape**: {{competitive_landscape}}
+      **Customer Demand Patterns**: {{demand_patterns}}
+      **External Market Forces**: {{external_forces}}
+
+  - id: unfolding-signals
+    title: Unfolding Signals Analysis
+    instruction: |
+      Identify signals that suggest your case study needs to evolve.
+    template: |
+      ## Unfolding Signals Detected
+      
+      ### Demand Evolution Signals
+      
+      **Signal 1: {{demand_signal_1_name}}**
+      - **Description**: {{demand_signal_1_description}}
+      - **Evidence**: {{demand_signal_1_evidence}}
+      - **Frequency**: {{demand_signal_1_frequency}}
+      - **Implication**: {{demand_signal_1_implication}}
+      
+      **Signal 2: {{demand_signal_2_name}}**
+      - **Description**: {{demand_signal_2_description}}
+      - **Evidence**: {{demand_signal_2_evidence}}
+      - **Frequency**: {{demand_signal_2_frequency}}
+      - **Implication**: {{demand_signal_2_implication}}
+      
+      **Signal 3: {{demand_signal_3_name}}**
+      - **Description**: {{demand_signal_3_description}}
+      - **Evidence**: {{demand_signal_3_evidence}}
+      - **Frequency**: {{demand_signal_3_frequency}}
+      - **Implication**: {{demand_signal_3_implication}}
+      
+      ### Customer Feedback Patterns
+      
+      **Recurring Themes**:
+      {{recurring_themes}}
+      
+      **New Requirements Emerging**:
+      {{new_requirements}}
+      
+      **Shifting Success Criteria**:
+      {{shifting_success_criteria}}
+      
+      **Changed Competitive Comparisons**:
+      {{changed_comparisons}}
+      
+      ### Market Shift Indicators
+      
+      **Industry Changes**:
+      {{industry_changes}}
+      
+      **Technology Evolution**:
+      {{technology_evolution}}
+      
+      **Regulatory Updates**:
+      {{regulatory_updates}}
+      
+      **Economic Factors**:
+      {{economic_factors}}
+
+  - id: unfolding-patterns
+    title: Unfolding Pattern Classification
+    instruction: |
+      Classify the type of unfolding needed based on the five common patterns.
+    template: |
+      ## Unfolding Pattern Analysis
+      
+      ### Pattern 1: Reframe to True Demand
+      **Applicability**: {{reframe_applicability}}/10
+      **Evidence**: {{reframe_evidence}}
+      **Current Demand Focus**: {{current_demand_focus}}
+      **True Demand Discovery**: {{true_demand_discovery}}
+      **Reframing Opportunity**: {{reframing_opportunity}}
+      
+      ### Pattern 2: Intensify Demand
+      **Applicability**: {{intensify_applicability}}/10
+      **Evidence**: {{intensify_evidence}}
+      **Current Intensity Level**: {{current_intensity_level}}
+      **Intensity Amplification**: {{intensity_amplification}}
+      **Depth Opportunity**: {{depth_opportunity}}
+      
+      ### Pattern 3: Simplify/Clarify Story
+      **Applicability**: {{simplify_applicability}}/10
+      **Evidence**: {{simplify_evidence}}
+      **Current Clarity Issues**: {{current_clarity_issues}}
+      **Simplification Opportunities**: {{simplification_opportunities}}
+      **Clarity Improvements**: {{clarity_improvements}}
+      
+      ### Pattern 4: Remove Supply Friction
+      **Applicability**: {{supply_friction_applicability}}/10
+      **Evidence**: {{supply_friction_evidence}}
+      **Current Supply Friction**: {{current_supply_friction}}
+      **Friction Removal Options**: {{friction_removal_options}}
+      **Implementation Simplification**: {{implementation_simplification}}
+      
+      ### Pattern 5: Remove Next Step Friction
+      **Applicability**: {{next_step_applicability}}/10
+      **Evidence**: {{next_step_evidence}}
+      **Current Next Step Friction**: {{current_next_step_friction}}
+      **Friction Removal Strategy**: {{next_step_friction_removal}}
+      **Conversion Improvements**: {{conversion_improvements}}
+      
+      ## Primary Unfolding Pattern Recommendation
+      
+      **Selected Pattern**: {{selected_pattern}}
+      **Rationale**: {{selection_rationale}}
+      **Expected Impact**: {{expected_impact}}
+      **Implementation Priority**: {{implementation_priority}}
+
+  - id: evolution-strategy
+    title: Case Study Evolution Strategy
+    instruction: |
+      Define the specific strategy for evolving your case study.
+    template: |
+      ## Case Study Evolution Strategy
+      
+      ### Evolution Approach: {{evolution_approach}}
+      
+      **Philosophy**: {{evolution_philosophy}}
+      **Risk Tolerance**: {{risk_tolerance}}
+      **Testing Strategy**: {{testing_strategy}}
+      **Timeline**: {{evolution_timeline}}
+      
+      ### Specific Changes Planned
+      
+      **Project Section Updates**
+      - Current: {{current_project_description}}
+      - Proposed: {{proposed_project_description}}
+      - Rationale: {{project_change_rationale}}
+      
+      **Context Section Updates**
+      - Current: {{current_context_description}}
+      - Proposed: {{proposed_context_description}}
+      - Rationale: {{context_change_rationale}}
+      
+      **Options Section Updates**
+      - Current: {{current_options_description}}
+      - Proposed: {{proposed_options_description}}
+      - Rationale: {{options_change_rationale}}
+      
+      **Results Section Updates**
+      - Current: {{current_results_description}}
+      - Proposed: {{proposed_results_description}}
+      - Rationale: {{results_change_rationale}}
+      
+      **How Section Updates**
+      - Current: {{current_how_description}}
+      - Proposed: {{proposed_how_description}}
+      - Rationale: {{how_change_rationale}}
+      
+      **What Section Updates**
+      - Current: {{current_what_description}}
+      - Proposed: {{proposed_what_description}}
+      - Rationale: {{what_change_rationale}}
+
+  - id: testing-framework
+    title: Evolution Testing Framework
+    instruction: |
+      Design a systematic approach to test case study changes.
+    template: |
+      ## Case Study Evolution Testing
+      
+      ### Testing Methodology
+      
+      **A/B Testing Setup**
+      - Control version: {{control_version_description}}
+      - Test version: {{test_version_description}}
+      - Split ratio: {{split_ratio}}
+      - Sample size needed: {{sample_size}} conversations
+      
+      **Success Metrics**
+      - Primary: {{primary_success_metric}}
+      - Secondary: {{secondary_success_metric}}
+      - Leading indicators: {{leading_indicators}}
+      
+      **Testing Timeline**
+      - Phase 1: {{phase_1_timeline}} - {{phase_1_description}}
+      - Phase 2: {{phase_2_timeline}} - {{phase_2_description}}
+      - Phase 3: {{phase_3_timeline}} - {{phase_3_description}}
+      
+      ### Test Implementation Plan
+      
+      **Week 1-2: Preparation**
+      - [ ] Create test case study version
+      - [ ] Update sales materials
+      - [ ] Brief team on changes
+      - [ ] Set up tracking systems
+      
+      **Week 3-6: Initial Testing**
+      - [ ] Run 50/50 split test
+      - [ ] Collect feedback after each call
+      - [ ] Track key metrics daily
+      - [ ] Adjust sample if needed
+      
+      **Week 7-8: Analysis & Decision**
+      - [ ] Analyze quantitative results
+      - [ ] Review qualitative feedback
+      - [ ] Make go/no-go decision
+      - [ ] Plan next iteration
+      
+      ### Data Collection Framework
+      
+      **Quantitative Tracking**
+      | Metric | Control | Test | Difference | Significance |
+      |--------|---------|------|------------|--------------|
+      | Response Rate | {{control_response_rate}}% | {{test_response_rate}}% | {{response_rate_diff}}% | {{response_significance}} |
+      | Close Rate | {{control_close_rate}}% | {{test_close_rate}}% | {{close_rate_diff}}% | {{close_significance}} |
+      | Sales Cycle | {{control_cycle}} days | {{test_cycle}} days | {{cycle_diff}} days | {{cycle_significance}} |
+      
+      **Qualitative Feedback Categories**
+      1. **Resonance**: How well does it connect?
+      2. **Clarity**: Is it easy to understand?
+      3. **Credibility**: Do they believe it?
+      4. **Urgency**: Does it create action?
+      5. **Differentiation**: How are we positioned?
+
+  - id: risk-management
+    title: Evolution Risk Management
+    instruction: |
+      Identify and plan for risks associated with case study evolution.
+    template: |
+      ## Evolution Risk Management
+      
+      ### Identified Risks
+      
+      **High-Impact Risks**
+      
+      **Risk 1: {{high_risk_1_name}}**
+      - **Description**: {{high_risk_1_description}}
+      - **Probability**: {{high_risk_1_probability}}/10
+      - **Impact**: {{high_risk_1_impact}}/10
+      - **Mitigation**: {{high_risk_1_mitigation}}
+      
+      **Risk 2: {{high_risk_2_name}}**
+      - **Description**: {{high_risk_2_description}}
+      - **Probability**: {{high_risk_2_probability}}/10
+      - **Impact**: {{high_risk_2_impact}}/10
+      - **Mitigation**: {{high_risk_2_mitigation}}
+      
+      **Medium-Impact Risks**
+      
+      **Risk 3: {{medium_risk_1_name}}**
+      - **Description**: {{medium_risk_1_description}}
+      - **Probability**: {{medium_risk_1_probability}}/10
+      - **Impact**: {{medium_risk_1_impact}}/10
+      - **Mitigation**: {{medium_risk_1_mitigation}}
+      
+      ### Risk Mitigation Strategies
+      
+      **Gradual Rollout Approach**
+      {{gradual_rollout_strategy}}
+      
+      **Rollback Plan**
+      {{rollback_plan}}
+      
+      **Performance Monitoring**
+      {{performance_monitoring_plan}}
+      
+      **Stakeholder Communication**
+      {{stakeholder_communication_plan}}
+      
+      ### Success Criteria & Guardrails
+      
+      **Go/No-Go Criteria**
+      - Must achieve: {{must_achieve_criteria}}
+      - Should achieve: {{should_achieve_criteria}}
+      - Nice to achieve: {{nice_to_achieve_criteria}}
+      
+      **Stop Loss Triggers**
+      - {{stop_loss_trigger_1}}
+      - {{stop_loss_trigger_2}}
+      - {{stop_loss_trigger_3}}
+
+  - id: implementation-roadmap
+    title: Implementation Roadmap
+    instruction: |
+      Create a detailed roadmap for implementing the case study evolution.
+    template: |
+      ## Implementation Roadmap
+      
+      ### Phase 1: Preparation ({{phase_1_duration}})
+      
+      **Week 1**
+      - [ ] Finalize new case study version
+      - [ ] Update sales pitch deck
+      - [ ] Create training materials
+      - [ ] Set up A/B testing framework
+      
+      **Week 2**
+      - [ ] Train team on changes
+      - [ ] Test new materials internally
+      - [ ] Prepare tracking systems
+      - [ ] Schedule checkpoint meetings
+      
+      ### Phase 2: Testing ({{phase_2_duration}})
+      
+      **Weeks 3-4**
+      - [ ] Launch 50/50 A/B test
+      - [ ] Conduct {{test_calls_week_3_4}} calls per week
+      - [ ] Daily metrics review
+      - [ ] Collect detailed feedback
+      
+      **Weeks 5-6**
+      - [ ] Continue testing at scale
+      - [ ] Analyze early patterns
+      - [ ] Make minor adjustments
+      - [ ] Prepare interim analysis
+      
+      ### Phase 3: Analysis & Decision ({{phase_3_duration}})
+      
+      **Week 7**
+      - [ ] Complete quantitative analysis
+      - [ ] Synthesize qualitative feedback
+      - [ ] Calculate statistical significance
+      - [ ] Prepare recommendation
+      
+      **Week 8**
+      - [ ] Make go/no-go decision
+      - [ ] Plan full rollout or iteration
+      - [ ] Update all materials
+      - [ ] Communicate changes to team
+      
+      ### Phase 4: Rollout ({{phase_4_duration}})
+      
+      **Week 9**
+      - [ ] Full rollout of winning version
+      - [ ] Archive old materials
+      - [ ] Update training resources
+      - [ ] Monitor performance closely
+      
+      **Week 10**
+      - [ ] Performance validation
+      - [ ] Team feedback collection
+      - [ ] Next iteration planning
+      - [ ] Document lessons learned
+      
+      ### Resource Requirements
+      
+      **Time Investment**
+      - Strategy development: {{strategy_time_investment}} hours
+      - Material creation: {{material_creation_time}} hours
+      - Testing execution: {{testing_time_investment}} hours
+      - Analysis & decision: {{analysis_time_investment}} hours
+      
+      **Tools Needed**
+      {{tools_needed}}
+      
+      **Team Involvement**  
+      {{team_involvement_requirements}}
+      
+      ### Success Measurement
+      
+      **Key Performance Indicators**
+      - {{kpi_1}}: Target {{kpi_1_target}}
+      - {{kpi_2}}: Target {{kpi_2_target}}
+      - {{kpi_3}}: Target {{kpi_3_target}}
+      
+      **Review Schedule**
+      - Daily: {{daily_review_scope}}
+      - Weekly: {{weekly_review_scope}}
+      - Monthly: {{monthly_review_scope}}
+      
+      ### Next Review Date
+      **Scheduled Review**: {{next_review_date}}
+      **Review Triggers**: {{review_triggers}}
+      **Review Participants**: {{review_participants}}

@@ -1,0 +1,277 @@
+template:
+  id: case-study-template-v1
+  name: B2B Case Study Framework
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/case-study.md
+    title: "{{customer_name}} Case Study - {{project_summary}}"
+
+workflow:
+  mode: interactive
+  elicitation: case-study-development
+  custom_elicitation:
+    title: "Case Study Development Process"
+    sections:
+      - id: customer-selection
+        options:
+          - "Use existing customer who achieved results"
+          - "Create theoretical case study from prospect research"
+          - "Adapt from similar customer in different vertical"
+          - "Combine insights from multiple customer conversations"
+          - "Proceed to case study creation"
+
+sections:
+  - id: customer-overview
+    title: Customer Overview
+    instruction: |
+      Identify ONE REAL PERSON as the center of your case study. This must be specific, not a composite or persona.
+    template: |
+      ## Customer Profile
+      
+      **Customer Name**: {{customer_name}}
+      **Role**: {{customer_role}}
+      **Company**: {{company_name}}
+      **Company Type**: {{company_description}}
+      **Industry**: {{industry}}
+      **Size**: {{company_size}}
+      **Why Chosen**: {{selection_rationale}}
+
+  - id: project-definition
+    title: Project Definition
+    instruction: |
+      Define the specific project this customer was trying to accomplish. Use their exact language and framing.
+    elicit: true
+    custom_elicitation: customer-selection
+    template: |
+      ## The Project
+      
+      ### What They Were Trying to Accomplish
+      {{project_description}}
+      
+      ### In Their Words
+      "{{customer_quote_project}}"
+      
+      ### Success Definition
+      {{success_criteria}}
+      
+      ### Project Owner
+      {{project_owner}} - {{owner_motivation}}
+      
+      ### Business Impact
+      {{business_impact}}
+
+  - id: context-and-urgency
+    title: Context & Urgency
+    instruction: |
+      Explain WHY this project became a priority now versus everything else they could focus on. What created the urgency?
+    template: |
+      ## Context: Why This, Why Now
+      
+      ### The Catalyst
+      {{urgency_catalyst}}
+      
+      ### Timing Drivers
+      {{timing_factors}}
+      
+      ### Cost of Inaction
+      {{inaction_cost}}
+      
+      ### Internal Pressure
+      {{internal_pressure}}
+      
+      ### External Factors
+      {{external_factors}}
+      
+      ### Quote on Urgency
+      "{{urgency_quote}}"
+
+  - id: options-evaluation
+    title: Options Evaluation
+    instruction: |
+      Map out all the realistic options this customer considered to accomplish their project, including doing nothing.
+    template: |
+      ## Options They Considered
+      
+      ### Option 1: Status Quo
+      **Description**: {{status_quo_description}}
+      **Why Not**: {{status_quo_problems}}
+      
+      ### Option 2: Build Internally
+      **Description**: {{internal_build_description}}
+      **Why Not**: {{internal_build_problems}}
+      
+      ### Option 3: Hire Someone
+      **Description**: {{hire_description}}
+      **Why Not**: {{hire_problems}}
+      
+      ### Option 4: Competitor Solution
+      **Description**: {{competitor_description}}
+      **Why Not**: {{competitor_problems}}
+      
+      ### Option 5: Your Solution
+      **Description**: {{your_solution_description}}
+      **Why Chosen**: {{selection_rationale}}
+      
+      ### Decision Criteria
+      {{decision_criteria}}
+
+  - id: results-achieved
+    title: Results Achieved
+    instruction: |
+      Document the specific, measurable results achieved and how the customer knows they succeeded.
+    template: |
+      ## Results Achieved
+      
+      ### Immediate Results (First 30 Days)
+      {{immediate_results}}
+      
+      ### Transformation Results (90 Days)
+      {{transformation_results}}
+      
+      ### Ongoing Impact
+      {{ongoing_impact}}
+      
+      ### Quantifiable Metrics
+      - **{{metric_1_name}}**: {{metric_1_before}} → {{metric_1_after}}
+      - **{{metric_2_name}}**: {{metric_2_before}} → {{metric_2_after}}
+      - **{{metric_3_name}}**: {{metric_3_before}} → {{metric_3_after}}
+      
+      ### Customer Testimonial
+      "{{results_testimonial}}"
+      
+      ### Evidence of Success
+      {{success_evidence}}
+
+  - id: implementation-path
+    title: Implementation Path
+    instruction: |
+      Detail exactly HOW they achieved these results - the specific path from start to success.
+    template: |
+      ## How It Worked
+      
+      ### Implementation Timeline
+      
+      **Week 1: {{week_1_milestone}}**
+      - Customer actions: {{week_1_customer}}
+      - Your actions: {{week_1_provider}}
+      - Outcome: {{week_1_outcome}}
+      
+      **Weeks 2-4: {{weeks_2_4_milestone}}**
+      - Customer actions: {{weeks_2_4_customer}}
+      - Your actions: {{weeks_2_4_provider}}
+      - Outcome: {{weeks_2_4_outcome}}
+      
+      **Month 2: {{month_2_milestone}}**
+      - Customer actions: {{month_2_customer}}
+      - Your actions: {{month_2_provider}}
+      - Outcome: {{month_2_outcome}}
+      
+      **Month 3: {{month_3_milestone}}**
+      - Customer actions: {{month_3_customer}}
+      - Your actions: {{month_3_provider}}
+      - Outcome: {{month_3_outcome}}
+      
+      ### Key Success Factors
+      {{success_factors}}
+      
+      ### What Made the Difference
+      {{differentiating_factors}}
+
+  - id: investment-details
+    title: Investment Details
+    instruction: |
+      Specify exactly what the customer bought, how much they invested, and how they justified the cost.
+    template: |
+      ## What They Invested
+      
+      ### The Offer
+      {{core_deliverable}}
+      
+      ### What's Included
+      - {{included_item_1}}
+      - {{included_item_2}}
+      - {{included_item_3}}
+      - {{included_item_4}}
+      
+      ### Support Level
+      {{support_description}}
+      
+      ### Investment
+      - **Initial Cost**: {{initial_cost}}
+      - **Ongoing Cost**: {{ongoing_cost}}
+      - **Total First Year**: {{total_first_year}}
+      
+      ### Payment Terms
+      {{payment_terms}}
+      
+      ### Risk Mitigation
+      {{guarantees_offered}}
+      
+      ### ROI Justification
+      "{{roi_quote}}"
+      
+      ### Cost vs. Alternatives
+      {{cost_comparison}}
+
+  - id: case-study-applications
+    title: Case Study Applications
+    instruction: |
+      Document how to use this case study in sales and marketing contexts.
+    template: |
+      ## Using This Case Study
+      
+      ### Target Audience
+      - **Primary**: {{primary_target}}
+      - **Secondary**: {{secondary_target}}
+      - **Not Right For**: {{poor_fit_profile}}
+      
+      ### Sales Application
+      {{sales_usage_notes}}
+      
+      ### Key Messages
+      1. {{key_message_1}}
+      2. {{key_message_2}}
+      3. {{key_message_3}}
+      
+      ### Proof Points
+      {{proof_points}}
+      
+      ### Common Questions
+      - **"{{common_question_1}}"** → {{answer_1}}
+      - **"{{common_question_2}}"** → {{answer_2}}
+      - **"{{common_question_3}}"** → {{answer_3}}
+      
+      ### Follow-up Materials
+      {{supporting_materials}}
+
+  - id: evolution-notes
+    title: Evolution Notes
+    instruction: |
+      Track how this case study should evolve based on market feedback and new learnings.
+    template: |
+      ## Case Study Evolution
+      
+      ### Current Version
+      - **Created**: {{creation_date}}
+      - **Last Updated**: {{last_update}}
+      - **Version**: {{version_number}}
+      
+      ### Performance Metrics
+      - **Resonance Score**: {{resonance_score}}/10
+      - **Close Rate Impact**: {{close_rate_change}}
+      - **Sales Cycle Impact**: {{cycle_impact}}
+      
+      ### Feedback Themes
+      {{feedback_summary}}
+      
+      ### Planned Improvements
+      - {{improvement_1}}
+      - {{improvement_2}}
+      - {{improvement_3}}
+      
+      ### A/B Test Ideas
+      {{test_hypotheses}}
+      
+      ### Next Review Date
+      {{next_review_date}}

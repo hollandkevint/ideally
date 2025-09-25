@@ -1,0 +1,420 @@
+template:
+  id: product-strategy-template-v1
+  name: Product Strategy Framework
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/product-strategy.md
+    title: "{{product_name}} Product Strategy - {{strategy_period}}"
+
+workflow:
+  mode: interactive
+  elicitation: product-strategy-development
+  custom_elicitation:
+    title: "Product Strategy Development Process"
+    sections:
+      - id: strategy-context
+        options:
+          - "New product strategy development"
+          - "Existing strategy refresh and update"
+          - "Platform or technical product strategy"
+          - "Growth-stage product strategy"
+          - "Enterprise product strategy"
+
+sections:
+  - id: executive-summary
+    title: Executive Summary
+    instruction: |
+      Provide a concise overview of the product strategy that executives can understand and approve.
+    template: |
+      # {{product_name}} Product Strategy
+      
+      ## Executive Summary
+      
+      **Strategy Period**: {{strategy_period}}
+      **Last Updated**: {{last_updated}}
+      **Strategy Owner**: {{strategy_owner}}
+      
+      ### Vision Statement
+      {{product_vision}}
+      
+      ### Strategic Objectives
+      - {{objective_1}}
+      - {{objective_2}}
+      - {{objective_3}}
+      
+      ### Success Metrics
+      - **{{primary_metric}}**: {{primary_target}}
+      - **{{secondary_metric}}**: {{secondary_target}}
+      - **{{tertiary_metric}}**: {{tertiary_target}}
+      
+      ### Key Initiatives
+      1. {{key_initiative_1}}
+      2. {{key_initiative_2}}
+      3. {{key_initiative_3}}
+
+  - id: market-analysis
+    title: Market Analysis
+    instruction: |
+      Analyze the market opportunity, competitive landscape, and customer needs that drive this strategy.
+    template: |
+      ## Market Analysis
+      
+      ### Market Opportunity
+      **Total Addressable Market**: {{tam_size}}
+      **Serviceable Addressable Market**: {{sam_size}}
+      **Current Market Share**: {{current_share}}
+      **Growth Rate**: {{market_growth_rate}}
+      
+      ### Market Trends
+      {{market_trends}}
+      
+      ### Customer Segments
+      
+      #### Primary Segment: {{primary_segment_name}}
+      - **Size**: {{primary_segment_size}}
+      - **Characteristics**: {{primary_segment_characteristics}}
+      - **Needs**: {{primary_segment_needs}}
+      - **Growth Potential**: {{primary_segment_growth}}
+      
+      #### Secondary Segment: {{secondary_segment_name}}
+      - **Size**: {{secondary_segment_size}}
+      - **Characteristics**: {{secondary_segment_characteristics}}
+      - **Needs**: {{secondary_segment_needs}}
+      - **Growth Potential**: {{secondary_segment_growth}}
+      
+      ### Competitive Landscape
+      
+      #### Direct Competitors
+      - **{{competitor_1}}**: {{competitor_1_position}}
+      - **{{competitor_2}}**: {{competitor_2_position}}
+      - **{{competitor_3}}**: {{competitor_3_position}}
+      
+      #### Competitive Advantages
+      {{competitive_advantages}}
+      
+      #### Threats and Opportunities
+      {{threats_opportunities}}
+
+  - id: customer-insights
+    title: Customer Insights
+    instruction: |
+      Document deep customer understanding that informs strategic decisions.
+    template: |
+      ## Customer Insights
+      
+      ### Customer Jobs-to-be-Done
+      
+      #### Functional Jobs
+      {{functional_jobs}}
+      
+      #### Emotional Jobs
+      {{emotional_jobs}}
+      
+      #### Social Jobs
+      {{social_jobs}}
+      
+      ### Customer Pain Points
+      
+      #### Current Process Pain
+      {{current_process_pain}}
+      
+      #### Outcome Pain
+      {{outcome_pain}}
+      
+      #### Cost Pain
+      {{cost_pain}}
+      
+      ### Value Drivers
+      {{customer_value_drivers}}
+      
+      ### Customer Decision Criteria
+      {{decision_criteria}}
+      
+      ### Buying Process
+      {{buying_process}}
+      
+      ### Customer Success Metrics
+      {{customer_success_metrics}}
+
+  - id: product-positioning
+    title: Product Positioning
+    instruction: |
+      Define how the product is positioned in the market and differentiated from alternatives.
+    template: |
+      ## Product Positioning
+      
+      ### Positioning Statement
+      For {{target_customer}}
+      Who {{customer_need}}
+      {{product_name}} is a {{product_category}}
+      That {{unique_benefit}}
+      Unlike {{primary_alternative}}
+      We {{key_differentiator}}
+      
+      ### Value Proposition
+      {{value_proposition}}
+      
+      ### Unique Selling Propositions
+      1. {{usp_1}}
+      2. {{usp_2}}
+      3. {{usp_3}}
+      
+      ### Brand Attributes
+      {{brand_attributes}}
+      
+      ### Messaging Framework
+      
+      #### Primary Message
+      {{primary_message}}
+      
+      #### Supporting Messages
+      - {{supporting_message_1}}
+      - {{supporting_message_2}}
+      - {{supporting_message_3}}
+      
+      ### Competitive Differentiation
+      {{competitive_differentiation}}
+
+  - id: strategic-themes
+    title: Strategic Themes
+    instruction: |
+      Define the key strategic themes that will guide product development and investment decisions.
+    template: |
+      ## Strategic Themes
+      
+      ### Theme 1: {{theme_1_name}}
+      **Objective**: {{theme_1_objective}}
+      **Rationale**: {{theme_1_rationale}}
+      **Success Criteria**: {{theme_1_success}}
+      **Investment Level**: {{theme_1_investment}}
+      
+      ### Theme 2: {{theme_2_name}}
+      **Objective**: {{theme_2_objective}}
+      **Rationale**: {{theme_2_rationale}}
+      **Success Criteria**: {{theme_2_success}}
+      **Investment Level**: {{theme_2_investment}}
+      
+      ### Theme 3: {{theme_3_name}}
+      **Objective**: {{theme_3_objective}}
+      **Rationale**: {{theme_3_rationale}}
+      **Success Criteria**: {{theme_3_success}}
+      **Investment Level**: {{theme_3_investment}}
+      
+      ### Cross-Theme Initiatives
+      {{cross_theme_initiatives}}
+
+  - id: product-roadmap
+    title: Product Roadmap
+    instruction: |
+      Outline the high-level product roadmap aligned with strategic themes.
+    template: |
+      ## Product Roadmap
+      
+      ### Roadmap Principles
+      {{roadmap_principles}}
+      
+      ### Now (Next 3 Months)
+      **Focus**: {{now_focus}}
+      
+      #### Key Initiatives
+      - {{now_initiative_1}}
+      - {{now_initiative_2}}
+      - {{now_initiative_3}}
+      
+      #### Success Metrics
+      {{now_metrics}}
+      
+      ### Next (3-6 Months)
+      **Focus**: {{next_focus}}
+      
+      #### Key Initiatives
+      - {{next_initiative_1}}
+      - {{next_initiative_2}}
+      - {{next_initiative_3}}
+      
+      #### Success Metrics
+      {{next_metrics}}
+      
+      ### Later (6-12 Months)
+      **Focus**: {{later_focus}}
+      
+      #### Key Initiatives
+      - {{later_initiative_1}}
+      - {{later_initiative_2}}
+      - {{later_initiative_3}}
+      
+      #### Success Metrics
+      {{later_metrics}}
+      
+      ### Roadmap Dependencies
+      {{roadmap_dependencies}}
+
+  - id: success-measurement
+    title: Success Measurement
+    instruction: |
+      Define how strategy success will be measured and tracked over time.
+    template: |
+      ## Success Measurement
+      
+      ### North Star Metric
+      **Metric**: {{north_star_metric}}
+      **Current Value**: {{north_star_current}}
+      **Target Value**: {{north_star_target}}
+      **Timeline**: {{north_star_timeline}}
+      
+      ### Leading Indicators
+      - **{{leading_1_metric}}**: {{leading_1_target}}
+      - **{{leading_2_metric}}**: {{leading_2_target}}
+      - **{{leading_3_metric}}**: {{leading_3_target}}
+      
+      ### Lagging Indicators
+      - **{{lagging_1_metric}}**: {{lagging_1_target}}
+      - **{{lagging_2_metric}}**: {{lagging_2_target}}
+      - **{{lagging_3_metric}}**: {{lagging_3_target}}
+      
+      ### OKRs (Objectives and Key Results)
+      
+      #### Objective 1: {{okr_1_objective}}
+      - **KR1**: {{okr_1_kr1}}
+      - **KR2**: {{okr_1_kr2}}
+      - **KR3**: {{okr_1_kr3}}
+      
+      #### Objective 2: {{okr_2_objective}}
+      - **KR1**: {{okr_2_kr1}}
+      - **KR2**: {{okr_2_kr2}}
+      - **KR3**: {{okr_2_kr3}}
+      
+      ### Review Cadence
+      - **Daily**: {{daily_metrics}}
+      - **Weekly**: {{weekly_metrics}}
+      - **Monthly**: {{monthly_metrics}}
+      - **Quarterly**: {{quarterly_metrics}}
+
+  - id: resource-requirements
+    title: Resource Requirements
+    instruction: |
+      Outline the resources needed to execute the strategy successfully.
+    template: |
+      ## Resource Requirements
+      
+      ### Team Structure
+      {{team_structure}}
+      
+      ### Hiring Plan
+      
+      #### Immediate Needs (0-3 months)
+      {{immediate_hiring}}
+      
+      #### Medium-term Needs (3-6 months)
+      {{medium_term_hiring}}
+      
+      #### Long-term Needs (6-12 months)
+      {{long_term_hiring}}
+      
+      ### Budget Requirements
+      
+      #### Development Costs
+      {{development_budget}}
+      
+      #### Marketing Costs
+      {{marketing_budget}}
+      
+      #### Operations Costs
+      {{operations_budget}}
+      
+      #### Total Investment
+      {{total_investment}}
+      
+      ### Technology and Tools
+      {{technology_requirements}}
+      
+      ### External Dependencies
+      {{external_dependencies}}
+
+  - id: risk-mitigation
+    title: Risk Analysis
+    instruction: |
+      Identify key risks to strategy execution and mitigation plans.
+    template: |
+      ## Risk Analysis and Mitigation
+      
+      ### Market Risks
+      
+      #### Risk: {{market_risk_1}}
+      **Probability**: {{market_risk_1_prob}}
+      **Impact**: {{market_risk_1_impact}}
+      **Mitigation**: {{market_risk_1_mitigation}}
+      
+      #### Risk: {{market_risk_2}}
+      **Probability**: {{market_risk_2_prob}}
+      **Impact**: {{market_risk_2_impact}}
+      **Mitigation**: {{market_risk_2_mitigation}}
+      
+      ### Competitive Risks
+      
+      #### Risk: {{competitive_risk_1}}
+      **Probability**: {{competitive_risk_1_prob}}
+      **Impact**: {{competitive_risk_1_impact}}
+      **Mitigation**: {{competitive_risk_1_mitigation}}
+      
+      ### Execution Risks
+      
+      #### Risk: {{execution_risk_1}}
+      **Probability**: {{execution_risk_1_prob}}
+      **Impact**: {{execution_risk_1_impact}}
+      **Mitigation**: {{execution_risk_1_mitigation}}
+      
+      #### Risk: {{execution_risk_2}}
+      **Probability**: {{execution_risk_2_prob}}
+      **Impact**: {{execution_risk_2_impact}}
+      **Mitigation**: {{execution_risk_2_mitigation}}
+      
+      ### Technology Risks
+      
+      #### Risk: {{tech_risk_1}}
+      **Probability**: {{tech_risk_1_prob}}
+      **Impact**: {{tech_risk_1_impact}}
+      **Mitigation**: {{tech_risk_1_mitigation}}
+      
+      ### Risk Monitoring
+      {{risk_monitoring_plan}}
+
+  - id: strategy-governance
+    title: Strategy Governance
+    instruction: |
+      Define how the strategy will be managed, reviewed, and updated over time.
+    template: |
+      ## Strategy Governance
+      
+      ### Strategy Review Process
+      
+      #### Monthly Reviews
+      **Participants**: {{monthly_participants}}
+      **Focus**: {{monthly_focus}}
+      **Deliverables**: {{monthly_deliverables}}
+      
+      #### Quarterly Reviews
+      **Participants**: {{quarterly_participants}}
+      **Focus**: {{quarterly_focus}}
+      **Deliverables**: {{quarterly_deliverables}}
+      
+      #### Annual Reviews
+      **Participants**: {{annual_participants}}
+      **Focus**: {{annual_focus}}
+      **Deliverables**: {{annual_deliverables}}
+      
+      ### Decision Authority
+      {{decision_authority}}
+      
+      ### Strategy Communication
+      {{communication_plan}}
+      
+      ### Strategy Updates
+      {{update_process}}
+      
+      ### Stakeholder Engagement
+      {{stakeholder_engagement}}
+      
+      ### Success Celebration
+      {{success_celebration_plan}}

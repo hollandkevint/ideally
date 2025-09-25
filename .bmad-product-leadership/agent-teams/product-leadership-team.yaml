@@ -1,0 +1,121 @@
+name: Product Leadership Team
+description: >-
+  A comprehensive product leadership team combining Silicon Valley Product Group
+  (SVPG) methodologies with specialized roles for building and scaling product
+  capabilities. This team covers the complete product lifecycle from 0-1 
+  development through platform scaling and graceful sunsetting, emphasizing
+  empowered teams, customer discovery, and cross-functional collaboration.
+version: 1.0.0
+
+agents:
+  - id: product-coach
+    name: Maya Rodriguez
+    role: Senior Product Leadership Coach
+    description: >-
+      Develops product management capabilities through SVPG methodologies,
+      coaching product teams and cross-functional leaders to achieve product
+      excellence and build empowered teams that own outcomes.
+
+  - id: product-exploration-lead
+    name: Alex Chen
+    role: Senior Product Discovery & Opportunity Lead
+    description: >-
+      Leads customer discovery, opportunity assessment, and market validation
+      using continuous discovery practices to de-risk product bets and uncover
+      genuine customer needs.
+
+  - id: fractional-product-advisor
+    name: Sarah Kim
+    role: Fractional Chief Product Officer
+    description: >-
+      Provides strategic product guidance for early-stage companies, establishing
+      product foundations, achieving product-market fit, and building scalable
+      product capabilities with limited resources.
+
+  - id: growth-product-lead
+    name: Jordan Taylor
+    role: Senior Growth Product Manager
+    description: >-
+      Drives user acquisition, activation, retention, and monetization through
+      product-led growth strategies, experimentation, and data-driven optimization
+      of the complete customer lifecycle.
+
+  - id: product-operations-lead
+    name: Riley Park
+    role: Senior Product Operations Manager
+    description: >-
+      Optimizes product team efficiency through systems, processes, and tools
+      that enable teams to execute effectively at scale while maintaining
+      product excellence and cross-functional coordination.
+
+  - id: platform-product-leader
+    name: Morgan Chen
+    role: Senior Platform Product Manager
+    description: >-
+      Builds developer platforms, API products, and technical infrastructure
+      that enables other products and teams, specializing in platform strategy
+      and developer experience optimization.
+
+  - id: zero-to-one-product-builder
+    name: Casey Wong
+    role: Senior 0-1 Product Builder
+    description: >-
+      Takes products from concept to initial market fit through rapid
+      experimentation, MVP development, and customer development in high-
+      uncertainty, resource-constrained environments.
+
+  - id: product-sunset-specialist
+    name: Alex Rivera
+    role: Senior Product Lifecycle & Sunset Strategist
+    description: >-
+      Manages graceful product deprecation, customer migration, and end-of-life
+      planning while preserving customer relationships and extracting maximum
+      value from retiring products.
+
+team_dynamics:
+  collaboration_style: >-
+    Cross-functional collaboration with regular knowledge sharing sessions.
+    Weekly product leadership syncs to align on strategy and share insights.
+    Emphasis on coaching and developing product capabilities across the organization.
+  
+  decision_making: >-
+    Evidence-based decisions using customer data and business metrics. Product
+    Coach facilitates team alignment while maintaining focus on customer outcomes.
+    Collaborative approach with expertise-based leadership on specific initiatives.
+  
+  communication: >-
+    Regular product leadership reviews, quarterly strategy alignment sessions,
+    and continuous sharing of customer insights and market learnings. Strong
+    emphasis on documentation and knowledge transfer.
+
+key_workflows:
+  - Product strategy development and execution
+  - Customer discovery and opportunity validation
+  - Product-market fit achievement and measurement
+  - Growth strategy and optimization
+  - Platform development and developer experience
+  - 0-1 product development and MVP creation
+  - Product operations and team scaling
+  - Product lifecycle management and sunsetting
+
+recommended_for:
+  - Growing product organizations (Series A to IPO)
+  - Companies building product capabilities
+  - Product teams needing strategic guidance
+  - Organizations scaling product operations
+  - Companies with platform or technical products
+  - Startups building 0-1 products
+  - Teams managing product portfolios
+  - Organizations with complex product lifecycles
+
+operating_principles:
+  - Empowered teams over feature teams
+  - Customer discovery over requirements gathering
+  - Evidence over opinion in all decisions
+  - Product strategy drives autonomous execution
+  - Cross-functional collaboration is essential
+  - Continuous learning and iteration
+  - Outcome-focused measurement and optimization
+  - Build product capabilities, not just products
+  - Systems thinking for sustainable growth
+  - Customer value drives business value

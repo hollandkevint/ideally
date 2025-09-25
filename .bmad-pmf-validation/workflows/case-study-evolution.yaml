@@ -1,0 +1,343 @@
+workflow:
+  id: case-study-evolution
+  name: Case Study Evolution & Unfolding Workflow
+  version: 1.0
+  description: >-
+    Systematic approach to evolving your case study based on market feedback
+    to achieve higher resonance and "hell yes" responses. Implements the five
+    unfolding patterns to strengthen demand-supply alignment over time.
+
+phases:
+  - id: performance-assessment
+    name: Current Performance Assessment
+    description: >-
+      Analyze current case study performance and gather comprehensive
+      feedback to identify evolution opportunities.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+    tasks:
+      - analyze-sales-call
+    templates:
+      - unfolding-plan-tmpl
+    checklists:
+      - case-study-validation-checklist
+      - sales-debug-checklist
+    outputs:
+      - Performance metrics analysis
+      - Feedback synthesis report
+      - Pattern identification summary
+    duration: 1 week
+    success_criteria:
+      - 10+ sales calls analyzed
+      - Clear performance baseline established
+      - Evolution opportunities identified
+
+  - id: unfolding-pattern-analysis
+    name: Unfolding Pattern Analysis
+    description: >-
+      Identify which of the five unfolding patterns applies to current
+      situation and develop specific evolution strategy.
+    agents:
+      - pmf-strategist
+      - demand-researcher
+      - case-study-architect
+    tasks:
+      - identify-demand-patterns
+    templates:
+      - unfolding-plan-tmpl
+      - demand-analysis-tmpl
+    outputs:
+      - Unfolding pattern identification
+      - Evolution strategy document
+      - Specific change recommendations
+    duration: 1 week
+    success_criteria:
+      - Primary unfolding pattern identified
+      - Specific evolution plan created
+      - Success metrics defined
+
+  - id: case-study-redesign
+    name: Case Study Redesign
+    description: >-
+      Create new version of case study implementing the identified
+      unfolding pattern and specific improvements.
+    agents:
+      - case-study-architect
+      - pmf-strategist
+    tasks:
+      - draft-case-study
+    templates:
+      - case-study-tmpl
+    checklists:
+      - case-study-validation-checklist
+    outputs:
+      - Updated case study version
+      - Comparison document (old vs. new)
+      - Training materials for new version
+    duration: 1-2 weeks
+    success_criteria:
+      - New case study addresses identified issues
+      - Maintains story coherence and flow
+      - Clear improvements over previous version
+
+  - id: ab-testing-setup
+    name: A/B Testing Setup
+    description: >-
+      Design and implement systematic testing framework to compare
+      old and new case study versions.
+    agents:
+      - sales-debugger
+      - pmf-strategist
+    templates:
+      - unfolding-plan-tmpl
+    outputs:
+      - Testing methodology document
+      - Tracking system setup
+      - Success criteria definition
+    duration: 1 week
+    success_criteria:
+      - Clear testing protocol established
+      - Metrics tracking system ready
+      - Sample size requirements defined
+
+  - id: market-testing
+    name: Market Testing & Data Collection
+    description: >-
+      Execute A/B testing with real prospects to validate case study
+      improvements and gather performance data.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+      - demand-researcher
+    tasks:
+      - analyze-sales-call
+      - identify-demand-patterns
+    checklists:
+      - sales-debug-checklist
+      - case-study-validation-checklist
+    outputs:
+      - A/B testing results
+      - Detailed feedback analysis
+      - Performance comparison metrics
+    duration: 3-4 weeks
+    success_criteria:
+      - 30+ conversations with each version
+      - Statistical significance achieved
+      - Clear performance differences identified
+
+  - id: analysis-and-decision
+    name: Analysis & Go/No-Go Decision
+    description: >-
+      Analyze testing results and make decision on case study evolution
+      based on performance data and market feedback.
+    agents:
+      - pmf-strategist
+      - case-study-architect
+      - sales-debugger
+    templates:
+      - unfolding-plan-tmpl
+    outputs:
+      - Testing results analysis
+      - Evolution decision document
+      - Next iteration planning
+    duration: 1 week
+    success_criteria:
+      - Clear data-driven decision made
+      - Performance improvement validated
+      - Next steps documented
+
+  - id: implementation-rollout
+    name: Implementation & Full Rollout
+    description: >-
+      Implement winning case study version and update all sales
+      materials and processes accordingly.
+    agents:
+      - pmf-strategist
+      - case-study-architect
+      - sales-debugger
+    tasks:
+      - create-sales-pitch
+    templates:
+      - sales-pitch-deck-tmpl
+      - case-study-tmpl
+    outputs:
+      - Updated sales materials
+      - Team training completion
+      - Process documentation updates
+    duration: 1 week
+    success_criteria:
+      - All materials updated consistently
+      - Team trained on new version
+      - Performance monitoring in place
+
+  - id: continuous-monitoring
+    name: Continuous Performance Monitoring
+    description: >-
+      Monitor ongoing performance of evolved case study and identify
+      opportunities for future evolution cycles.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+    tasks:
+      - analyze-sales-call
+    checklists:
+      - pmf-signals-checklist
+      - case-study-validation-checklist
+    outputs:
+      - Performance tracking dashboard
+      - Continuous improvement recommendations
+      - Next evolution planning
+    duration: Ongoing
+    success_criteria:
+      - Sustained performance improvement
+      - Regular feedback collection
+      - Evolution opportunities identified
+
+unfolding_patterns_supported:
+  - id: reframe-to-true-demand
+    name: Reframe to True Demand
+    description: >-
+      Discover what customers are REALLY trying to accomplish versus
+      what you thought they wanted.
+    indicators:
+      - Low engagement despite interest
+      - Confusion about value proposition
+      - Long sales cycles
+      - Price sensitivity
+    evolution_approach:
+      - Deeper customer discovery
+      - Project reframing
+      - Context adjustment
+      - Success criteria revision
+
+  - id: intensify-demand
+    name: Intensify Demand
+    description: >-
+      Amplify the urgency and importance of the customer's project
+      to create stronger pull dynamics.
+    indicators:
+      - Lukewarm interest
+      - Slow decision-making
+      - Competing priorities
+      - Budget hesitation
+    evolution_approach:
+      - Urgency amplification
+      - Consequence clarification
+      - Timeline compression
+      - Stakes elevation
+
+  - id: simplify-clarify-story
+    name: Simplify/Clarify Story
+    description: >-
+      Make the case study clearer and easier to understand, removing
+      confusion and increasing comprehension.
+    indicators:
+      - Frequent clarification questions
+      - Misunderstanding of offering
+      - Complex implementation concerns
+      - Lost prospects mid-conversation
+    evolution_approach:
+      - Language simplification
+      - Story streamlining
+      - Visual aids addition
+      - Jargon elimination
+
+  - id: remove-supply-friction
+    name: Remove Supply Friction
+    description: >-
+      Eliminate barriers in how you deliver value to make implementation
+      easier and more attractive.
+    indicators:
+      - Implementation concerns
+      - Resource requirement objections
+      - Risk aversion
+      - Technical complexity fears
+    evolution_approach:
+      - Delivery simplification
+      - Risk reduction
+      - Resource optimization
+      - Support enhancement
+
+  - id: remove-next-step-friction
+    name: Remove Next Step Friction
+    description: >-
+      Eliminate barriers to taking the next step in the sales process
+      to improve conversion rates.
+    indicators:
+      - Good meetings, no follow-up
+      - Decision paralysis
+      - Procurement barriers
+      - Internal selling challenges
+    evolution_approach:
+      - Process simplification
+      - Decision support
+      - Internal champion enablement
+      - Barrier removal
+
+decision_points:
+  - id: pattern-identification-check
+    after_phase: unfolding-pattern-analysis
+    criteria:
+      - Clear primary pattern identified
+      - Specific evolution strategy defined
+      - Realistic improvement expectations set
+    fail_action: Return to performance-assessment for deeper analysis
+
+  - id: testing-readiness-check
+    after_phase: case-study-redesign
+    criteria:
+      - New case study significantly different
+      - Addresses identified issues
+      - Maintains story coherence
+    fail_action: Return to case-study-redesign for refinement
+
+  - id: statistical-significance-check
+    after_phase: market-testing
+    criteria:
+      - Adequate sample size achieved
+      - Clear performance differences
+      - Statistical significance reached
+    fail_action: Continue testing or adjust sample size
+
+collaboration_points:
+  - Weekly evolution strategy reviews
+  - Daily feedback collection during testing
+  - Cross-agent pattern recognition sessions
+  - Customer feedback synthesis meetings
+  - Performance metric reviews
+
+tools_required:
+  - A/B testing framework
+  - Performance analytics dashboard
+  - Customer feedback collection system
+  - Version control for case study iterations
+  - Statistical analysis tools
+
+success_metrics:
+  - Case study resonance improvement: 20%+
+  - Sales conversion rate increase: 15%+
+  - Sales cycle length reduction: 25%+
+  - Customer engagement score improvement
+  - "Hell yes" response frequency increase
+
+risk_factors:
+  - New version performs worse than original
+  - Market conditions change during testing
+  - Sample size too small for significance
+  - Team resistance to change
+  - Customer confusion during transition
+
+mitigation_strategies:
+  - Gradual rollout with rollback plan
+  - Market monitoring during testing
+  - Adequate sample size planning
+  - Change management process
+  - Clear communication strategy
+
+exit_criteria:
+  - Statistically significant improvement achieved
+  - New case study performs better on key metrics
+  - Team trained and confident in new version
+  - Materials updated consistently
+  - Continuous monitoring process established

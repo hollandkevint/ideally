@@ -1,0 +1,394 @@
+template:
+  id: sales-pitch-deck-template-v1
+  name: Case Study Sales Pitch Deck
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/sales-pitch-deck.md
+    title: "{{company_name}} Sales Pitch - {{target_audience}}"
+
+workflow:
+  mode: guided
+  elicitation: pitch-deck-creation
+
+sections:
+  - id: pitch-overview
+    title: Pitch Overview
+    instruction: |
+      Define the overall structure and objectives for your sales pitch deck.
+    template: |
+      # Sales Pitch Deck: {{deck_title}}
+      
+      **Target Audience**: {{target_audience}}
+      **Case Study Used**: {{case_study_reference}}
+      **Presentation Length**: {{presentation_length}} minutes
+      **Created**: {{creation_date}}
+      **Last Updated**: {{last_update}}
+      
+      ## Pitch Objectives
+      - {{objective_1}}
+      - {{objective_2}}
+      - {{objective_3}}
+      
+      ## Success Metrics
+      - **Primary**: {{primary_success_metric}}
+      - **Secondary**: {{secondary_success_metric}}
+
+  - id: slide-01-title
+    title: Slide 1 - Title Slide
+    instruction: |
+      Create an outcome-focused title slide that sets expectations.
+    template: |
+      ## Slide 1: Title Slide
+      
+      ### Main Title
+      **{{main_title}}**
+      
+      ### Subtitle
+      {{subtitle}}
+      
+      ### Presenter Info
+      {{presenter_name}}
+      {{company_name}}
+      {{contact_info}}
+      
+      ### Design Notes
+      {{design_guidance}}
+      
+      ### Speaking Notes
+      "{{opening_words}}"
+
+  - id: slide-02-agenda
+    title: Slide 2 - Agenda & Discovery
+    instruction: |
+      Set the agenda and transition into discovery mode.
+    template: |
+      ## Slide 2: Agenda & Discovery
+      
+      ### Agenda Items
+      1. {{agenda_item_1}}
+      2. {{agenda_item_2}}  
+      3. {{agenda_item_3}}
+      4. {{agenda_item_4}}
+      
+      ### Discovery Transition
+      "{{discovery_transition}}"
+      
+      ### Key Discovery Questions
+      - {{discovery_question_1}}
+      - {{discovery_question_2}}
+      - {{discovery_question_3}}
+      
+      ### Speaking Notes
+      {{discovery_speaking_notes}}
+
+  - id: slide-03-situation
+    title: Slide 3 - The Situation
+    instruction: |
+      Present project options that your prospects typically face.
+    template: |
+      ## Slide 3: The Situation
+      
+      ### Header
+      **{{situation_header}}**
+      
+      ### Project Options
+      
+      **Option 1: {{project_option_1}}**
+      {{project_1_description}}
+      
+      **Option 2: {{project_option_2}}**
+      {{project_2_description}}
+      
+      **Option 3: {{project_option_3}}**
+      {{project_3_description}}
+      
+      ### Interactive Element
+      "{{interactive_question}}"
+      
+      ### Speaking Notes
+      {{situation_speaking_notes}}
+      
+      ### Expected Responses
+      {{expected_responses}}
+
+  - id: slide-04-context
+    title: Slide 4 - The Context
+    instruction: |
+      Share the context that made this project urgent for your case study customer.
+    template: |
+      ## Slide 4: The Context
+      
+      ### Customer Introduction
+      **{{customer_intro}}**
+      
+      ### The Catalyst
+      {{context_catalyst}}
+      
+      ### Urgency Factors
+      - {{urgency_factor_1}}
+      - {{urgency_factor_2}}
+      - {{urgency_factor_3}}
+      
+      ### Timeline Pressure
+      {{timeline_pressure}}
+      
+      ### Customer Quote
+      "{{context_customer_quote}}"
+      
+      ### Parallel Question
+      "{{parallel_question}}"
+      
+      ### Speaking Notes
+      {{context_speaking_notes}}
+
+  - id: slide-05-options
+    title: Slide 5 - The Options
+    instruction: |
+      Present how your case study customer evaluated their options.
+    template: |
+      ## Slide 5: The Options
+      
+      ### Header
+      **They looked at several options:**
+      
+      ### Option 1: Status Quo
+      **Description**: {{status_quo_desc}}
+      **Issue**: {{status_quo_problem}}
+      
+      ### Option 2: {{option_2_name}}
+      **Description**: {{option_2_desc}}
+      **Issue**: {{option_2_problem}}
+      
+      ### Option 3: {{option_3_name}}
+      **Description**: {{option_3_desc}}
+      **Issue**: {{option_3_problem}}
+      
+      ### Option 4: Your Solution
+      **Description**: {{your_solution_desc}}
+      **Advantage**: {{your_advantage}}
+      
+      ### Decision Criteria
+      {{decision_criteria}}
+      
+      ### Engagement Question
+      "{{options_engagement_question}}"
+      
+      ### Speaking Notes
+      {{options_speaking_notes}}
+
+  - id: slide-06-results
+    title: Slide 6 - The Results
+    instruction: |
+      Present the specific results achieved by your case study customer.
+    template: |
+      ## Slide 6: The Results
+      
+      ### Header
+      **Here's what happened:**
+      
+      ### Immediate Results
+      ✓ {{immediate_result_1}}
+      ✓ {{immediate_result_2}}
+      ✓ {{immediate_result_3}}
+      
+      ### Transformation Results
+      ✓ {{transformation_result_1}}
+      ✓ {{transformation_result_2}}
+      ✓ {{transformation_result_3}}
+      
+      ### Quantifiable Metrics
+      - **{{metric_1}}**: {{metric_1_improvement}}
+      - **{{metric_2}}**: {{metric_2_improvement}}  
+      - **{{metric_3}}**: {{metric_3_improvement}}
+      
+      ### Customer Testimonial
+      "{{results_testimonial}}"
+      
+      ### Value Question
+      "{{value_question}}"
+      
+      ### Speaking Notes
+      {{results_speaking_notes}}
+
+  - id: slide-07-how
+    title: Slide 7 - How It Works
+    instruction: |
+      Explain the implementation path and what the customer experience looks like.
+    template: |
+      ## Slide 7: How It Works
+      
+      ### Header
+      **The path to these results:**
+      
+      ### Implementation Timeline
+      
+      **{{phase_1_name}}**: {{phase_1_description}}
+      - Timeline: {{phase_1_timeline}}
+      - Customer effort: {{phase_1_customer_effort}}
+      - Your delivery: {{phase_1_your_delivery}}
+      
+      **{{phase_2_name}}**: {{phase_2_description}}
+      - Timeline: {{phase_2_timeline}}
+      - Customer effort: {{phase_2_customer_effort}}
+      - Your delivery: {{phase_2_your_delivery}}
+      
+      **{{phase_3_name}}**: {{phase_3_description}}
+      - Timeline: {{phase_3_timeline}}
+      - Customer effort: {{phase_3_customer_effort}}
+      - Your delivery: {{phase_3_your_delivery}}
+      
+      ### Key Success Factors
+      {{success_factors}}
+      
+      ### Implementation Question
+      "{{implementation_question}}"
+      
+      ### Speaking Notes
+      {{how_speaking_notes}}
+
+  - id: slide-08-investment
+    title: Slide 8 - The Investment
+    instruction: |
+      Present your offer with pricing and terms clearly.
+    template: |
+      ## Slide 8: The Investment
+      
+      ### Header
+      **Here's exactly what's included:**
+      
+      ### Core Deliverable
+      {{core_deliverable}}
+      
+      ### What's Included
+      • {{included_item_1}}
+      • {{included_item_2}}
+      • {{included_item_3}}
+      • {{included_item_4}}
+      
+      ### Support Level
+      {{support_description}}
+      
+      ### Investment
+      **{{pricing_model}}**: {{primary_price}}
+      {{pricing_details}}
+      
+      ### Payment Terms
+      {{payment_terms}}
+      
+      ### Risk Mitigation
+      {{guarantees}}
+      
+      ### ROI Context
+      {{roi_justification}}
+      
+      ### Pricing Question
+      "{{pricing_question}}"
+      
+      ### Speaking Notes
+      {{investment_speaking_notes}}
+
+  - id: slide-09-next-steps
+    title: Slide 9 - Next Steps
+    instruction: |
+      Outline the typical process and create momentum toward action.
+    template: |
+      ## Slide 9: Next Steps
+      
+      ### Header
+      **Typical process from here:**
+      
+      ### Step 1: {{next_step_1}}
+      {{step_1_description}}
+      Timeline: {{step_1_timeline}}
+      
+      ### Step 2: {{next_step_2}}
+      {{step_2_description}}
+      Timeline: {{step_2_timeline}}
+      
+      ### Step 3: {{next_step_3}}
+      {{step_3_description}}
+      Timeline: {{step_3_timeline}}
+      
+      ### Step 4: {{next_step_4}}
+      {{step_4_description}}
+      Timeline: {{step_4_timeline}}
+      
+      ### Path to First Value
+      {{first_value_timeline}}
+      
+      ### Close Question
+      "{{close_question}}"
+      
+      ### Speaking Notes
+      {{next_steps_speaking_notes}}
+
+  - id: pitch-mechanics
+    title: Pitch Mechanics
+    instruction: |
+      Document the technical aspects of delivering this pitch effectively.
+    template: |
+      ## Pitch Delivery Mechanics
+      
+      ### Pre-Call Preparation
+      - {{prep_item_1}}
+      - {{prep_item_2}}
+      - {{prep_item_3}}
+      
+      ### Discovery Phase ({{discovery_duration}} minutes)
+      **Objectives**: {{discovery_objectives}}
+      **Key Questions**: {{discovery_key_questions}}
+      **Qualification**: {{qualification_criteria}}
+      
+      ### Presentation Phase ({{presentation_duration}} minutes)
+      **Flow**: {{presentation_flow}}
+      **Interaction Points**: {{interaction_strategy}}
+      **Energy Management**: {{energy_management}}
+      
+      ### Q&A Handling
+      **Common Objections**:
+      - "{{objection_1}}" → {{response_1}}
+      - "{{objection_2}}" → {{response_2}}
+      - "{{objection_3}}" → {{response_3}}
+      
+      ### Closing Techniques
+      {{closing_approach}}
+      
+      ### Follow-up Protocol
+      {{follow_up_process}}
+
+  - id: pitch-analytics
+    title: Pitch Analytics
+    instruction: |
+      Set up tracking and measurement for pitch performance.
+    template: |
+      ## Pitch Performance Tracking
+      
+      ### Engagement Metrics
+      - Slide-by-slide engagement scores
+      - Question frequency by section
+      - Energy level tracking
+      - Time spent per section
+      
+      ### Conversion Metrics
+      - Discovery to pitch rate: {{discovery_to_pitch_rate}}
+      - Pitch to next step rate: {{pitch_to_next_rate}}
+      - Overall close rate: {{close_rate}}
+      - Sales cycle length: {{cycle_length}}
+      
+      ### A/B Testing Framework
+      **Current Variations**:
+      - {{variation_1}}: {{variation_1_description}}
+      - {{variation_2}}: {{variation_2_description}}
+      
+      **Testing Hypotheses**:
+      {{testing_hypotheses}}
+      
+      ### Performance Benchmarks
+      {{performance_benchmarks}}
+      
+      ### Improvement Opportunities
+      {{improvement_areas}}
+      
+      ### Next Review Date
+      {{next_review_date}}

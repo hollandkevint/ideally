@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "apps/web/app/api/**": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "buildCommand": "npm install && cd apps/web && npm run build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "npm install",
+  "framework": null
+}

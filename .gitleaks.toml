@@ -1,0 +1,65 @@
+# Gitleaks configuration for secret scanning
+# Prevents API keys, tokens, and credentials from being committed
+
+title = "ThinkHaven Secret Scanning"
+
+[allowlist]
+description = "Global allowlist"
+
+# Allow test/example values
+regexes = [
+    '''example\.com''',
+    '''test-.*-key''',
+    '''your-.*-here''',
+    '''placeholder''',
+    '''REPLACE_ME'''
+]
+
+# Allow specific files
+paths = [
+    '''.env.example''',
+    '''README.md''',
+    '''docs/.*'''
+]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API Key"
+regex = '''sk-ant-[a-zA-Z0-9\-]{95}'''
+tags = ["key", "anthropic"]
+
+[[rules]]
+id = "openai-api-key"
+description = "OpenAI API Key"
+regex = '''sk-[a-zA-Z0-9]{48}'''
+tags = ["key", "openai"]
+
+[[rules]]
+id = "supabase-key"
+description = "Supabase Service Key"
+regex = '''sbp_[a-zA-Z0-9]{40}'''
+tags = ["key", "supabase"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_\-\s]?key|apikey|api_secret|api[_\-\s]?token)['"]?\s*[:=]\s*['"]?([a-zA-Z0-9\-_]{20,})['"]?'''
+tags = ["key", "generic"]
+
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----'''
+tags = ["key", "private"]
+
+[[rules]]
+id = "jwt-token"
+description = "JWT Token"
+regex = '''eyJ[a-zA-Z0-9_\-]*\.eyJ[a-zA-Z0-9_\-]*\.[a-zA-Z0-9_\-]+'''
+tags = ["token", "jwt"]
+
+[[rules]]
+id = "database-connection-string"
+description = "Database Connection String with Password"
+regex = '''(?i)(mongodb|postgresql|postgres|mysql|mssql|oracle|redis|cassandra)://[^:]+:[^@]+@[^/]+'''
+tags = ["database", "credentials"]

@@ -1,0 +1,303 @@
+template:
+  id: demand-analysis-template-v1
+  name: Demand Pattern Analysis Framework
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/demand-analysis.md
+    title: "Demand Pattern Analysis - {{analysis_date}}"
+
+workflow:
+  mode: guided
+  elicitation: demand-analysis-process
+  
+sections:
+  - id: analysis-overview
+    title: Analysis Overview
+    instruction: |
+      Document the scope and context of this demand analysis session.
+    template: |
+      # Demand Pattern Analysis
+      
+      **Analysis Date**: {{analysis_date}}
+      **Analyst**: {{analyst_name}}
+      **Data Sources**: {{data_sources}}
+      **Time Period**: {{analysis_period}}
+      **Customer Interactions**: {{interaction_count}}
+      
+      ## Analysis Goals
+      {{analysis_objectives}}
+      
+      ## Data Quality Notes
+      {{data_quality_assessment}}
+
+  - id: raw-demand-signals
+    title: Raw Demand Signals
+    instruction: |
+      Catalog all demand signals collected from customer interactions.
+    template: |
+      ## Collected Demand Signals
+      
+      ### Explicit Demand Statements
+      | Customer | Role | Statement | Context |
+      |----------|------|-----------|---------|
+      | {{explicit_signal_1_customer}} | {{explicit_signal_1_role}} | "{{explicit_signal_1_statement}}" | {{explicit_signal_1_context}} |
+      | {{explicit_signal_2_customer}} | {{explicit_signal_2_role}} | "{{explicit_signal_2_statement}}" | {{explicit_signal_2_context}} |
+      | {{explicit_signal_3_customer}} | {{explicit_signal_3_role}} | "{{explicit_signal_3_statement}}" | {{explicit_signal_3_context}} |
+      
+      ### Implicit Demand Indicators
+      | Customer | Signal Type | Description | Intensity |
+      |----------|-------------|-------------|-----------|
+      | {{implicit_signal_1_customer}} | {{implicit_signal_1_type}} | {{implicit_signal_1_description}} | {{implicit_signal_1_intensity}} |
+      | {{implicit_signal_2_customer}} | {{implicit_signal_2_type}} | {{implicit_signal_2_description}} | {{implicit_signal_2_intensity}} |
+      | {{implicit_signal_3_customer}} | {{implicit_signal_3_type}} | {{implicit_signal_3_description}} | {{implicit_signal_3_intensity}} |
+      
+      ### Timing Indicators
+      | Customer | Urgency Level | Timeline | Catalyst |
+      |----------|---------------|----------|----------|
+      | {{timing_signal_1_customer}} | {{timing_signal_1_urgency}} | {{timing_signal_1_timeline}} | {{timing_signal_1_catalyst}} |
+      | {{timing_signal_2_customer}} | {{timing_signal_2_urgency}} | {{timing_signal_2_timeline}} | {{timing_signal_2_catalyst}} |
+      | {{timing_signal_3_customer}} | {{timing_signal_3_urgency}} | {{timing_signal_3_timeline}} | {{timing_signal_3_catalyst}} |
+
+  - id: project-mapping
+    title: Project Mapping
+    instruction: |
+      Map the actual projects customers are trying to accomplish using their language.
+    template: |
+      ## Customer Project Analysis
+      
+      ### Project Categories Identified
+      
+      #### Project Pattern 1: {{project_pattern_1_name}}
+      **Customer Language**: "{{project_1_customer_words}}"
+      **What They're Accomplishing**: {{project_1_goal}}
+      **Success Looks Like**: {{project_1_success}}
+      **Who Owns It**: {{project_1_owner}}
+      **Business Impact**: {{project_1_impact}}
+      **Examples**:
+      - {{project_1_example_1_customer}}: "{{project_1_example_1_quote}}"
+      - {{project_1_example_2_customer}}: "{{project_1_example_2_quote}}"
+      - {{project_1_example_3_customer}}: "{{project_1_example_3_quote}}"
+      
+      #### Project Pattern 2: {{project_pattern_2_name}}
+      **Customer Language**: "{{project_2_customer_words}}"
+      **What They're Accomplishing**: {{project_2_goal}}
+      **Success Looks Like**: {{project_2_success}}
+      **Who Owns It**: {{project_2_owner}}
+      **Business Impact**: {{project_2_impact}}
+      **Examples**:
+      - {{project_2_example_1_customer}}: "{{project_2_example_1_quote}}"
+      - {{project_2_example_2_customer}}: "{{project_2_example_2_quote}}"
+      - {{project_2_example_3_customer}}: "{{project_2_example_3_quote}}"
+      
+      #### Project Pattern 3: {{project_pattern_3_name}}
+      **Customer Language**: "{{project_3_customer_words}}"
+      **What They're Accomplishing**: {{project_3_goal}}
+      **Success Looks Like**: {{project_3_success}}
+      **Who Owns It**: {{project_3_owner}}
+      **Business Impact**: {{project_3_impact}}
+      **Examples**:
+      - {{project_3_example_1_customer}}: "{{project_3_example_1_quote}}"
+      - {{project_3_example_2_customer}}: "{{project_3_example_2_quote}}"
+      - {{project_3_example_3_customer}}: "{{project_3_example_3_quote}}"
+
+  - id: context-analysis
+    title: Context Analysis
+    instruction: |
+      Identify what causes these projects to become priorities and create urgency.
+    template: |
+      ## Context & Catalyst Analysis
+      
+      ### External Catalysts
+      | Catalyst Type | Frequency | Description | Example Customer |
+      |---------------|-----------|-------------|------------------|
+      | {{external_catalyst_1_type}} | {{external_catalyst_1_frequency}} | {{external_catalyst_1_description}} | {{external_catalyst_1_example}} |
+      | {{external_catalyst_2_type}} | {{external_catalyst_2_frequency}} | {{external_catalyst_2_description}} | {{external_catalyst_2_example}} |
+      | {{external_catalyst_3_type}} | {{external_catalyst_3_frequency}} | {{external_catalyst_3_description}} | {{external_catalyst_3_example}} |
+      
+      ### Internal Catalysts
+      | Catalyst Type | Frequency | Description | Example Customer |
+      |---------------|-----------|-------------|------------------|
+      | {{internal_catalyst_1_type}} | {{internal_catalyst_1_frequency}} | {{internal_catalyst_1_description}} | {{internal_catalyst_1_example}} |
+      | {{internal_catalyst_2_type}} | {{internal_catalyst_2_frequency}} | {{internal_catalyst_2_description}} | {{internal_catalyst_2_example}} |
+      | {{internal_catalyst_3_type}} | {{internal_catalyst_3_frequency}} | {{internal_catalyst_3_description}} | {{internal_catalyst_3_example}} |
+      
+      ### Timing Patterns
+      **Seasonal Trends**: {{seasonal_patterns}}
+      **Business Cycle Alignment**: {{business_cycle_patterns}}
+      **Funding/Budget Cycles**: {{funding_patterns}}
+      **Leadership Changes**: {{leadership_patterns}}
+      
+      ### Urgency Drivers Ranking
+      1. {{urgency_driver_1}} - {{urgency_impact_1}}
+      2. {{urgency_driver_2}} - {{urgency_impact_2}}
+      3. {{urgency_driver_3}} - {{urgency_impact_3}}
+      4. {{urgency_driver_4}} - {{urgency_impact_4}}
+      5. {{urgency_driver_5}} - {{urgency_impact_5}}
+
+  - id: options-landscape
+    title: Options Landscape
+    instruction: |
+      Map how customers evaluate different solutions and what influences their decisions.
+    template: |
+      ## Customer Options Analysis
+      
+      ### Common Option Sets
+      
+      #### For {{project_pattern_1_name}}:
+      1. **Status Quo**: {{pattern_1_status_quo}}
+         - Why it fails: {{pattern_1_status_quo_failure}}
+      2. **Internal Build**: {{pattern_1_internal}}
+         - Limitations: {{pattern_1_internal_limits}}
+      3. **Hire/Contract**: {{pattern_1_hire}}
+         - Why not chosen: {{pattern_1_hire_issues}}
+      4. **Competitive Solutions**: {{pattern_1_competitors}}
+         - Weaknesses: {{pattern_1_competitor_gaps}}
+      5. **Your Solution**: {{pattern_1_your_position}}
+         - Advantages: {{pattern_1_advantages}}
+      
+      ### Decision Criteria Patterns
+      | Project Type | Primary Criteria | Secondary Criteria | Tie-breakers |
+      |--------------|------------------|-------------------|--------------|
+      | {{decision_criteria_1_project_type}} | {{decision_criteria_1_primary}} | {{decision_criteria_1_secondary}} | {{decision_criteria_1_tiebreaker}} |
+      | {{decision_criteria_2_project_type}} | {{decision_criteria_2_primary}} | {{decision_criteria_2_secondary}} | {{decision_criteria_2_tiebreaker}} |
+      | {{decision_criteria_3_project_type}} | {{decision_criteria_3_primary}} | {{decision_criteria_3_secondary}} | {{decision_criteria_3_tiebreaker}} |
+      
+      ### Competitive Positioning
+      **Most Common Comparison**: {{common_comparison}}
+      **Our Differentiation**: {{key_differentiator}}
+      **Weakest Position**: {{weak_position}}
+      **Strongest Position**: {{strong_position}}
+
+  - id: demand-intensity
+    title: Demand Intensity Analysis
+    instruction: |
+      Score and analyze the intensity of demand for each pattern identified.
+    template: |
+      ## Demand Intensity Scoring
+      
+      ### Intensity Framework
+      **High Intensity (8-10)**: Clear timeline, allocated budget, multiple stakeholders, high cost of inaction
+      **Medium Intensity (5-7)**: Some urgency, exploring budget, single champion, moderate consequences
+      **Low Intensity (1-4)**: Nice to have, no timeline, no budget discussion, no clear consequences
+      
+      ### Pattern Intensity Scores
+      
+      | Project Pattern | Avg Score | Pull Indicators | Push Required | Market Size |
+      |-----------------|-----------|-----------------|---------------|-------------|
+      | {{project_pattern_1_name}} | {{pattern_1_score}}/10 | {{pattern_1_pull}} | {{pattern_1_push}} | {{pattern_1_market}} |
+      | {{project_pattern_2_name}} | {{pattern_2_score}}/10 | {{pattern_2_pull}} | {{pattern_2_push}} | {{pattern_2_market}} |
+      | {{project_pattern_3_name}} | {{pattern_3_score}}/10 | {{pattern_3_pull}} | {{pattern_3_push}} | {{pattern_3_market}} |
+      
+      ### High Intensity Characteristics
+      {{high_intensity_traits}}
+      
+      ### Low Intensity Patterns
+      {{low_intensity_patterns}}
+      
+      ### Demand Amplification Opportunities
+      {{amplification_strategies}}
+
+  - id: customer-profiles
+    title: Customer Profiles
+    instruction: |
+      Create profiles of customers with the strongest demand patterns.
+    template: |
+      ## High-Demand Customer Profiles
+      
+      ### Profile A: {{profile_a_name}}
+      **Demand Pattern**: {{profile_a_pattern}}
+      **Intensity Score**: {{profile_a_score}}/10
+      **Company Characteristics**:
+      - Size: {{profile_a_size}}
+      - Industry: {{profile_a_industry}}
+      - Growth stage: {{profile_a_stage}}
+      - Tech stack: {{profile_a_tech}}
+      
+      **Individual Characteristics**:
+      - Role: {{profile_a_role}}
+      - Experience: {{profile_a_experience}}
+      - Motivations: {{profile_a_motivations}}
+      - Constraints: {{profile_a_constraints}}
+      
+      **Buying Process**:
+      - Decision makers: {{profile_a_decision_makers}}
+      - Evaluation process: {{profile_a_evaluation}}
+      - Timeline: {{profile_a_timeline}}
+      - Budget authority: {{profile_a_budget}}
+      
+      **Reach Strategy**:
+      {{profile_a_reach_strategy}}
+      
+      ### Profile B: {{profile_b_name}}
+      [Similar structure for additional profiles]
+
+  - id: anti-patterns
+    title: Anti-Patterns
+    instruction: |
+      Document patterns that indicate weak demand or poor fit.
+    template: |
+      ## Demand Anti-Patterns
+      
+      ### False Positive Indicators
+      | Signal | Why Misleading | Actual Meaning |
+      |--------|----------------|----------------|
+      | {{false_positive_1_signal}} | {{false_positive_1_misleading_reason}} | {{false_positive_1_actual_meaning}} |
+      | {{false_positive_2_signal}} | {{false_positive_2_misleading_reason}} | {{false_positive_2_actual_meaning}} |
+      | {{false_positive_3_signal}} | {{false_positive_3_misleading_reason}} | {{false_positive_3_actual_meaning}} |
+      
+      ### Poor Fit Patterns
+      **Company Anti-Patterns**:
+      {{company_anti_patterns}}
+      
+      **Individual Anti-Patterns**:
+      {{individual_anti_patterns}}
+      
+      **Situational Anti-Patterns**:
+      {{situational_anti_patterns}}
+      
+      ### Early Warning Signs
+      {{warning_signs}}
+
+  - id: strategic-recommendations
+    title: Strategic Recommendations
+    instruction: |
+      Translate demand analysis into actionable business strategy.
+    template: |
+      ## Strategic Recommendations
+      
+      ### Primary Focus Area
+      **Recommended Pattern**: {{recommended_pattern}}
+      **Rationale**: {{recommendation_rationale}}
+      **Expected Impact**: {{expected_impact}}
+      
+      ### Case Study Evolution
+      **Current Case Study Alignment**: {{current_alignment}}/10
+      **Suggested Modifications**:
+      - {{modification_1}}
+      - {{modification_2}}
+      - {{modification_3}}
+      
+      ### Targeting Refinements
+      **Ideal Customer Profile Updates**:
+      {{icp_updates}}
+      
+      **Qualification Criteria**:
+      {{qualification_criteria}}
+      
+      ### Messaging Implications
+      **Key Messages to Emphasize**:
+      {{key_messages}}
+      
+      **Language to Adopt**:
+      {{language_recommendations}}
+      
+      ### Channel Strategy
+      **Primary Channels**: {{primary_channels}}
+      **Channel-Specific Approaches**: {{channel_approaches}}
+      
+      ### Next Analysis Date
+      {{next_analysis_date}}
+      
+      ### Success Metrics
+      {{success_metrics_to_track}}

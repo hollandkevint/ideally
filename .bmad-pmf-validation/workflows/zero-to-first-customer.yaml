@@ -1,0 +1,254 @@
+workflow:
+  id: zero-to-first-customer
+  name: Zero to First Customer Workflow
+  version: 1.0
+  description: >-
+    Complete systematic approach to acquiring your first paying customer
+    through demand discovery, case study development, and sales-based learning.
+    Designed to escape the "pain cave" and establish initial PMF signals.
+
+phases:
+  - id: foundation-setup
+    name: Foundation & Strategy Setup
+    description: >-
+      Establish the foundational elements needed for systematic customer
+      acquisition including initial case study and targeting strategy.
+    agents:
+      - pmf-strategist
+      - demand-researcher
+    tasks:
+      - draft-case-study
+      - identify-demand-patterns
+    templates:
+      - case-study-tmpl
+      - demand-analysis-tmpl
+    outputs:
+      - Initial theoretical case study
+      - Target customer profile
+      - Demand hypothesis documentation
+    duration: 1-2 weeks
+    success_criteria:
+      - One compelling case study created
+      - Clear ideal customer profile defined
+      - Demand intensity theory established
+
+  - id: pitch-development
+    name: Sales Pitch Development
+    description: >-
+      Transform case study into compelling sales presentation and create
+      supporting materials for customer conversations.
+    agents:
+      - case-study-architect
+      - sales-debugger
+    tasks:
+      - create-sales-pitch
+    templates:
+      - sales-pitch-deck-tmpl
+    outputs:
+      - Complete sales pitch deck
+      - Discovery question framework
+      - Objection handling guide
+    duration: 1 week
+    success_criteria:
+      - Pitch flows naturally and conversationally
+      - Clear call-to-action defined
+      - Materials ready for testing
+
+  - id: outreach-preparation
+    name: Outreach Campaign Preparation
+    description: >-
+      Design and prepare personalized outreach campaigns to generate
+      initial sales conversations with target prospects.
+    agents:
+      - growth-catalyst
+      - demand-researcher
+    tasks:
+      - design-outreach-campaign
+    templates:
+      - outreach-message-tmpl
+    outputs:
+      - Outreach message templates
+      - Prospect research framework
+      - Target list (50-100 prospects)
+    duration: 1 week
+    success_criteria:
+      - 5+ message templates created
+      - Research process documented
+      - Initial prospect list assembled
+
+  - id: sales-conversations
+    name: Sales Conversation Phase
+    description: >-
+      Execute systematic sales outreach and conduct discovery/demo calls
+      to test case study resonance and gather market feedback.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+      - demand-researcher
+    tasks:
+      - analyze-sales-call
+      - identify-demand-patterns  
+    templates:
+      - case-study-tmpl
+    checklists:
+      - sales-debug-checklist
+      - demand-intensity-checklist
+    outputs:
+      - 20+ sales conversations completed
+      - Call analysis documentation
+      - Demand pattern insights
+      - Case study refinements
+    duration: 4-6 weeks
+    success_criteria:
+      - 5-10 sales calls per week achieved
+      - Clear patterns identified in feedback
+      - At least 3 qualified prospects engaged
+
+  - id: case-study-evolution
+    name: Case Study Iteration & Refinement
+    description: >-
+      Systematically evolve case study based on sales feedback to improve
+      resonance and conversion rates.
+    agents:
+      - case-study-architect
+      - pmf-strategist
+      - sales-debugger
+    tasks:
+      - analyze-sales-call
+    templates:
+      - unfolding-plan-tmpl
+      - case-study-tmpl
+    checklists:
+      - case-study-validation-checklist
+    outputs:
+      - Updated case study versions
+      - A/B testing results
+      - Resonance improvement documentation
+    duration: 2-3 weeks
+    success_criteria:
+      - Measurable improvement in response rates
+      - Higher engagement during demos
+      - Clearer "hell yes" responses
+
+  - id: first-customer-acquisition
+    name: First Customer Acquisition
+    description: >-
+      Focus intensively on closing the first paying customer through
+      personalized sales process and manual delivery design.
+    agents:
+      - pmf-strategist
+      - sales-debugger
+      - pricing-strategist
+      - customer-success-engineer
+    tasks:
+      - analyze-sales-call
+      - design-manual-delivery
+    templates:
+      - retention-metrics-tmpl
+    checklists:
+      - pmf-signals-checklist
+    outputs:
+      - First paying customer agreement
+      - Manual delivery plan
+      - Success metrics framework
+    duration: 2-4 weeks
+    success_criteria:
+      - Customer contract signed
+      - Payment received
+      - Implementation plan agreed
+
+  - id: delivery-optimization
+    name: Manual Delivery & Success
+    description: >-
+      Execute manual delivery to ensure customer success and validate
+      retention drivers for future scalability.
+    agents:
+      - customer-success-engineer
+      - pmf-strategist
+    tasks:
+      - design-manual-delivery
+    templates:
+      - retention-metrics-tmpl
+    checklists:
+      - retention-drivers-checklist
+    outputs:
+      - Customer success achievement
+      - Retention driver documentation
+      - Delivery process optimization
+      - Success story creation
+    duration: 6-12 weeks
+    success_criteria:
+      - Customer achieves promised results
+      - High satisfaction scores
+      - Renewal commitment secured
+      - Reference willingness confirmed
+
+decision_points:
+  - id: case-study-resonance-check
+    after_phase: sales-conversations
+    criteria:
+      - At least 30% of prospects show strong interest
+      - Clear demand patterns identified
+      - Qualified prospects willing to move forward
+    fail_action: Return to foundation-setup for case study revision
+
+  - id: first-close-validation
+    after_phase: first-customer-acquisition
+    criteria:
+      - Customer contract executed
+      - Payment terms agreed
+      - Implementation timeline confirmed
+    fail_action: Return to case-study-evolution for refinement
+
+  - id: delivery-success-validation
+    after_phase: delivery-optimization
+    criteria:
+      - Customer achieves core success metrics
+      - High retention probability (90%+)
+      - Reference and testimonial provided
+    fail_action: Analyze delivery process and improve
+
+collaboration_points:
+  - Daily standup during sales-conversations phase
+  - Weekly case study evolution reviews
+  - Post-call analysis after every sales conversation
+  - Customer success check-ins during delivery
+  - Cross-agent pattern sharing sessions
+
+tools_required:
+  - CRM or customer tracking system
+  - Sales call recording software
+  - Email/LinkedIn outreach tools
+  - Document collaboration platform
+  - Calendar scheduling system
+
+success_metrics:
+  - Outreach response rate: 10-20%
+  - Meeting booking rate: 60%+
+  - Sales call close rate: 30%+ (final prospects)
+  - First customer retention: 90%+
+  - Time to first customer: 12-16 weeks
+
+risk_factors:
+  - Case study may not resonate with target market
+  - Demand intensity lower than anticipated
+  - Pricing/value proposition misalignment
+  - Competition from established solutions
+  - Founder sales skills development needed
+  - Market timing challenges
+
+mitigation_strategies:
+  - Start with broad case study, narrow based on feedback
+  - Test multiple demand patterns simultaneously
+  - Flexible pricing and packaging options
+  - Focus on unique advantages vs. competition
+  - Invest in sales skill development
+  - Monitor market conditions and adjust timing
+
+exit_criteria:
+  - First paying customer successfully onboarded
+  - Clear path to customer success established
+  - Repeatable sales process documented
+  - Demand patterns validated
+  - Retention drivers identified
+  - Foundation for scaling to 10 customers

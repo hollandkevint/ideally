@@ -1,0 +1,362 @@
+template:
+  id: retention-metrics-template-v1
+  name: Customer Retention & Success Metrics Framework
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/retention-metrics.md
+    title: "Retention Metrics Framework - {{company_name}}"
+
+workflow:
+  mode: guided
+  elicitation: retention-metrics-setup
+
+sections:
+  - id: metrics-overview
+    title: Retention Metrics Overview
+    instruction: |
+      Define the overall approach to measuring customer retention and success.
+    template: |
+      # Customer Retention Metrics Framework
+      
+      **Company**: {{company_name}}
+      **Product**: {{product_name}}
+      **Analysis Period**: {{analysis_period}}
+      **Created**: {{creation_date}}
+      **Owner**: {{metrics_owner}}
+      
+      ## Framework Objectives
+      {{framework_objectives}}
+      
+      ## Key Principles
+      - Retention reveals PMF more than growth
+      - Leading indicators predict churn before it happens
+      - Success is measured by customer equilibrium state
+      - Manual tracking before automated systems
+      
+      ## Success Definition
+      **Customer at Equilibrium**: {{equilibrium_definition}}
+
+  - id: baseline-metrics
+    title: Baseline Retention Metrics
+    instruction: |
+      Establish core retention metrics that every B2B business should track.
+    template: |
+      ## Core Retention Metrics
+      
+      ### Monthly Retention Rate
+      **Definition**: {{monthly_retention_definition}}
+      **Target**: {{monthly_retention_target}}%
+      **Current**: {{monthly_retention_current}}%
+      **Calculation**: {{monthly_retention_calculation}}
+      
+      ### Net Revenue Retention
+      **Definition**: {{nrr_definition}}
+      **Target**: {{nrr_target}}%
+      **Current**: {{nrr_current}}%
+      **Calculation**: {{nrr_calculation}}
+      
+      ### Gross Revenue Retention
+      **Definition**: {{grr_definition}}
+      **Target**: {{grr_target}}%
+      **Current**: {{grr_current}}%
+      **Calculation**: {{grr_calculation}}
+      
+      ### Customer Lifetime Value
+      **Average LTV**: ${{average_ltv}}
+      **LTV Calculation**: {{ltv_calculation}}
+      **Target LTV**: ${{target_ltv}}
+      
+      ### Churn Analysis
+      **Monthly Churn Rate**: {{monthly_churn_rate}}%
+      **Churn by Customer Segment**: {{churn_by_segment}}
+      **Time to Churn Average**: {{time_to_churn}} days
+
+  - id: leading-indicators
+    title: Leading Indicators
+    instruction: |
+      Identify early signals that predict customer success or churn risk.
+    template: |
+      ## Leading Indicators of Success
+      
+      ### Onboarding Success Metrics
+      
+      **First Value Milestone**
+      - Definition: {{first_value_definition}}
+      - Target timeframe: {{first_value_timeframe}} days
+      - Success rate: {{first_value_success_rate}}%
+      - Impact on retention: {{first_value_impact}}
+      
+      **Setup Completion Rate**
+      - Full setup definition: {{setup_completion_definition}}
+      - Target completion: {{setup_target_days}} days
+      - Current rate: {{setup_completion_rate}}%
+      - Correlation with retention: {{setup_retention_correlation}}
+      
+      **Initial Engagement Score**
+      - Scoring methodology: {{engagement_scoring}}
+      - Target score: {{target_engagement_score}}
+      - Success threshold: {{engagement_threshold}}
+      
+      ### Usage Pattern Indicators
+      
+      **Login Frequency**
+      - Healthy frequency: {{healthy_login_frequency}}
+      - Warning threshold: {{login_warning_threshold}}
+      - Critical threshold: {{login_critical_threshold}}
+      
+      **Feature Adoption Depth**
+      - Core features used: {{core_features_list}}
+      - Adoption progression: {{adoption_progression}}
+      - Advanced feature usage: {{advanced_feature_criteria}}
+      
+      **Data Integration Level**
+      - Integration completion: {{integration_completion_definition}}
+      - Data quality score: {{data_quality_scoring}}
+      - Usage depth: {{usage_depth_metrics}}
+
+  - id: customer-health-score
+    title: Customer Health Scoring
+    instruction: |
+      Create a comprehensive health scoring system for predicting retention.
+    template: |
+      ## Customer Health Scoring System
+      
+      ### Health Score Components
+      
+      **Usage Score ({{usage_weight}}% weight)**
+      - Login frequency: {{login_scoring}}
+      - Feature usage: {{feature_usage_scoring}}
+      - Session duration: {{session_duration_scoring}}
+      - Data volume: {{data_volume_scoring}}
+      
+      **Engagement Score ({{engagement_weight}}% weight)**
+      - Support interactions: {{support_interaction_scoring}}
+      - Training completion: {{training_completion_scoring}}
+      - Community participation: {{community_participation_scoring}}
+      - Feedback provision: {{feedback_scoring}}
+      
+      **Business Value Score ({{value_weight}}% weight)**
+      - Goal achievement: {{goal_achievement_scoring}}
+      - ROI realization: {{roi_realization_scoring}}
+      - Process improvement: {{process_improvement_scoring}}
+      - Cost savings: {{cost_savings_scoring}}
+      
+      **Relationship Score ({{relationship_weight}}% weight)**
+      - Champion strength: {{champion_strength_scoring}}
+      - Stakeholder breadth: {{stakeholder_breadth_scoring}}
+      - Executive buy-in: {{executive_buyin_scoring}}
+      - Renewal discussions: {{renewal_discussion_scoring}}
+      
+      ### Health Score Calculation
+      **Formula**: {{health_score_formula}}
+      
+      ### Health Score Ranges
+      - **Green (80-100)**: {{green_score_description}}
+      - **Yellow (60-79)**: {{yellow_score_description}}
+      - **Red (Below 60)**: {{red_score_description}}
+      
+      ### Score Update Frequency
+      {{score_update_frequency}}
+
+  - id: success-milestones
+    title: Success Milestones
+    instruction: |
+      Define key milestones that indicate customer success and predict retention.
+    template: |
+      ## Customer Success Milestones
+      
+      ### 30-Day Milestones
+      
+      **Milestone 1: {{milestone_30_1_name}}**
+      - Definition: {{milestone_30_1_definition}}
+      - Success criteria: {{milestone_30_1_criteria}}
+      - Achievement rate: {{milestone_30_1_rate}}%
+      - Retention impact: {{milestone_30_1_impact}}
+      
+      **Milestone 2: {{milestone_30_2_name}}**
+      - Definition: {{milestone_30_2_definition}}
+      - Success criteria: {{milestone_30_2_criteria}}
+      - Achievement rate: {{milestone_30_2_rate}}%
+      - Retention impact: {{milestone_30_2_impact}}
+      
+      ### 90-Day Milestones
+      
+      **Business Value Realization**
+      - Definition: {{business_value_definition}}
+      - Measurement: {{business_value_measurement}}
+      - Target achievement: {{business_value_target}}
+      - Current rate: {{business_value_rate}}%
+      
+      **Process Integration**
+      - Definition: {{process_integration_definition}}
+      - Success criteria: {{process_integration_criteria}}
+      - Achievement indicators: {{process_integration_indicators}}
+      
+      **Team Adoption**
+      - Definition: {{team_adoption_definition}}
+      - Adoption threshold: {{team_adoption_threshold}}
+      - Current rate: {{team_adoption_rate}}%
+      
+      ### 180-Day Milestones
+      
+      **ROI Achievement**
+      - Target ROI: {{target_roi}}%
+      - Measurement method: {{roi_measurement}}
+      - Achievement rate: {{roi_achievement_rate}}%
+      
+      **Expansion Readiness**
+      - Expansion indicators: {{expansion_indicators}}
+      - Readiness criteria: {{expansion_readiness_criteria}}
+      - Current expansion rate: {{expansion_rate}}%
+
+  - id: churn-risk-signals
+    title: Churn Risk Signals
+    instruction: |
+      Identify early warning signs and create intervention triggers.
+    template: |
+      ## Churn Risk Signal System
+      
+      ### High-Risk Signals (Immediate attention)
+      
+      **Usage Degradation**
+      - No login for {{critical_no_login}} days
+      - Feature usage drop >{{critical_usage_drop}}%
+      - Data integration failure
+      - Session duration <{{critical_session_duration}} minutes
+      
+      **Engagement Withdrawal**
+      - Unresponsive to outreach
+      - Cancelled scheduled meetings
+      - Negative support interactions
+      - Avoided training opportunities
+      
+      **Business Context Changes**
+      - Champion departure
+      - Budget cuts announced
+      - Competitive evaluation
+      - Contract non-renewal mention
+      
+      ### Medium-Risk Signals (Weekly monitoring)
+      
+      **Performance Issues**
+      - Slow feature adoption: {{slow_adoption_definition}}
+      - Integration problems: {{integration_problem_definition}}
+      - Support ticket volume: {{support_ticket_threshold}}
+      - User error frequency: {{user_error_threshold}}
+      
+      **Value Realization Delays**
+      - Missed 30-day milestones
+      - ROI timeline extension
+      - Goal achievement delays
+      - Process integration barriers
+      
+      ### Low-Risk Signals (Monthly review)
+      
+      **Engagement Patterns**
+      - Decreased login frequency
+      - Shallow feature usage
+      - Minimal data uploads
+      - Reduced team participation
+      
+      ### Intervention Triggers
+      
+      | Risk Level | Trigger | Response Time | Action |
+      |------------|---------|---------------|---------|
+      | High | {{high_risk_trigger}} | {{high_risk_response_time}} | {{high_risk_action}} |
+      | Medium | {{medium_risk_trigger}} | {{medium_risk_response_time}} | {{medium_risk_action}} |
+      | Low | {{low_risk_trigger}} | {{low_risk_response_time}} | {{low_risk_action}} |
+
+  - id: intervention-playbook
+    title: Intervention Playbook
+    instruction: |
+      Define specific actions to take when churn risk signals are detected.
+    template: |
+      ## Retention Intervention Playbook
+      
+      ### High-Risk Interventions
+      
+      **Immediate Outreach (Within 24 hours)**
+      - Personal call from {{high_risk_contact_person}}
+      - Agenda: {{high_risk_call_agenda}}
+      - Escalation path: {{high_risk_escalation}}
+      
+      **Value Recovery Plan**
+      - Diagnose root cause: {{value_recovery_diagnosis}}
+      - Quick win identification: {{quick_win_process}}
+      - Resource allocation: {{value_recovery_resources}}
+      - Success measurement: {{value_recovery_metrics}}
+      
+      **Executive Engagement**
+      - When to involve: {{executive_involvement_criteria}}
+      - Escalation process: {{executive_escalation_process}}
+      - Success stories: {{executive_success_examples}}
+      
+      ### Medium-Risk Interventions
+      
+      **Proactive Check-in**
+      - Frequency: {{medium_risk_checkin_frequency}}
+      - Format: {{medium_risk_checkin_format}}
+      - Topics: {{medium_risk_checkin_topics}}
+      
+      **Success Coaching**
+      - Coaching approach: {{success_coaching_approach}}
+      - Resource provision: {{coaching_resources}}
+      - Progress tracking: {{coaching_progress_tracking}}
+      
+      ### Low-Risk Interventions
+      
+      **Engagement Boost**
+      - Engagement tactics: {{engagement_boost_tactics}}
+      - Content sharing: {{content_sharing_strategy}}
+      - Community involvement: {{community_involvement_approach}}
+      
+      ### Intervention Tracking
+      
+      **Success Metrics**
+      - Intervention success rate: {{intervention_success_rate}}%
+      - Time to recovery: {{time_to_recovery}} days
+      - Cost per intervention: ${{cost_per_intervention}}
+      
+      **Documentation Requirements**
+      {{intervention_documentation_requirements}}
+
+  - id: reporting-dashboard
+    title: Retention Dashboard
+    instruction: |
+      Design a dashboard for tracking retention metrics and customer health.
+    template: |
+      ## Retention Metrics Dashboard
+      
+      ### Daily Metrics
+      - New customer health scores
+      - Churn risk alerts
+      - Intervention queue
+      - Support ticket escalations
+      
+      ### Weekly Metrics
+      - Retention rate trends
+      - Health score distribution
+      - Milestone achievement rates
+      - Intervention effectiveness
+      
+      ### Monthly Metrics
+      - Net revenue retention
+      - Customer lifetime value
+      - Churn analysis
+      - Success milestone trends
+      
+      ### Dashboard Automation
+      **Data Sources**: {{dashboard_data_sources}}
+      **Update Frequency**: {{dashboard_update_frequency}}
+      **Access Permissions**: {{dashboard_access_permissions}}
+      **Alert Configuration**: {{dashboard_alert_configuration}}
+      
+      ### Reporting Schedule
+      **Daily**: {{daily_reporting_schedule}}
+      **Weekly**: {{weekly_reporting_schedule}}
+      **Monthly**: {{monthly_reporting_schedule}}
+      **Quarterly**: {{quarterly_reporting_schedule}}
+      
+      ### Stakeholder Communication
+      {{stakeholder_communication_plan}}

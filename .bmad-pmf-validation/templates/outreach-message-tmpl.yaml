@@ -1,0 +1,495 @@
+template:
+  id: outreach-message-template-v1
+  name: Personalized B2B Outreach Message Framework
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/outreach-messages.md
+    title: "Outreach Campaign - {{campaign_name}}"
+
+workflow:
+  mode: guided
+  elicitation: outreach-message-creation
+
+sections:
+  - id: campaign-overview
+    title: Campaign Overview
+    instruction: |
+      Define the overall outreach campaign strategy and objectives.
+    template: |
+      # Outreach Message Campaign: {{campaign_name}}
+      
+      **Target Audience**: {{target_audience}}
+      **Campaign Goals**: {{campaign_goals}}
+      **Volume Target**: {{volume_target}} messages/week
+      **Response Rate Goal**: {{response_rate_goal}}%
+      **Meeting Target**: {{meeting_target}} meetings/week
+      **Campaign Duration**: {{campaign_duration}}
+      **Created**: {{creation_date}}
+      
+      ## Target Segments
+      {{target_segments}}
+      
+      ## Your Unique Advantages
+      {{unique_advantages}}
+      
+      ## Channel Strategy
+      - Primary: {{primary_channel}}
+      - Secondary: {{secondary_channel}}
+      - Testing: {{testing_channels}}
+
+  - id: email-templates
+    title: Cold Email Templates
+    instruction: |
+      Create personalized cold email templates for different scenarios and segments.
+    template: |
+      ## Cold Email Templates
+      
+      ### Template 1: Direct Value
+      **Use Case**: {{template_1_use_case}}
+      **Target Segment**: {{template_1_segment}}
+      
+      **Subject Line Options:**
+      - {{subject_1_option_1}}
+      - {{subject_1_option_2}}
+      - {{subject_1_option_3}}
+      
+      **Email Body:**
+      ```
+      Hi {{first_name}},
+      
+      {{personalization_line}}
+      
+      {{problem_recognition}}
+      
+      {{value_proposition_teaser}}
+      
+      {{social_proof_element}}
+      
+      {{clear_cta}}
+      
+      {{signature_with_credibility}}
+      ```
+      
+      **Personalization Variables:**
+      - {{personalization_var_1}}: {{var_1_description}}
+      - {{personalization_var_2}}: {{var_2_description}}
+      - {{personalization_var_3}}: {{var_3_description}}
+      
+      ### Template 2: Problem Recognition
+      **Use Case**: {{template_2_use_case}}
+      **Target Segment**: {{template_2_segment}}
+      
+      **Subject Line Options:**
+      - {{subject_2_option_1}}
+      - {{subject_2_option_2}}
+      - {{subject_2_option_3}}
+      
+      **Email Body:**
+      ```
+      Hi {{first_name}},
+      
+      {{specific_observation}}
+      
+      {{problem_hypothesis}}
+      
+      {{peer_insight_teaser}}
+      
+      {{soft_cta}}
+      
+      {{signature}}
+      ```
+      
+      ### Template 3: Peer Insight
+      **Use Case**: {{template_3_use_case}}
+      **Target Segment**: {{template_3_segment}}
+      
+      **Subject Line Options:**
+      - {{subject_3_option_1}}
+      - {{subject_3_option_2}}
+      - {{subject_3_option_3}}
+      
+      **Email Body:**
+      ```
+      Hi {{first_name}},
+      
+      {{peer_context_setup}}
+      
+      {{insight_sharing}}
+      
+      {{relevance_bridge}}
+      
+      {{collaboration_cta}}
+      
+      {{signature}}
+      ```
+      
+      ### Template 4: Tactical Help
+      **Use Case**: {{template_4_use_case}}
+      **Target Segment**: {{template_4_segment}}
+      
+      **Subject Line Options:**
+      - {{subject_4_option_1}}
+      - {{subject_4_option_2}}
+      - {{subject_4_option_3}}
+      
+      **Email Body:**
+      ```
+      Hi {{first_name}},
+      
+      {{challenge_identification}}
+      
+      {{framework_introduction}}
+      
+      {{value_preview}}
+      
+      {{resource_sharing_cta}}
+      
+      {{signature}}
+      ```
+
+  - id: linkedin-templates
+    title: LinkedIn Message Templates
+    instruction: |
+      Create LinkedIn outreach templates that feel natural and conversational.
+    template: |
+      ## LinkedIn Message Templates
+      
+      ### Connection Request Messages
+      
+      **Template A: Mutual Interest**
+      ```
+      Hi {{first_name}}, 
+      
+      {{connection_context}}
+      
+      {{mutual_interest_identification}}
+      
+      {{connection_value_preview}}
+      ```
+      **Character Count**: {{template_a_character_count}}
+      
+      **Template B: Industry Insight**
+      ```
+      Hi {{first_name}},
+      
+      {{industry_observation}}
+      
+      {{insight_relevance}}
+      
+      {{connection_proposition}}
+      ```
+      **Character Count**: {{template_b_character_count}}
+      
+      ### Follow-up Messages (After Connection)
+      
+      **Follow-up 1: Value First**
+      ```
+      Hi {{first_name}},
+      
+      {{connection_appreciation}}
+      
+      {{value_offer}}
+      
+      {{no_pressure_cta}}
+      ```
+      
+      **Follow-up 2: Conversation Starter**
+      ```
+      Hi {{first_name}},
+      
+      {{conversation_bridge}}
+      
+      {{relevant_question}}
+      
+      {{collaborative_tone}}
+      ```
+      
+      **Follow-up 3: Resource Sharing**
+      ```
+      Hi {{first_name}},
+      
+      {{resource_context}}
+      
+      {{resource_description}}
+      
+      {{feedback_request}}
+      ```
+
+  - id: follow-up-sequences
+    title: Follow-up Sequences
+    instruction: |
+      Design multi-touch follow-up sequences that add value without being pushy.
+    template: |
+      ## Follow-up Sequences
+      
+      ### Email Follow-up Sequence
+      
+      **Follow-up 1 (Day 3)**
+      **Purpose**: {{followup_1_purpose}}
+      **Approach**: {{followup_1_approach}}
+      
+      ```
+      Hi {{first_name}},
+      
+      {{reference_original_message}}
+      
+      {{new_value_addition}}
+      
+      {{simplified_cta}}
+      
+      {{signature}}
+      ```
+      
+      **Follow-up 2 (Day 7)**
+      **Purpose**: {{followup_2_purpose}}
+      **Approach**: {{followup_2_approach}}
+      
+      ```
+      Hi {{first_name}},
+      
+      {{different_angle_approach}}
+      
+      {{resource_sharing}}
+      
+      {{yes_no_question}}
+      
+      {{signature}}
+      ```
+      
+      **Follow-up 3 (Day 14)**
+      **Purpose**: {{followup_3_purpose}}
+      **Approach**: {{followup_3_approach}}
+      
+      ```
+      Hi {{first_name}},
+      
+      {{brief_checkin}}
+      
+      {{timing_acknowledgment}}
+      
+      {{permission_request}}
+      
+      {{signature}}
+      ```
+      
+      **Break-up Message (Day 21)**
+      **Purpose**: {{breakup_purpose}}
+      **Approach**: {{breakup_approach}}
+      
+      ```
+      Hi {{first_name}},
+      
+      {{graceful_acknowledgment}}
+      
+      {{door_left_open}}
+      
+      {{final_value_add}}
+      
+      {{signature}}
+      ```
+      
+      ### LinkedIn Follow-up Sequence
+      
+      **LinkedIn Follow-up 1 (Day 5)**
+      ```
+      {{linkedin_followup_1}}
+      ```
+      
+      **LinkedIn Follow-up 2 (Day 12)**
+      ```
+      {{linkedin_followup_2}}
+      ```
+
+  - id: personalization-framework
+    title: Personalization Framework
+    instruction: |
+      Create a systematic approach to personalizing messages at scale.
+    template: |
+      ## Personalization Framework
+      
+      ### Research Checklist (2-3 minutes per prospect)
+      
+      **Company-Level Research**
+      - [ ] Recent news/announcements: {{company_news_sources}}
+      - [ ] Growth indicators: {{growth_indicators}}
+      - [ ] Technology stack: {{tech_stack_research}}
+      - [ ] Competitive position: {{competitive_research}}
+      - [ ] Funding/financial status: {{financial_research}}
+      
+      **Individual-Level Research**
+      - [ ] Recent LinkedIn activity: {{linkedin_activity_check}}
+      - [ ] Content they've shared: {{content_research}}
+      - [ ] Career progression: {{career_research}}
+      - [ ] Speaking/writing topics: {{thought_leadership_research}}
+      - [ ] Common connections: {{connection_research}}
+      
+      ### Personalization Elements
+      
+      **Opening Lines**
+      - Company trigger: "{{company_trigger_example}}"
+      - Personal trigger: "{{personal_trigger_example}}"
+      - Industry trigger: "{{industry_trigger_example}}"
+      - News trigger: "{{news_trigger_example}}"
+      
+      **Problem Recognition**
+      - Role-specific: "{{role_specific_problem}}"
+      - Industry-specific: "{{industry_specific_problem}}"
+      - Size-specific: "{{size_specific_problem}}"
+      - Growth-stage specific: "{{growth_stage_problem}}"
+      
+      **Social Proof Selection**
+      - Similar company size: {{similar_size_examples}}
+      - Same industry: {{same_industry_examples}}
+      - Comparable role: {{comparable_role_examples}}
+      - Relevant use case: {{relevant_use_case_examples}}
+      
+      ### Personalization Scale System
+      
+      **Level 1: Basic (30 seconds)**
+      - Company name and role
+      - Industry-standard problem
+      - Generic social proof
+      
+      **Level 2: Enhanced (2 minutes)**
+      - Specific company trigger
+      - Role-specific challenge
+      - Relevant case study
+      
+      **Level 3: Premium (5 minutes)**
+      - Personal observation
+      - Custom problem hypothesis
+      - Tailored value proposition
+      
+      ### Quality Control
+      
+      **Message Quality Checklist**
+      - [ ] Feels written specifically for them
+      - [ ] References something unique about them/company
+      - [ ] Clear value proposition
+      - [ ] Single, clear call-to-action
+      - [ ] Professional but conversational tone
+      - [ ] No obvious template language
+      - [ ] Proper grammar and spelling
+      - [ ] Appropriate length for channel
+
+  - id: subject-line-library
+    title: Subject Line Library
+    instruction: |
+      Build a library of high-performing subject lines for different scenarios.
+    template: |
+      ## Subject Line Library
+      
+      ### High-Performing Categories
+      
+      **Question Format**
+      - {{question_subject_1}}
+      - {{question_subject_2}}
+      - {{question_subject_3}}
+      - Performance: {{question_format_performance}}
+      
+      **Observation Format**
+      - {{observation_subject_1}}
+      - {{observation_subject_2}}
+      - {{observation_subject_3}}
+      - Performance: {{observation_format_performance}}
+      
+      **Value Format**
+      - {{value_subject_1}}
+      - {{value_subject_2}}
+      - {{value_subject_3}}
+      - Performance: {{value_format_performance}}
+      
+      **Connection Format**
+      - {{connection_subject_1}}
+      - {{connection_subject_2}}
+      - {{connection_subject_3}}
+      - Performance: {{connection_format_performance}}
+      
+      ### Subject Line Testing
+      
+      **A/B Testing Framework**
+      - Test size: {{ab_test_size}} messages per variation
+      - Success metric: {{ab_success_metric}}
+      - Decision threshold: {{ab_decision_threshold}}
+      - Testing duration: {{ab_testing_duration}}
+      
+      **Current Tests**
+      - Test 1: {{current_test_1_description}}
+      - Test 2: {{current_test_2_description}}
+      - Test 3: {{current_test_3_description}}
+      
+      ### Subject Line Guidelines
+      
+      **Best Practices**
+      {{subject_line_best_practices}}
+      
+      **Avoid List**
+      {{subject_line_avoid_list}}
+      
+      **Character Limits**
+      - Email: {{email_subject_character_limit}} characters
+      - LinkedIn: {{linkedin_subject_character_limit}} characters
+
+  - id: performance-tracking
+    title: Performance Tracking
+    instruction: |
+      Set up systems to measure and optimize outreach performance.
+    template: |
+      ## Outreach Performance Tracking
+      
+      ### Key Metrics
+      
+      **Volume Metrics**
+      - Messages sent per day: {{daily_message_volume}}
+      - Messages sent per week: {{weekly_message_volume}}
+      - Time per message: {{time_per_message}} minutes
+      
+      **Response Metrics**
+      - Open rate: {{open_rate}}%
+      - Response rate: {{response_rate}}%
+      - Positive response rate: {{positive_response_rate}}%
+      - Meeting booking rate: {{meeting_booking_rate}}%
+      
+      **Quality Metrics**
+      - Message-to-meeting conversion: {{message_to_meeting_rate}}%
+      - Meeting show rate: {{meeting_show_rate}}%
+      - Meeting-to-opportunity conversion: {{meeting_to_opportunity_rate}}%
+      
+      ### Tracking System
+      
+      **CRM/Spreadsheet Setup**
+      {{tracking_system_description}}
+      
+      **Daily Tracking Fields**
+      - Prospect name
+      - Company  
+      - Message sent (Y/N)
+      - Template used
+      - Personalization level
+      - Response received (Y/N)
+      - Response sentiment
+      - Next step scheduled (Y/N)
+      
+      **Weekly Analysis**
+      {{weekly_analysis_process}}
+      
+      **Monthly Optimization**
+      {{monthly_optimization_process}}
+      
+      ### Success Benchmarks
+      
+      **Beginner Targets**
+      - Response rate: {{beginner_response_rate}}%
+      - Meeting rate: {{beginner_meeting_rate}}%
+      
+      **Intermediate Targets**
+      - Response rate: {{intermediate_response_rate}}%
+      - Meeting rate: {{intermediate_meeting_rate}}%
+      
+      **Advanced Targets**
+      - Response rate: {{advanced_response_rate}}%
+      - Meeting rate: {{advanced_meeting_rate}}%
+      
+      ### Optimization Areas
+      {{optimization_focus_areas}}

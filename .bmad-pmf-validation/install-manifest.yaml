@@ -1,0 +1,129 @@
+version: 1.0.0
+installed_at: '2025-08-21T14:32:31.894Z'
+install_type: expansion-pack
+expansion_pack_id: bmad-pmf-validation
+expansion_pack_name: bmad-pmf-validation
+ides_setup:
+  - cursor
+  - claude-code
+files:
+  - path: .bmad-pmf-validation/config.yaml
+    hash: 6046ae6db402d476
+    modified: false
+  - path: .bmad-pmf-validation/README.md
+    hash: b0271e47fbdf034d
+    modified: false
+  - path: .bmad-pmf-validation/utils/workflow-management.md
+    hash: c2196880f2281f84
+    modified: false
+  - path: .bmad-pmf-validation/utils/bmad-doc-template.md
+    hash: 34df6ead8b91abfc
+    modified: false
+  - path: .bmad-pmf-validation/templates/unfolding-plan-tmpl.yaml
+    hash: 7b79bfa95f03d4e5
+    modified: false
+  - path: .bmad-pmf-validation/templates/sales-pitch-deck-tmpl.yaml
+    hash: d966b990dcd9531d
+    modified: false
+  - path: .bmad-pmf-validation/templates/retention-metrics-tmpl.yaml
+    hash: f60c51a42a2af482
+    modified: false
+  - path: .bmad-pmf-validation/templates/outreach-message-tmpl.yaml
+    hash: 5a7b0b7cf2557b55
+    modified: false
+  - path: .bmad-pmf-validation/templates/demand-analysis-tmpl.yaml
+    hash: d100830a618696d0
+    modified: false
+  - path: .bmad-pmf-validation/templates/case-study-tmpl.yaml
+    hash: 21439b0756bb4d9f
+    modified: false
+  - path: .bmad-pmf-validation/workflows/zero-to-first-customer.yaml
+    hash: e2a30a088486a03c
+    modified: false
+  - path: .bmad-pmf-validation/workflows/sales-to-learn.yaml
+    hash: 6ec89223d64dd897
+    modified: false
+  - path: .bmad-pmf-validation/workflows/manual-to-automated.yaml
+    hash: c4a54de4d0b24712
+    modified: false
+  - path: .bmad-pmf-validation/workflows/case-study-evolution.yaml
+    hash: e8c8ac3701f563cb
+    modified: false
+  - path: .bmad-pmf-validation/data/elicitation-methods.md
+    hash: 8c3ca9b84c8784c9
+    modified: false
+  - path: .bmad-pmf-validation/data/bmad-kb.md
+    hash: 6f5f8e30d25b270a
+    modified: false
+  - path: .bmad-pmf-validation/checklists/sales-debug-checklist.md
+    hash: a3a0d9b0e6a19155
+    modified: false
+  - path: .bmad-pmf-validation/checklists/retention-drivers-checklist.md
+    hash: 3e23688d730367c8
+    modified: false
+  - path: .bmad-pmf-validation/checklists/pmf-signals-checklist.md
+    hash: 81ca79e91bfd5aee
+    modified: false
+  - path: .bmad-pmf-validation/checklists/demand-intensity-checklist.md
+    hash: 0b6ba3a2dad1beee
+    modified: false
+  - path: .bmad-pmf-validation/checklists/case-study-validation-checklist.md
+    hash: 1da437a2c09a8e50
+    modified: false
+  - path: .bmad-pmf-validation/agents/sales-debugger.md
+    hash: d742ba7e4d0fdc65
+    modified: false
+  - path: .bmad-pmf-validation/agents/pricing-strategist.md
+    hash: c707c899a188af19
+    modified: false
+  - path: .bmad-pmf-validation/agents/pmf-strategist.md
+    hash: 1fee2bff12177769
+    modified: false
+  - path: .bmad-pmf-validation/agents/growth-catalyst.md
+    hash: 943f256edc1ddf6a
+    modified: false
+  - path: .bmad-pmf-validation/agents/demand-researcher.md
+    hash: 9648f0e6ff7c57f5
+    modified: false
+  - path: .bmad-pmf-validation/agents/customer-success-engineer.md
+    hash: 711508e2da248ab9
+    modified: false
+  - path: .bmad-pmf-validation/agents/case-study-architect.md
+    hash: dd17be78a5861314
+    modified: false
+  - path: .bmad-pmf-validation/agents/bmad-orchestrator.md
+    hash: 7875f8d3d9168ece
+    modified: false
+  - path: .bmad-pmf-validation/tasks/kb-mode-interaction.md
+    hash: 4d6b921c24ba4999
+    modified: false
+  - path: .bmad-pmf-validation/tasks/identify-demand-patterns.md
+    hash: 72570e37302a5962
+    modified: false
+  - path: .bmad-pmf-validation/tasks/execute-checklist.md
+    hash: 6bd1ee3b1c983148
+    modified: false
+  - path: .bmad-pmf-validation/tasks/draft-case-study.md
+    hash: a04f00a7c275536b
+    modified: false
+  - path: .bmad-pmf-validation/tasks/design-outreach-campaign.md
+    hash: 1f1265460683a719
+    modified: false
+  - path: .bmad-pmf-validation/tasks/design-manual-delivery.md
+    hash: fa860a1ba9d39b56
+    modified: false
+  - path: .bmad-pmf-validation/tasks/create-sales-pitch.md
+    hash: d26e2fc6ae4140f6
+    modified: false
+  - path: .bmad-pmf-validation/tasks/create-doc.md
+    hash: 0a6aeba58cd7a3e4
+    modified: false
+  - path: .bmad-pmf-validation/tasks/analyze-sales-call.md
+    hash: 7c1961e2a073d187
+    modified: false
+  - path: .bmad-pmf-validation/tasks/advanced-elicitation.md
+    hash: d39118bf32237a21
+    modified: false
+  - path: .bmad-pmf-validation/agent-teams/pmf-validation-team.yaml
+    hash: 2e735924e0e29c54
+    modified: false

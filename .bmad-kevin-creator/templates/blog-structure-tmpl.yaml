@@ -1,0 +1,151 @@
+name: blog-structure
+description: Kevin's proven blog article framework for maximum impact
+version: 1.0.0
+sections:
+  - name: opening
+    description: "Compelling hook that draws readers in"
+    required: true
+    options:
+      - personal_story: "Start with Kevin's real experience"
+      - surprising_fact: "Counter-intuitive data or insight"
+      - contrarian_take: "Challenge conventional wisdom"
+      - problem_scenario: "Paint picture of common struggle"
+    prompts:
+      - "What personal experience opened your eyes to this?"
+      - "What data point would shock your readers?"
+      - "What does everyone believe that's actually wrong?"
+      - "What problem keeps your audience up at night?"
+    examples:
+      - "I spent three years building data products that nobody trusted. Here's what I learned about the real problem."
+      - "70% of healthcare data initiatives fail, but not for the reasons you think."
+      - "Everyone talks about data-driven decisions. But most data doesn't drive anything."
+
+  - name: problem_definition
+    description: "Why this matters right now"
+    required: true
+    structure:
+      - current_state: "What's happening in the industry"
+      - pain_points: "Specific problems people face"
+      - consequences: "Cost of not solving this"
+      - timing: "Why this matters now"
+    prompts:
+      - "What's the real problem behind the symptoms?"
+      - "Why are smart people still struggling with this?"
+      - "What's the cost of inaction?"
+      - "Why is now the right time to address this?"
+
+  - name: context_and_background
+    description: "Set the stage with necessary context"
+    required: true
+    elements:
+      - industry_landscape: "Current state of the field"
+      - historical_perspective: "How we got here"
+      - key_players: "Who's involved"
+      - relevant_trends: "What's changing"
+    guidelines:
+      - "Keep it concise - background, not encyclopedia"
+      - "Focus on what's directly relevant"
+      - "Use Kevin's domain expertise"
+      - "Connect to reader's experience"
+
+  - name: kevin_approach
+    description: "Kevin's unique solution or perspective"
+    required: true
+    components:
+      - core_insight: "The key realization"
+      - methodology: "Kevin's specific approach"
+      - why_different: "What makes this unique"
+      - evidence: "Why this works"
+    structure:
+      - "Here's what I learned..."
+      - "My approach is different because..."
+      - "Instead of X, I do Y"
+      - "This works because..."
+
+  - name: implementation_deep_dive
+    description: "How to actually do this"
+    required: true
+    format: 
+      - step_by_step: "Numbered process"
+      - frameworks: "Mental models to apply"
+      - tools_and_tactics: "Specific resources"
+      - examples: "Real implementations"
+    requirements:
+      - "Actionable immediately"
+      - "Specific, not generic"
+      - "Include tools/technologies"
+      - "Show don't tell with examples"
+
+  - name: real_world_results
+    description: "What to expect when you implement"
+    required: true
+    include:
+      - success_metrics: "How to measure progress"
+      - timeline: "Realistic expectations"
+      - common_obstacles: "What to watch out for"
+      - case_studies: "Real examples with results"
+    format:
+      - "When I implemented this..."
+      - "You can expect to see..."
+      - "The biggest challenge will be..."
+      - "Here's what success looks like..."
+
+  - name: conclusion_synthesis
+    description: "Kevin's perspective and key takeaways"
+    required: true
+    elements:
+      - key_insights: "3-5 main points"
+      - broader_implications: "What this means for the field"
+      - kevin_perspective: "Personal reflection"
+      - call_to_action: "What reader should do next"
+    avoid:
+      - "Simple summary of what was said"
+      - "Generic motivation"
+      - "Vague next steps"
+    include:
+      - "Personal insights from implementation"
+      - "Honest assessment of limitations"
+      - "Clear, specific next action"
+
+formatting_guidelines:
+  structure:
+    - headers: "Clear H2/H3 hierarchy"
+    - paragraphs: "2-4 sentences maximum"
+    - lists: "Use bullets for key points"
+    - emphasis: "Bold sparingly for key concepts"
+    - length: "1,200-2,500 words for depth"
+  
+  readability:
+    - sentences: "Mix short punchy and longer explanatory"
+    - transitions: "Smooth flow between sections"
+    - examples: "Concrete throughout, not abstract"
+    - voice: "Conversational, like explaining to colleague"
+    - technical_depth: "Appropriate for audience expertise"
+
+seo_considerations:
+  - title: "Include primary keyword naturally"
+  - headers: "Use target keywords in H2s"
+  - internal_links: "Link to related Kevin content"
+  - meta_description: "Compelling 150-160 characters"
+  - alt_text: "Descriptive image tags"
+
+engagement_elements:
+  - pull_quotes: "Highlight memorable insights"
+  - code_snippets: "Formatted examples if technical"
+  - diagrams: "Visual explanations where helpful"
+  - related_posts: "Link to complementary content"
+  - social_share: "Quotable sections for LinkedIn"
+
+kevin_specific_touches:
+  - healthcare_context: "Industry-specific applications"
+  - data_product_angle: "Connect to Kevin's expertise"
+  - solopreneur_insights: "Independent builder perspective"
+  - vulnerability: "Appropriate sharing of struggles"
+  - practical_wisdom: "Hard-won insights from experience"
+
+quality_checks:
+  - value_density: "Every paragraph delivers insight"
+  - actionability: "Reader knows exactly what to do"
+  - authenticity: "Sounds like Kevin's voice"
+  - originality: "Unique perspective, not rehashed advice"
+  - evidence: "Claims supported by experience/data"

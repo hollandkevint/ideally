@@ -1,0 +1,90 @@
+version: 1.0.0
+installed_at: '2025-08-21T14:32:31.948Z'
+install_type: expansion-pack
+expansion_pack_id: bmad-product-leadership
+expansion_pack_name: bmad-product-leadership
+ides_setup:
+  - cursor
+  - claude-code
+files:
+  - path: .bmad-product-leadership/config.yaml
+    hash: aabdc9a5259a2522
+    modified: false
+  - path: .bmad-product-leadership/workflows/zero-to-one-development.yaml
+    hash: bcb80db955094495
+    modified: false
+  - path: .bmad-product-leadership/workflows/product-strategy-development.yaml
+    hash: 7b5f4d5ef864bc3a
+    modified: false
+  - path: .bmad-product-leadership/templates/product-strategy-tmpl.yaml
+    hash: 09a00f4520bc46f2
+    modified: false
+  - path: .bmad-product-leadership/utils/workflow-management.md
+    hash: c2196880f2281f84
+    modified: false
+  - path: .bmad-product-leadership/utils/bmad-doc-template.md
+    hash: 34df6ead8b91abfc
+    modified: false
+  - path: .bmad-product-leadership/tasks/validate-product-concept.md
+    hash: df2500169ca26793
+    modified: false
+  - path: .bmad-product-leadership/tasks/kb-mode-interaction.md
+    hash: 4d6b921c24ba4999
+    modified: false
+  - path: .bmad-product-leadership/tasks/execute-checklist.md
+    hash: 4d5e305f7204b7bf
+    modified: false
+  - path: .bmad-product-leadership/tasks/develop-growth-strategy.md
+    hash: 83530e60708861ff
+    modified: false
+  - path: .bmad-product-leadership/tasks/design-discovery-plan.md
+    hash: eb9b8983e34a12a0
+    modified: false
+  - path: .bmad-product-leadership/tasks/create-doc.md
+    hash: 0a6aeba58cd7a3e4
+    modified: false
+  - path: .bmad-product-leadership/tasks/assess-product-maturity.md
+    hash: a33ed951df6af52c
+    modified: false
+  - path: .bmad-product-leadership/tasks/advanced-elicitation.md
+    hash: d39118bf32237a21
+    modified: false
+  - path: .bmad-product-leadership/checklists/product-team-readiness-checklist.md
+    hash: 9f1dc91ab841c9b9
+    modified: false
+  - path: .bmad-product-leadership/data/elicitation-methods.md
+    hash: 8c3ca9b84c8784c9
+    modified: false
+  - path: .bmad-product-leadership/data/bmad-kb.md
+    hash: d62a38c23349167b
+    modified: false
+  - path: .bmad-product-leadership/agent-teams/product-leadership-team.yaml
+    hash: fb92b978ba56ed97
+    modified: false
+  - path: .bmad-product-leadership/agents/zero-to-one-product-builder.md
+    hash: efb210a10ec70c3c
+    modified: false
+  - path: .bmad-product-leadership/agents/product-sunset-specialist.md
+    hash: 5ee4d4e3ee540db0
+    modified: false
+  - path: .bmad-product-leadership/agents/product-operations-lead.md
+    hash: b7cedbe94032eabc
+    modified: false
+  - path: .bmad-product-leadership/agents/product-exploration-lead.md
+    hash: 15255e38e57922b7
+    modified: false
+  - path: .bmad-product-leadership/agents/product-coach.md
+    hash: edcf6ac9b819164e
+    modified: false
+  - path: .bmad-product-leadership/agents/platform-product-leader.md
+    hash: 133671a3793c076e
+    modified: false
+  - path: .bmad-product-leadership/agents/growth-product-lead.md
+    hash: fcb839a04807293c
+    modified: false
+  - path: .bmad-product-leadership/agents/fractional-product-advisor.md
+    hash: 206ffdbc5c36048f
+    modified: false
+  - path: .bmad-product-leadership/agents/bmad-orchestrator.md
+    hash: e86cb8e4df3ffa50
+    modified: false
