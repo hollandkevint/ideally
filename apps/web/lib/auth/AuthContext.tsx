@@ -4,15 +4,12 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../supabase/client'
 import { authLogger } from '../monitoring/auth-logger'
-import { OAuthStateManager } from './oauth-state-manager'
-import { OAuthValidator } from './oauth-validation'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<void>
-  signInWithGoogleIdToken: (idToken: string) => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
 }
 
@@ -94,76 +91,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('AuthContext: Starting Google OAuth signin flow')
 
-      // Validate OAuth configuration before starting
-      const validationResult = OAuthValidator.validateAndLog()
-      if (!validationResult.isValid) {
-        throw new Error(`OAuth configuration error: ${validationResult.errors.join(', ')}`)
-      }
-
-      // Prepare for OAuth using state manager to prevent PKCE conflicts
-      OAuthStateManager.prepareForNewOAuth()
-
-      const redirectUrl = OAuthValidator.getRedirectUrl()
-      console.log('AuthContext: Redirect URL:', redirectUrl)
-
-      // Generate unique state parameter for our own tracking
-      const authState = OAuthStateManager.generateState()
-
-      // Store the state but let Supabase handle the OAuth state parameter
-      console.log('AuthContext: Generated OAuth tracking state:', authState)
-
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-            // Remove custom state parameter - let Supabase handle OAuth state internally
-          },
-          // Explicitly enable PKCE flow
-          skipBrowserRedirect: false,
-          // Ensure proper scopes are requested
-          scopes: 'email profile openid',
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
 
       if (error) {
         const latencyMs = Date.now() - startTime
 
-        // Categorize error types
-        let errorType = 'oauth_initiation_error'
-        if (error.message?.includes('code') || error.message?.includes('PKCE')) {
-          errorType = 'pkce_initiation_error'
-        } else if (error.message?.includes('network')) {
-          errorType = 'network_error'
-        } else if (error.message?.includes('popup')) {
-          errorType = 'popup_blocked'
-        }
-
         await authLogger.logAuthFailure(
           'oauth_google',
-          errorType,
+          'oauth_initiation_error',
           error.message || 'Google signin failed',
           latencyMs,
           correlationId
         )
 
-        // Check for PKCE-specific errors
-        if (error.message?.includes('code') || error.message?.includes('PKCE')) {
-          console.error('AuthContext: PKCE flow error detected')
-          throw new Error('Authentication verification error. Please clear your browser cookies and try again.')
-        }
-
         throw new Error(error.message || 'Google signin failed')
       }
 
       if (data?.url) {
-        console.log('AuthContext: Google OAuth redirect URL generated successfully')
-        // Ensure we're redirecting to the OAuth URL
+        console.log('AuthContext: Redirecting to Google OAuth')
         window.location.href = data.url
       } else {
-        console.error('AuthContext: No OAuth URL received from Supabase')
         throw new Error('Failed to initiate Google signin - no redirect URL received')
       }
 
@@ -179,64 +131,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         correlationId
       )
 
-      console.error('AuthContext: Unexpected error during Google signin:', {
-        error: err,
-        timestamp: new Date().toISOString()
-      })
+      console.error('AuthContext: Error during Google signin:', err)
       throw err
     }
   }
 
-  const signInWithGoogleIdToken = async (idToken: string) => {
-    try {
-      console.log('AuthContext: Starting Google ID token signin flow')
-      
-      const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: idToken
-      })
-      
-      if (error) {
-        console.error('AuthContext: Google ID token signin error:', {
-          message: error.message,
-          status: error.status,
-          name: error.name,
-          timestamp: new Date().toISOString()
-        })
-        
-        // Provide specific error messages based on error type
-        let userMessage = 'Google signin failed'
-        if (error.message?.includes('Invalid token')) {
-          userMessage = 'Google signin token is invalid or expired'
-        } else if (error.message?.includes('Network')) {
-          userMessage = 'Network error during Google signin. Please try again.'
-        } else if (error.message?.includes('Provider')) {
-          userMessage = 'Google signin is not properly configured'
-        }
-        
-        throw new Error(userMessage)
-      }
-      
-      if (!data.user) {
-        console.error('AuthContext: No user data received from Google signin')
-        throw new Error('No user information received from Google')
-      }
-      
-      console.log('AuthContext: Google signin successful:', {
-        email: data.user.email,
-        id: data.user.id,
-        provider: data.user.app_metadata?.provider,
-        timestamp: new Date().toISOString()
-      })
-      
-    } catch (err) {
-      console.error('AuthContext: Unexpected error during Google signin:', {
-        error: err,
-        timestamp: new Date().toISOString()
-      })
-      throw err
-    }
-  }
 
   const signInWithEmail = async (email: string, password: string) => {
     const startTime = Date.now()
@@ -304,7 +203,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     signOut,
     signInWithGoogle,
-    signInWithGoogleIdToken,
     signInWithEmail,
   }
 

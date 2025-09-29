@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-// Google One Tap temporarily disabled due to authentication issues
-// import GoogleOneTapSignin from './components/auth/GoogleOneTapSignin'
 
 export default function Home() {
   const { user, loading, signInWithGoogle } = useAuth()

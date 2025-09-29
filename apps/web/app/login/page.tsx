@@ -5,7 +5,6 @@ import { useAuth } from '../../lib/auth/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '../../components/ui/button'
-import { OAuthStateManager } from '../../lib/auth/oauth-state-manager'
 
 function LoginPageContent() {
   const { signInWithEmail, signInWithGoogle } = useAuth()
@@ -16,46 +15,12 @@ function LoginPageContent() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showRetryOptions, setShowRetryOptions] = useState(false)
 
-  // Handle error messages from OAuth callback with enhanced PKCE error recovery
+  // Handle error messages from OAuth callback
   useEffect(() => {
     const errorParam = searchParams.get('error')
-    const messageParam = searchParams.get('message')
-    const retryParam = searchParams.get('retry')
-
     if (errorParam) {
-      if (errorParam === 'pkce_error' || errorParam === 'pkce_mismatch') {
-        const isPkceError = true
-        setError(messageParam || 'Authentication verification failed. Please try signing in again.')
-        setShowRetryOptions(isPkceError)
-
-        // If this is a retry attempt, increment the attempt counter
-        if (retryParam === 'true') {
-          const attemptCount = OAuthStateManager.incrementAttempt()
-          console.log('Login: PKCE retry attempt #', attemptCount)
-
-          if (OAuthStateManager.hasExceededMaxAttempts()) {
-            setError('Multiple authentication attempts failed. Please clear your browser data and try again, or use email/password login.')
-            setShowRetryOptions(true)
-          }
-        }
-      } else if (errorParam === 'oauth_state_error') {
-        setError(messageParam || 'Authentication state validation failed. Please try signing in again.')
-        setShowRetryOptions(true)
-
-        // Clear OAuth state for state validation errors
-        try {
-          OAuthStateManager.clearOAuthState()
-          console.log('Login: Cleared OAuth state due to state validation error')
-        } catch (err) {
-          console.warn('Login: Could not clear OAuth state:', err)
-        }
-      } else if (messageParam) {
-        setError(decodeURIComponent(messageParam))
-      } else {
-        setError(decodeURIComponent(errorParam))
-      }
+      setError(decodeURIComponent(errorParam))
     }
   }, [searchParams])
 
@@ -92,55 +57,17 @@ function LoginPageContent() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true)
     setError('')
-    setShowRetryOptions(false)
 
     try {
       await signInWithGoogle()
     } catch (err) {
       console.error('Google sign-in error:', err)
       setError('Google sign-in failed. Please try again.')
-
-      // Check if this is a PKCE-related error
-      const errorMessage = err instanceof Error ? err.message : String(err)
-      if (errorMessage.includes('verification') || errorMessage.includes('PKCE') || errorMessage.includes('cookies')) {
-        setShowRetryOptions(true)
-      }
     } finally {
       setGoogleLoading(false)
     }
   }
 
-  const handleClearBrowserData = () => {
-    try {
-      // Clear OAuth state
-      OAuthStateManager.clearOAuthState()
-
-      // Clear cookies (limited by browser security)
-      document.cookie.split(";").forEach((c) => {
-        const eqPos = c.indexOf("=")
-        const name = eqPos > -1 ? c.substr(0, eqPos) : c
-        if (name.trim().startsWith('sb-') || name.trim().includes('auth')) {
-          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.thinkhaven.co`
-        }
-      })
-
-      setError('')
-      setShowRetryOptions(false)
-      alert('Browser data cleared. Please try signing in again.')
-    } catch (err) {
-      console.error('Error clearing browser data:', err)
-      alert('Could not automatically clear browser data. Please manually clear your browser cookies and try again.')
-    }
-  }
-
-  const handleRetryOAuth = async () => {
-    handleClearBrowserData()
-    // Small delay to ensure cleanup is complete
-    setTimeout(() => {
-      handleGoogleSignIn()
-    }, 500)
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -233,33 +160,6 @@ function LoginPageContent() {
                   <Link href="/resend-confirmation" className="text-sm font-medium text-primary hover:text-primary-hover underline">
                     → Resend confirmation email
                   </Link>
-                </div>
-              )}
-              {showRetryOptions && (
-                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-                  <h4 className="text-sm font-medium text-yellow-800 mb-2">Authentication Issue Detected</h4>
-                  <p className="text-sm text-yellow-700 mb-3">
-                    This appears to be a browser state conflict. Try these recovery options:
-                  </p>
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={handleRetryOAuth}
-                      className="w-full px-3 py-2 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-800 rounded border border-yellow-300 transition-colors"
-                    >
-                      🔄 Clear Data & Retry Google Sign-in
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleClearBrowserData}
-                      className="w-full px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-300 transition-colors"
-                    >
-                      🧹 Clear Browser Data Only
-                    </button>
-                  </div>
-                  <p className="text-xs text-yellow-600 mt-2">
-                    If issues persist, try using email/password login or contact support.
-                  </p>
                 </div>
               )}
             </div>
