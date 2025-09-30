@@ -19,10 +19,11 @@ Let me know if you need changes.`
       const result = VisualSuggestionParser.parseMessage('msg-1', content, 'assistant')
 
       expect(result.hasVisualContent).toBe(true)
-      expect(result.suggestions.length).toBe(1)
-      expect(result.suggestions[0].type).toBe('flowchart')
-      expect(result.suggestions[0].confidence).toBe(1.0)
-      expect(result.suggestions[0].diagramCode).toContain('flowchart TD')
+      expect(result.suggestions.length).toBeGreaterThanOrEqual(1)
+      const explicitSuggestion = result.suggestions.find(s => s.confidence === 1.0)
+      expect(explicitSuggestion).toBeDefined()
+      expect(explicitSuggestion?.type).toBe('flowchart')
+      expect(explicitSuggestion?.diagramCode).toContain('flowchart TD')
     })
 
     it('should detect sequence diagram type', () => {

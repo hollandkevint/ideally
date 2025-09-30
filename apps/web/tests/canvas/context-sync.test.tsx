@@ -349,6 +349,12 @@ Result: Success ✓`
   })
 
   describe('Integration Scenarios', () => {
+    const mockOptions = {
+      workspaceId: 'test-workspace',
+      minConfidence: 0.5,
+      autoPopulate: false,
+    }
+
     it('should handle full conversation flow', () => {
       const { result } = renderHook(() => useCanvasSync(mockOptions))
 
