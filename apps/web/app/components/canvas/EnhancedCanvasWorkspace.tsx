@@ -9,6 +9,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Editor } from 'tldraw';
 import MermaidEditor from './MermaidEditor';
+import CanvasExportModal from '../../../components/canvas/CanvasExportModal';
 
 // Dynamically import tldraw to avoid SSR issues
 const TldrawCanvas = dynamic(() => import('./TldrawCanvas'), {
@@ -21,7 +22,12 @@ const TldrawCanvas = dynamic(() => import('./TldrawCanvas'), {
 });
 
 export interface EnhancedCanvasWorkspaceProps {
-  sessionId: string;
+  workspaceId: string;
+  sessionId?: string;
+  initialMode?: 'draw' | 'diagram';
+  initialDiagramCode?: string;
+  initialDiagramType?: string;
+  onStateChange?: (state: any) => void;
   onSave?: (data: any) => void;
   readOnly?: boolean;
 }
@@ -29,14 +35,20 @@ export interface EnhancedCanvasWorkspaceProps {
 type CanvasMode = 'draw' | 'diagram';
 
 export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = ({
+  workspaceId,
   sessionId,
+  initialMode = 'draw',
+  initialDiagramCode = '',
+  initialDiagramType,
+  onStateChange,
   onSave,
   readOnly = false
 }) => {
-  const [mode, setMode] = useState<CanvasMode>('draw');
+  const [mode, setMode] = useState<CanvasMode>(initialMode);
   const [editor, setEditor] = useState<Editor | null>(null);
-  const [mermaidCode, setMermaidCode] = useState('');
+  const [mermaidCode, setMermaidCode] = useState(initialDiagramCode);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Handle tldraw mount
   const handleTldrawMount = useCallback((editor: Editor) => {
@@ -174,14 +186,30 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
 
           <div className="h-6 w-px bg-gray-300" />
 
+          {/* Export Button */}
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            className="px-3 py-1.5 text-gray-700 hover:bg-gray-100 rounded transition-colors flex items-center gap-1.5"
+            title="Export canvas as PNG or SVG"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export
+          </button>
+
           <div className="ml-auto flex items-center gap-2 text-xs text-gray-500">
             {lastSaved && (
               <span>
                 Last saved: {lastSaved.toLocaleTimeString()}
               </span>
             )}
-            <span className="text-gray-400">•</span>
-            <span>Session: {sessionId.slice(0, 8)}</span>
+            {sessionId && (
+              <>
+                <span className="text-gray-400">•</span>
+                <span>Session: {sessionId.slice(0, 8)}</span>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -212,6 +240,17 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
           <span>Auto-save every 30 seconds</span>
         </div>
       )}
+
+      {/* Export Modal */}
+      <CanvasExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        mode={mode}
+        tldrawEditor={editor}
+        diagramCode={mermaidCode}
+        workspaceId={workspaceId}
+        workspaceName={`Workspace ${workspaceId.slice(0, 8)}`}
+      />
     </div>
   );
 };
