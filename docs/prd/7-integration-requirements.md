@@ -1,6 +1,6 @@
 # Integration Requirements
 
-## Claude Sonnet 4 API Integration Specifications
+## Claude Sonnet 4 API Integration Specifications1
 
 ### API Configuration
 - **Model**: claude-3-sonnet-20240229 (latest stable)
