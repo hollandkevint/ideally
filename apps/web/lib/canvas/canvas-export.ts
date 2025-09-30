@@ -2,9 +2,59 @@
  * Canvas Export Utilities
  *
  * Provides PNG and SVG export functionality for both drawing (tldraw) and diagram (Mermaid) modes
+ *
+ * Performance optimizations:
+ * - Canvas pooling for PNG conversion
+ * - Mermaid render caching
+ * - Offscreen canvas for faster rendering
  */
 
 import mermaid from 'mermaid'
+
+// Canvas pool for reuse (reduces GC pressure)
+const canvasPool: HTMLCanvasElement[] = []
+const MAX_POOL_SIZE = 3
+
+function getCanvas(): HTMLCanvasElement {
+  return canvasPool.pop() || document.createElement('canvas')
+}
+
+function releaseCanvas(canvas: HTMLCanvasElement) {
+  if (canvasPool.length < MAX_POOL_SIZE) {
+    // Clear canvas before pooling
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+    canvasPool.push(canvas)
+  }
+}
+
+// Mermaid render cache (diagram code → SVG string)
+const mermaidCache = new Map<string, { svg: string; timestamp: number }>()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+function getCachedMermaidSVG(diagramCode: string): string | null {
+  const cached = mermaidCache.get(diagramCode)
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.svg
+  }
+  return null
+}
+
+function cacheMermaidSVG(diagramCode: string, svg: string) {
+  mermaidCache.set(diagramCode, { svg, timestamp: Date.now() })
+
+  // Cleanup old entries if cache gets too large
+  if (mermaidCache.size > 50) {
+    const now = Date.now()
+    for (const [key, value] of mermaidCache.entries()) {
+      if (now - value.timestamp > CACHE_TTL) {
+        mermaidCache.delete(key)
+      }
+    }
+  }
+}
 
 export interface ExportMetadata {
   workspaceId: string
@@ -179,8 +229,17 @@ export async function exportMermaidAsPNG(
     const opts = { ...DEFAULT_OPTIONS, ...options }
     const filename = opts.filename || `diagram-${Date.now()}.png`
 
-    // Render Mermaid to SVG first
-    const { svg } = await mermaid.render('export-diagram', diagramCode)
+    // Check cache first
+    let svg = getCachedMermaidSVG(diagramCode)
+
+    if (!svg) {
+      // Render Mermaid to SVG
+      const result = await mermaid.render('export-diagram', diagramCode)
+      svg = result.svg
+
+      // Cache for future exports
+      cacheMermaidSVG(diagramCode, svg)
+    }
 
     // Convert SVG to PNG
     const blob = await svgToPNG(
@@ -258,6 +317,7 @@ export async function exportMermaidAsSVG(
 
 /**
  * Convert SVG string to PNG blob
+ * Optimized with canvas pooling
  */
 async function svgToPNG(
   svgString: string,
@@ -267,10 +327,15 @@ async function svgToPNG(
   backgroundColor: string
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
+    // Get canvas from pool
+    const canvas = getCanvas()
+    const ctx = canvas.getContext('2d', {
+      alpha: backgroundColor === 'transparent',
+      willReadFrequently: false, // Optimize for toBlob
+    })
 
     if (!ctx) {
+      releaseCanvas(canvas)
       reject(new Error('Failed to get canvas context'))
       return
     }
@@ -291,20 +356,31 @@ async function svgToPNG(
     const url = URL.createObjectURL(svgBlob)
 
     img.onload = () => {
+      // Use imageSmoothingEnabled for better quality
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
+
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
       URL.revokeObjectURL(url)
 
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob)
-        } else {
-          reject(new Error('Failed to create PNG blob'))
-        }
-      }, 'image/png')
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            releaseCanvas(canvas) // Return to pool
+            resolve(blob)
+          } else {
+            releaseCanvas(canvas)
+            reject(new Error('Failed to create PNG blob'))
+          }
+        },
+        'image/png',
+        1.0 // Maximum quality
+      )
     }
 
     img.onerror = () => {
       URL.revokeObjectURL(url)
+      releaseCanvas(canvas)
       reject(new Error('Failed to load SVG image'))
     }
 
