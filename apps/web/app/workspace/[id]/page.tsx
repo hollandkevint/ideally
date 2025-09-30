@@ -10,12 +10,12 @@ import BmadInterface from '../../components/bmad/BmadInterface'
 import StateBridge from '../../components/dual-pane/StateBridge'
 import { PaneErrorBoundary, LoadingPane, OfflineIndicator, useOnlineStatus } from '../../components/dual-pane/PaneErrorBoundary'
 import { useSharedInput } from '../../components/workspace/useSharedInput'
-import CanvasContextSync from '../../components/canvas/CanvasContextSync'
+import CanvasContextSync from '../../../components/canvas/CanvasContextSync'
 import dynamic from 'next/dynamic'
 
 // Dynamically import canvas components (SSR-safe)
 const EnhancedCanvasWorkspace = dynamic(
-  () => import('../../components/canvas/EnhancedCanvasWorkspace'),
+  () => import('../../../app/components/canvas/EnhancedCanvasWorkspace'),
   { ssr: false }
 )
 
