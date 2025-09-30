@@ -434,3 +434,52 @@ export interface PriorityMatrix {
     timeWasters: { maxImpact: 6, minEffort: 5 };
   };
 }
+
+// Feature Brief types (Story 2.4c)
+export interface FeatureBrief {
+  id: string;
+  title: string;
+  description: string;
+  userStories: string[];
+  acceptanceCriteria: string[];
+  successMetrics: string[];
+  implementationNotes: string[];
+  priorityContext: {
+    score: number;
+    category: string;
+    quadrant: string;
+  };
+  generatedAt: Date;
+  lastEditedAt: Date;
+  version: number;
+}
+
+export interface FeatureSessionData {
+  featureInput: FeatureInputData;
+  priorityScoring: PriorityScoring;
+  featureBrief?: FeatureBrief;
+}
+
+export interface ExportFormat {
+  format: 'markdown' | 'text' | 'pdf';
+  content: string;
+  filename: string;
+}
+
+export interface BriefGenerationRequest {
+  sessionId: string;
+  regenerate?: boolean;
+}
+
+export interface BriefUpdateRequest {
+  sessionId: string;
+  briefId: string;
+  updates: Partial<FeatureBrief>;
+}
+
+export interface BriefQualityValidation {
+  isValid: boolean;
+  qualityScore: number;
+  errors: string[];
+  warnings: string[];
+}

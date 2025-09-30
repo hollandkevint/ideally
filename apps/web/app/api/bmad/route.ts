@@ -23,6 +23,7 @@ import {
   getPriorityRecommendations,
   analyzePriority
 } from '@/lib/bmad/pathways/priority-scoring';
+import { FeatureBriefGenerator } from '@/lib/bmad/generators/feature-brief-generator';
 
 /**
  * BMad Method API Endpoints
@@ -108,6 +109,18 @@ export async function POST(request: NextRequest) {
 
       case 'save_priority_scoring':
         return await handleSavePriorityScoring(userId, params);
+
+      case 'generate_feature_brief':
+        return await handleGenerateFeatureBrief(userId, params);
+
+      case 'update_feature_brief':
+        return await handleUpdateFeatureBrief(userId, params);
+
+      case 'regenerate_feature_brief':
+        return await handleRegenerateFeatureBrief(userId, params);
+
+      case 'export_feature_brief':
+        return await handleExportFeatureBrief(params);
 
       // Universal Session State Management endpoints
       case 'switch_pathway':
@@ -642,6 +655,305 @@ async function handleSavePriorityScoring(
     const errorMessage = error instanceof Error ? error.message : 'Save failed';
     return NextResponse.json(
       { error: 'Failed to save priority scoring', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+// Feature Brief Generation Handlers
+
+/**
+ * Generate feature brief from session data
+ */
+async function handleGenerateFeatureBrief(
+  userId: string,
+  params: {
+    sessionId: string;
+  }
+) {
+  const { sessionId } = params;
+
+  if (!sessionId) {
+    return NextResponse.json(
+      { error: 'sessionId is required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Get feature input and priority scoring from session
+    const session = await sessionOrchestrator.getSession(sessionId);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Session not found' },
+        { status: 404 }
+      );
+    }
+
+    // Extract feature session data from bmad_user_responses
+    const featureInputResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'feature-input');
+    const priorityScoringResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'priority-scoring');
+
+    if (!featureInputResponse.length || !priorityScoringResponse.length) {
+      return NextResponse.json(
+        { error: 'Feature input and priority scoring required before generating brief' },
+        { status: 400 }
+      );
+    }
+
+    const featureInput = featureInputResponse[0].response_data.data as FeatureInputData;
+    const priorityScoring = priorityScoringResponse[0].response_data.data as PriorityScoring;
+
+    // Generate the brief
+    const generator = new FeatureBriefGenerator();
+    const brief = await generator.generate({
+      featureInput,
+      priorityScoring
+    });
+
+    // Validate the generated brief
+    const validation = generator.validateBrief(brief);
+
+    // Save the brief to session
+    await BmadDatabase.recordUserResponse(
+      sessionId,
+      'feature-brief',
+      'feature-brief-generator',
+      {
+        data: brief
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        brief,
+        validation,
+        generated_at: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Generate feature brief error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Generation failed';
+    return NextResponse.json(
+      { error: 'Failed to generate feature brief', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Update existing feature brief
+ */
+async function handleUpdateFeatureBrief(
+  userId: string,
+  params: {
+    sessionId: string;
+    briefId: string;
+    updates: Partial<FeatureBrief>;
+  }
+) {
+  const { sessionId, briefId, updates } = params;
+
+  if (!sessionId || !briefId || !updates) {
+    return NextResponse.json(
+      { error: 'sessionId, briefId, and updates are required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const generator = new FeatureBriefGenerator();
+    const updatedBrief = await generator.update(briefId, updates);
+
+    // Validate the updated brief
+    const validation = generator.validateBrief(updatedBrief);
+
+    // Save updated brief to session
+    await BmadDatabase.recordUserResponse(
+      sessionId,
+      'feature-brief',
+      'feature-brief-update',
+      {
+        data: updatedBrief
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        brief: updatedBrief,
+        validation,
+        updated_at: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Update feature brief error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Update failed';
+    return NextResponse.json(
+      { error: 'Failed to update feature brief', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Regenerate feature brief from session data
+ */
+async function handleRegenerateFeatureBrief(
+  userId: string,
+  params: {
+    sessionId: string;
+    briefId: string;
+  }
+) {
+  const { sessionId, briefId } = params;
+
+  if (!sessionId || !briefId) {
+    return NextResponse.json(
+      { error: 'sessionId and briefId are required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Get feature session data
+    const featureInputResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'feature-input');
+    const priorityScoringResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'priority-scoring');
+    const existingBriefResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'feature-brief');
+
+    if (!featureInputResponse.length || !priorityScoringResponse.length) {
+      return NextResponse.json(
+        { error: 'Feature input and priority scoring required' },
+        { status: 400 }
+      );
+    }
+
+    const featureInput = featureInputResponse[0].response_data.data as FeatureInputData;
+    const priorityScoring = priorityScoringResponse[0].response_data.data as PriorityScoring;
+    const existingBrief = existingBriefResponse.length > 0
+      ? existingBriefResponse[0].response_data.data as FeatureBrief
+      : undefined;
+
+    // Regenerate the brief
+    const generator = new FeatureBriefGenerator();
+    const newBrief = await generator.regenerate(briefId, {
+      featureInput,
+      priorityScoring,
+      featureBrief: existingBrief
+    });
+
+    // Validate the regenerated brief
+    const validation = generator.validateBrief(newBrief);
+
+    // Save regenerated brief
+    await BmadDatabase.recordUserResponse(
+      sessionId,
+      'feature-brief',
+      'feature-brief-regeneration',
+      {
+        data: newBrief
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        brief: newBrief,
+        validation,
+        regenerated_at: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Regenerate feature brief error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Regeneration failed';
+    return NextResponse.json(
+      { error: 'Failed to regenerate feature brief', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Export feature brief in specified format
+ */
+async function handleExportFeatureBrief(params: {
+  sessionId: string;
+  format: 'markdown' | 'text' | 'pdf';
+}) {
+  const { sessionId, format = 'markdown' } = params;
+
+  if (!sessionId) {
+    return NextResponse.json(
+      { error: 'sessionId is required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Get the brief from session
+    const briefResponse = await BmadDatabase.getResponsesByPhase(sessionId, 'feature-brief');
+
+    if (!briefResponse.length) {
+      return NextResponse.json(
+        { error: 'No feature brief found for this session' },
+        { status: 404 }
+      );
+    }
+
+    const brief = briefResponse[0].response_data.data as FeatureBrief;
+
+    // Import export formatters dynamically
+    const { formatBriefAsMarkdown, formatBriefAsText, formatBriefAsPDF } =
+      await import('@/lib/bmad/exports/brief-formatters');
+
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    switch (format) {
+      case 'markdown':
+        content = formatBriefAsMarkdown(brief);
+        filename = `feature-brief-${brief.id}.md`;
+        mimeType = 'text/markdown';
+        break;
+      case 'text':
+        content = formatBriefAsText(brief);
+        filename = `feature-brief-${brief.id}.txt`;
+        mimeType = 'text/plain';
+        break;
+      case 'pdf':
+        content = await formatBriefAsPDF(brief);
+        filename = `feature-brief-${brief.id}.pdf`;
+        mimeType = 'application/pdf';
+        break;
+      default:
+        return NextResponse.json(
+          { error: 'Invalid export format. Use: markdown, text, or pdf' },
+          { status: 400 }
+        );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        format,
+        content,
+        filename,
+        mimeType,
+        exported_at: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Export feature brief error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Export failed';
+    return NextResponse.json(
+      { error: 'Failed to export feature brief', details: errorMessage },
       { status: 500 }
     );
   }
