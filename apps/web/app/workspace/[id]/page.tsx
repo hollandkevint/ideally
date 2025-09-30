@@ -47,14 +47,24 @@ export default function WorkspacePage() {
   const fetchWorkspace = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('workspaces')
-        .select('*')
-        .eq('id', params.id)
-        .eq('user_id', user?.id)
+        .from('user_workspace')
+        .select('user_id, workspace_state, updated_at')
+        .eq('user_id', params.id)
         .single()
 
       if (error) throw error
-      setWorkspace(data)
+
+      // Transform user_workspace data to Workspace format
+      const transformedWorkspace: Workspace = {
+        id: data.user_id,
+        name: data.workspace_state?.name || 'My Strategic Workspace',
+        description: data.workspace_state?.description || 'Strategic thinking workspace',
+        chat_context: data.workspace_state?.chat_context || [],
+        canvas_elements: data.workspace_state?.canvas_elements || [],
+        user_id: data.user_id
+      }
+
+      setWorkspace(transformedWorkspace)
     } catch (error) {
       console.error('Error fetching workspace:', error)
       setError('Workspace not found or you do not have access to it')
@@ -79,15 +89,21 @@ export default function WorkspacePage() {
     }
 
     const updatedChatContext = [...workspace.chat_context, newMessage]
-    
+
     try {
       const { error } = await supabase
-        .from('workspaces')
-        .update({ 
-          chat_context: updatedChatContext,
+        .from('user_workspace')
+        .update({
+          workspace_state: {
+            name: workspace.name,
+            description: workspace.description,
+            chat_context: updatedChatContext,
+            canvas_elements: workspace.canvas_elements,
+            updated_at: new Date().toISOString()
+          },
           updated_at: new Date().toISOString()
         })
-        .eq('id', workspace.id)
+        .eq('user_id', workspace.id)
 
       if (error) throw error
 
@@ -167,9 +183,16 @@ export default function WorkspacePage() {
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6).trim()
+
+            // Skip [DONE] signal
+            if (dataStr === '[DONE]') {
+              continue
+            }
+
             try {
-              const data = JSON.parse(line.slice(6))
-              
+              const data = JSON.parse(dataStr)
+
               if (data.type === 'content') {
                 assistantContent += data.content
                 // Update streaming message in UI
@@ -181,7 +204,7 @@ export default function WorkspacePage() {
                 throw new Error(data.error)
               }
             } catch (parseError) {
-              console.error('Failed to parse stream data:', parseError)
+              console.error('Failed to parse stream data:', dataStr, parseError)
             }
           }
         }
@@ -348,7 +371,8 @@ export default function WorkspacePage() {
                 )}
               </div>
             </button>
-            <button
+            {/* BMad Method tab temporarily disabled - database setup pending */}
+            {/* <button
               onClick={() => handleTabSwitch('bmad')}
               className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'bmad'
@@ -365,7 +389,7 @@ export default function WorkspacePage() {
                   NEW
                 </span>
               </div>
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -375,18 +399,78 @@ export default function WorkspacePage() {
             <>
               <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
                 {workspace.chat_context.length === 0 && (
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-semibold text-sm">M</span>
+                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-semibold">M</span>
                       </div>
-                      <div>
-                        <p className="font-medium text-blue-900 mb-1">Welcome to your Strategic Session!</p>
-                        <p className="text-blue-700 text-sm">
-                          I&apos;m Mary, your AI strategic advisor. I&apos;m here to help you think through ideas, validate concepts, 
-                          and develop actionable plans. What challenge would you like to explore today?
+                      <div className="flex-1">
+                        <p className="font-semibold text-blue-900 text-lg mb-2">Welcome to your Strategic Session!</p>
+                        <p className="text-blue-700 mb-4">
+                          I&apos;m Mary, your AI strategic advisor. I&apos;m here to help you think through ideas, validate concepts,
+                          and develop actionable plans using the proven bMAD Method.
                         </p>
+                        <p className="font-medium text-blue-900 mb-3">Try asking me about:</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <button
+                            onClick={() => {
+                              setMessageInput("I have a new product idea I want to validate")
+                              setTimeout(() => {
+                                const input = document.querySelector('input[type="text"]') as HTMLInputElement
+                                input?.focus()
+                                input?.select()
+                              }, 100)
+                            }}
+                            className="text-left px-4 py-3 bg-white hover:bg-blue-100 border border-blue-200 rounded-lg text-sm text-blue-800 hover:text-blue-900 transition-colors"
+                          >
+                            💡 Validate a new product idea
+                          </button>
+                          <button
+                            onClick={() => {
+                              setMessageInput("I need help analyzing my competitive landscape")
+                              setTimeout(() => {
+                                const input = document.querySelector('input[type="text"]') as HTMLInputElement
+                                input?.focus()
+                                input?.select()
+                              }, 100)
+                            }}
+                            className="text-left px-4 py-3 bg-white hover:bg-blue-100 border border-blue-200 rounded-lg text-sm text-blue-800 hover:text-blue-900 transition-colors"
+                          >
+                            📊 Analyze competitive landscape
+                          </button>
+                          <button
+                            onClick={() => {
+                              setMessageInput("I'm stuck on my business model and need guidance")
+                              setTimeout(() => {
+                                const input = document.querySelector('input[type="text"]') as HTMLInputElement
+                                input?.focus()
+                                input?.select()
+                              }, 100)
+                            }}
+                            className="text-left px-4 py-3 bg-white hover:bg-blue-100 border border-blue-200 rounded-lg text-sm text-blue-800 hover:text-blue-900 transition-colors"
+                          >
+                            🎯 Refine business model
+                          </button>
+                          <button
+                            onClick={() => {
+                              setMessageInput("Help me prioritize my product features")
+                              setTimeout(() => {
+                                const input = document.querySelector('input[type="text"]') as HTMLInputElement
+                                input?.focus()
+                                input?.select()
+                              }, 100)
+                            }}
+                            className="text-left px-4 py-3 bg-white hover:bg-blue-100 border border-blue-200 rounded-lg text-sm text-blue-800 hover:text-blue-900 transition-colors"
+                          >
+                            ⚡ Prioritize features
+                          </button>
+                        </div>
                       </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        💬 <strong>Tip:</strong> Click a suggestion above to populate the input field, then press <kbd className="px-2 py-1 bg-white border border-blue-300 rounded text-xs font-mono">Send</kbd> or <kbd className="px-2 py-1 bg-white border border-blue-300 rounded text-xs font-mono">Enter</kbd> to chat with Mary!
+                      </p>
                     </div>
                   </div>
                 )}

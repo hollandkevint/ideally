@@ -3,15 +3,15 @@ import { claudeClient } from '@/lib/ai/claude-client';
 import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
 import { createClient } from '@/lib/supabase/server';
 import { CoachingContext } from '@/lib/ai/mary-persona';
-import { WorkspaceContextBuilder } from '@/lib/ai/workspace-context';
+import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
 
 export async function POST(request: NextRequest) {
   try {
     const { message, workspaceId, conversationHistory, coachingContext } = await request.json();
-    
+
     // Validate request
     if (!message || !workspaceId) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), { 
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -20,24 +20,27 @@ export async function POST(request: NextRequest) {
     // Get user context
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized', details: authError?.message }), { 
+      return new Response(JSON.stringify({ error: 'Unauthorized', details: authError?.message }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Verify workspace access
+    // Verify workspace access - using user_workspace table
     const { data: workspace, error: workspaceError } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('id', workspaceId)
+      .from('user_workspace')
+      .select('user_id, workspace_state')
       .eq('user_id', user.id)
       .single();
 
     if (workspaceError || !workspace) {
-      return new Response(JSON.stringify({ error: 'Workspace not found' }), { 
+      console.error('Workspace lookup error:', workspaceError);
+      return new Response(JSON.stringify({
+        error: 'Workspace not found',
+        details: workspaceError?.message
+      }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -71,13 +74,13 @@ export async function POST(request: NextRequest) {
 
     // Prepare conversation context management
     const historyWithContext = conversationHistory || [];
-    const managedHistory = WorkspaceContextBuilder.pruneConversationHistory(
+    const managedHistory = ConversationContextManager.pruneConversationHistory(
       historyWithContext,
       6000 // Leave room for response
     );
 
     const encoder = new StreamEncoder();
-    
+
     // Create streaming response
     const stream = new ReadableStream({
       async start(controller) {
@@ -131,25 +134,9 @@ export async function POST(request: NextRequest) {
             }
           }
 
-          // Store conversation in database
-          try {
-            await supabase
-              .from('conversations')
-              .upsert({
-                workspace_id: workspaceId,
-                user_id: user.id,
-                messages: [
-                  ...managedHistory,
-                  { role: 'user', content: message, timestamp: new Date().toISOString() },
-                  { role: 'assistant', content: fullContent, timestamp: new Date().toISOString() }
-                ],
-                coaching_context: finalCoachingContext,
-                last_activity: new Date().toISOString()
-              }, { onConflict: 'workspace_id,user_id' });
-          } catch (dbError) {
-            console.warn('Failed to store conversation:', dbError);
-            // Don't fail the request for database issues
-          }
+          // Note: Conversation storage is handled by the workspace page
+          // which updates user_workspace.workspace_state.chat_context
+          // No additional database storage needed here
           
           // Send completion signal with usage data
           controller.enqueue(encoder.encodeComplete(claudeResponse.usage));

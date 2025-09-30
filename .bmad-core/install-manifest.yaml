@@ -1,13 +1,11 @@
-version: 1.0.0
-installed_at: '2025-08-21T14:32:32.040Z'
+version: 4.43.0
+installed_at: '2025-09-29T15:41:12.771Z'
 install_type: full
 agent: null
 ides_setup:
   - cursor
   - claude-code
-expansion_packs:
-  - bmad-pmf-validation
-  - bmad-product-leadership
+expansion_packs: []
 files:
   - path: .bmad-core/working-in-the-brownfield.md
     hash: 2bf3551cbc498b47
@@ -15,35 +13,41 @@ files:
   - path: .bmad-core/user-guide.md
     hash: e633affe88d4ff20
     modified: false
+  - path: .bmad-core/install-manifest.yaml
+    hash: 69c865234d39ba4e
+    modified: false
   - path: .bmad-core/enhanced-ide-development-workflow.md
     hash: 39beb3516c070e2b
     modified: false
+  - path: .bmad-core/core-config.yaml.bak
+    hash: 8422ba8d50f3133d
+    modified: false
   - path: .bmad-core/core-config.yaml
-    hash: 073cf6d2527c545d
+    hash: 94ce5b2faad48235
+    modified: false
+  - path: .bmad-core/workflows/greenfield-ui.yaml
+    hash: 2b595f235c095790
+    modified: false
+  - path: .bmad-core/workflows/greenfield-service.yaml
+    hash: 1ea8b8d218f8caef
+    modified: false
+  - path: .bmad-core/workflows/greenfield-fullstack.yaml
+    hash: df34e60ccfac2624
+    modified: false
+  - path: .bmad-core/workflows/brownfield-ui.yaml
+    hash: 8a8068093272d00f
+    modified: false
+  - path: .bmad-core/workflows/brownfield-service.yaml
+    hash: a3cd68897852876e
+    modified: false
+  - path: .bmad-core/workflows/brownfield-fullstack.yaml
+    hash: 9716ad5956a37037
     modified: false
   - path: .bmad-core/utils/workflow-management.md
     hash: c2196880f2281f84
     modified: false
   - path: .bmad-core/utils/bmad-doc-template.md
     hash: 34df6ead8b91abfc
-    modified: false
-  - path: .bmad-core/workflows/greenfield-ui.yaml
-    hash: defde5d6bdcedd49
-    modified: false
-  - path: .bmad-core/workflows/greenfield-service.yaml
-    hash: adf12981103693fb
-    modified: false
-  - path: .bmad-core/workflows/greenfield-fullstack.yaml
-    hash: ba1bca46aae0486f
-    modified: false
-  - path: .bmad-core/workflows/brownfield-ui.yaml
-    hash: d8d63286af13181c
-    modified: false
-  - path: .bmad-core/workflows/brownfield-service.yaml
-    hash: e3e8029216c47391
-    modified: false
-  - path: .bmad-core/workflows/brownfield-fullstack.yaml
-    hash: 60a703d65da43d27
     modified: false
   - path: .bmad-core/templates/story-tmpl.yaml
     hash: 11e79b87ff700c8f
@@ -76,7 +80,7 @@ files:
     hash: 5b89b783cd2cacdb
     modified: false
   - path: .bmad-core/templates/brownfield-architecture-tmpl.yaml
-    hash: be2b8c7fa9e5864d
+    hash: 24af1ba7d17e68da
     modified: false
   - path: .bmad-core/templates/brainstorming-output-tmpl.yaml
     hash: ba806c97165c8178
@@ -178,7 +182,7 @@ files:
     hash: df403478049b6958
     modified: false
   - path: .bmad-core/checklists/po-master-checklist.md
-    hash: c46c67e6bf61b70e
+    hash: 8354985e56053c48
     modified: false
   - path: .bmad-core/checklists/pm-checklist.md
     hash: b53f0270312713d2
@@ -188,18 +192,6 @@ files:
     modified: false
   - path: .bmad-core/checklists/architect-checklist.md
     hash: 15ef7d01b0e31c3f
-    modified: false
-  - path: .bmad-core/agent-teams/team-no-ui.yaml
-    hash: 00cbffc4106cbe1e
-    modified: false
-  - path: .bmad-core/agent-teams/team-ide-minimal.yaml
-    hash: 424972103dfde87d
-    modified: false
-  - path: .bmad-core/agent-teams/team-fullstack.yaml
-    hash: 14c7a2d8bc7ceb6f
-    modified: false
-  - path: .bmad-core/agent-teams/team-all.yaml
-    hash: db5b0ff0a9c9c2e8
     modified: false
   - path: .bmad-core/agents/ux-expert.md
     hash: a99c4d3c839db162
@@ -231,156 +223,15 @@ files:
   - path: .bmad-core/agents/analyst.md
     hash: 4b50870da75956b0
     modified: false
-  - path: .bmad-pmf-validation/agents/sales-debugger.md
-    hash: d742ba7e4d0fdc65
+  - path: .bmad-core/agent-teams/team-no-ui.yaml
+    hash: 00cbffc4106cbe1e
     modified: false
-  - path: .bmad-pmf-validation/agents/pricing-strategist.md
-    hash: c707c899a188af19
+  - path: .bmad-core/agent-teams/team-ide-minimal.yaml
+    hash: 424972103dfde87d
     modified: false
-  - path: .bmad-pmf-validation/agents/pmf-strategist.md
-    hash: 1fee2bff12177769
+  - path: .bmad-core/agent-teams/team-fullstack.yaml
+    hash: 14c7a2d8bc7ceb6f
     modified: false
-  - path: .bmad-pmf-validation/agents/growth-catalyst.md
-    hash: 943f256edc1ddf6a
-    modified: false
-  - path: .bmad-pmf-validation/agents/demand-researcher.md
-    hash: 9648f0e6ff7c57f5
-    modified: false
-  - path: .bmad-pmf-validation/agents/customer-success-engineer.md
-    hash: 711508e2da248ab9
-    modified: false
-  - path: .bmad-pmf-validation/agents/case-study-architect.md
-    hash: dd17be78a5861314
-    modified: false
-  - path: .bmad-pmf-validation/agent-teams/pmf-validation-team.yaml
-    hash: 2e735924e0e29c54
-    modified: false
-  - path: .bmad-pmf-validation/templates/unfolding-plan-tmpl.yaml
-    hash: 7b79bfa95f03d4e5
-    modified: false
-  - path: .bmad-pmf-validation/templates/sales-pitch-deck-tmpl.yaml
-    hash: d966b990dcd9531d
-    modified: false
-  - path: .bmad-pmf-validation/templates/retention-metrics-tmpl.yaml
-    hash: f60c51a42a2af482
-    modified: false
-  - path: .bmad-pmf-validation/templates/outreach-message-tmpl.yaml
-    hash: 5a7b0b7cf2557b55
-    modified: false
-  - path: .bmad-pmf-validation/templates/demand-analysis-tmpl.yaml
-    hash: d100830a618696d0
-    modified: false
-  - path: .bmad-pmf-validation/templates/case-study-tmpl.yaml
-    hash: 21439b0756bb4d9f
-    modified: false
-  - path: .bmad-pmf-validation/tasks/identify-demand-patterns.md
-    hash: 72570e37302a5962
-    modified: false
-  - path: .bmad-pmf-validation/tasks/draft-case-study.md
-    hash: a04f00a7c275536b
-    modified: false
-  - path: .bmad-pmf-validation/tasks/design-outreach-campaign.md
-    hash: 1f1265460683a719
-    modified: false
-  - path: .bmad-pmf-validation/tasks/design-manual-delivery.md
-    hash: fa860a1ba9d39b56
-    modified: false
-  - path: .bmad-pmf-validation/tasks/create-sales-pitch.md
-    hash: d26e2fc6ae4140f6
-    modified: false
-  - path: .bmad-pmf-validation/tasks/analyze-sales-call.md
-    hash: 7c1961e2a073d187
-    modified: false
-  - path: .bmad-pmf-validation/checklists/sales-debug-checklist.md
-    hash: a3a0d9b0e6a19155
-    modified: false
-  - path: .bmad-pmf-validation/checklists/retention-drivers-checklist.md
-    hash: 3e23688d730367c8
-    modified: false
-  - path: .bmad-pmf-validation/checklists/pmf-signals-checklist.md
-    hash: 81ca79e91bfd5aee
-    modified: false
-  - path: .bmad-pmf-validation/checklists/demand-intensity-checklist.md
-    hash: 0b6ba3a2dad1beee
-    modified: false
-  - path: .bmad-pmf-validation/checklists/case-study-validation-checklist.md
-    hash: 1da437a2c09a8e50
-    modified: false
-  - path: .bmad-pmf-validation/workflows/zero-to-first-customer.yaml
-    hash: e2a30a088486a03c
-    modified: false
-  - path: .bmad-pmf-validation/workflows/sales-to-learn.yaml
-    hash: 6ec89223d64dd897
-    modified: false
-  - path: .bmad-pmf-validation/workflows/manual-to-automated.yaml
-    hash: c4a54de4d0b24712
-    modified: false
-  - path: .bmad-pmf-validation/workflows/case-study-evolution.yaml
-    hash: e8c8ac3701f563cb
-    modified: false
-  - path: .bmad-pmf-validation/data/bmad-kb.md
-    hash: 6f5f8e30d25b270a
-    modified: false
-  - path: .bmad-pmf-validation/config.yaml
-    hash: 6046ae6db402d476
-    modified: false
-  - path: .bmad-pmf-validation/README.md
-    hash: b0271e47fbdf034d
-    modified: false
-  - path: .bmad-product-leadership/agents/zero-to-one-product-builder.md
-    hash: efb210a10ec70c3c
-    modified: false
-  - path: .bmad-product-leadership/agents/product-sunset-specialist.md
-    hash: 5ee4d4e3ee540db0
-    modified: false
-  - path: .bmad-product-leadership/agents/product-operations-lead.md
-    hash: b7cedbe94032eabc
-    modified: false
-  - path: .bmad-product-leadership/agents/product-exploration-lead.md
-    hash: 15255e38e57922b7
-    modified: false
-  - path: .bmad-product-leadership/agents/product-coach.md
-    hash: edcf6ac9b819164e
-    modified: false
-  - path: .bmad-product-leadership/agents/platform-product-leader.md
-    hash: 133671a3793c076e
-    modified: false
-  - path: .bmad-product-leadership/agents/growth-product-lead.md
-    hash: fcb839a04807293c
-    modified: false
-  - path: .bmad-product-leadership/agents/fractional-product-advisor.md
-    hash: 206ffdbc5c36048f
-    modified: false
-  - path: .bmad-product-leadership/agent-teams/product-leadership-team.yaml
-    hash: fb92b978ba56ed97
-    modified: false
-  - path: .bmad-product-leadership/templates/product-strategy-tmpl.yaml
-    hash: 09a00f4520bc46f2
-    modified: false
-  - path: .bmad-product-leadership/tasks/validate-product-concept.md
-    hash: df2500169ca26793
-    modified: false
-  - path: .bmad-product-leadership/tasks/develop-growth-strategy.md
-    hash: 83530e60708861ff
-    modified: false
-  - path: .bmad-product-leadership/tasks/design-discovery-plan.md
-    hash: eb9b8983e34a12a0
-    modified: false
-  - path: .bmad-product-leadership/tasks/assess-product-maturity.md
-    hash: a33ed951df6af52c
-    modified: false
-  - path: .bmad-product-leadership/checklists/product-team-readiness-checklist.md
-    hash: 9f1dc91ab841c9b9
-    modified: false
-  - path: .bmad-product-leadership/workflows/zero-to-one-development.yaml
-    hash: bcb80db955094495
-    modified: false
-  - path: .bmad-product-leadership/workflows/product-strategy-development.yaml
-    hash: 7b5f4d5ef864bc3a
-    modified: false
-  - path: .bmad-product-leadership/data/bmad-kb.md
-    hash: d62a38c23349167b
-    modified: false
-  - path: .bmad-product-leadership/config.yaml
-    hash: aabdc9a5259a2522
+  - path: .bmad-core/agent-teams/team-all.yaml
+    hash: db5b0ff0a9c9c2e8
     modified: false

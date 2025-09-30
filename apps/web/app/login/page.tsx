@@ -176,15 +176,15 @@ function LoginPageContent() {
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-secondary">
+            <p className="text-sm text-gray-600">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="font-medium text-primary hover:text-primary-hover">
+              <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-800 underline">
                 Sign up here
               </Link>
             </p>
-            <p className="text-secondary">
+            <p className="text-sm text-gray-600">
               Email not confirmed?{' '}
-              <Link href="/resend-confirmation" className="font-medium text-primary hover:text-primary-hover">
+              <Link href="/resend-confirmation" className="font-medium text-blue-600 hover:text-blue-800 underline">
                 Resend confirmation email
               </Link>
             </p>

@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('AuthContext: Initial session:', session?.user?.email || 'No user')
       setUser(session?.user ?? null)
+      setLoading(false) // Always set loading to false after initial session check
     })
 
     // Listen for auth changes
@@ -37,14 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString()
       })
 
-      // Do not set loading to false on initial session load without a user.
-      // This can happen during an OAuth redirect before the session is fully established.
-      const isInitialSessionWithNoUser = event === 'INITIAL_SESSION' && !session?.user;
-      if (!isInitialSessionWithNoUser) {
-        setLoading(false);
-      }
-      
       setUser(session?.user ?? null)
+      setLoading(false)
       
       // Handle authentication events with structured logging
       if (event === 'SIGNED_IN' && session) {

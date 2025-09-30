@@ -56,6 +56,7 @@ function DashboardContent() {
         .from('user_workspace')
         .select('user_id, workspace_state, updated_at')
         .eq('user_id', user?.id)
+        .single()
 
       if (error) {
         console.error('Error fetching workspaces:', error)
@@ -101,24 +102,24 @@ function DashboardContent() {
         // Don't redirect on database errors - show error state instead
         setWorkspaces([])
       } else {
-        console.log('Dashboard: Successfully fetched user workspace:', data ? 'Found' : 'Not found')
+        console.log('Dashboard: Successfully fetched user workspace:', data ? 'Found' : 'Not found', data)
 
-        // Transform UserWorkspace data to Workspace format
-        const transformedWorkspaces: Workspace[] = data ? data.map((userWs: UserWorkspace) => ({
-          id: userWs.user_id, // Using user_id as workspace id for now
-          name: userWs.workspace_state?.name || 'My Strategic Workspace',
-          description: userWs.workspace_state?.description || 'Strategic thinking and planning workspace',
-          dual_pane_state: userWs.workspace_state?.dual_pane_state || {
+        // Transform UserWorkspace data to Workspace format (single workspace per user)
+        const transformedWorkspaces: Workspace[] = data ? [{
+          id: data.user_id,
+          name: data.workspace_state?.name || 'My Strategic Workspace',
+          description: data.workspace_state?.description || 'Strategic thinking and planning workspace',
+          dual_pane_state: data.workspace_state?.dual_pane_state || {
             chat_width: 50,
             canvas_width: 50,
             active_pane: 'chat',
             collapsed: false
           },
-          created_at: userWs.workspace_state?.created_at || userWs.updated_at,
-          updated_at: userWs.updated_at,
-          chat_context: userWs.workspace_state?.chat_context || [],
-          canvas_elements: userWs.workspace_state?.canvas_elements || []
-        })) : []
+          created_at: data.workspace_state?.created_at || data.updated_at,
+          updated_at: data.updated_at,
+          chat_context: data.workspace_state?.chat_context || [],
+          canvas_elements: data.workspace_state?.canvas_elements || []
+        }] : []
 
         setWorkspaces(transformedWorkspaces)
         setRetryCount(0) // Reset retry count on success
