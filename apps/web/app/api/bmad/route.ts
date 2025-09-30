@@ -158,6 +158,16 @@ export async function POST(request: NextRequest) {
       case 'generate_business_model_canvas':
         return await handleGenerateBusinessModelCanvas(userId, params);
 
+      // Canvas Workspace endpoints
+      case 'save_canvas_state':
+        return await handleSaveCanvasState(userId, params);
+
+      case 'load_canvas_state':
+        return await handleLoadCanvasState(userId, params);
+
+      case 'export_canvas':
+        return await handleExportCanvas(params);
+
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
@@ -1344,6 +1354,78 @@ async function handleGenerateBusinessModelCanvas(userId: string, params: { sessi
     console.error('Generate business model canvas error:', error);
     return NextResponse.json(
       { error: 'Failed to generate business model canvas', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Canvas Workspace Handlers
+
+async function handleSaveCanvasState(userId: string, params: { sessionId: string, canvasState: any }) {
+  try {
+    const { canvasManager } = await import('@/lib/canvas/canvas-manager');
+
+    await canvasManager.saveState(params.sessionId, params.canvasState);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Canvas state saved successfully'
+    });
+  } catch (error) {
+    console.error('Save canvas state error:', error);
+    return NextResponse.json(
+      { error: 'Failed to save canvas state', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleLoadCanvasState(userId: string, params: { sessionId: string }) {
+  try {
+    const { canvasManager } = await import('@/lib/canvas/canvas-manager');
+
+    const canvasState = await canvasManager.loadState(params.sessionId);
+
+    return NextResponse.json({
+      success: true,
+      data: canvasState
+    });
+  } catch (error) {
+    console.error('Load canvas state error:', error);
+    return NextResponse.json(
+      { error: 'Failed to load canvas state', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleExportCanvas(params: { sessionId: string, format: 'png' | 'svg' | 'mermaid' }) {
+  try {
+    const { canvasManager } = await import('@/lib/canvas/canvas-manager');
+
+    const canvasState = await canvasManager.loadState(params.sessionId);
+
+    if (!canvasState) {
+      return NextResponse.json(
+        { error: 'Canvas state not found' },
+        { status: 404 }
+      );
+    }
+
+    // Export logic will be implemented with canvas library integration
+    // For now, return the canvas data
+    return NextResponse.json({
+      success: true,
+      data: {
+        format: params.format,
+        canvasState,
+        message: 'Export functionality will be implemented with canvas library'
+      }
+    });
+  } catch (error) {
+    console.error('Export canvas error:', error);
+    return NextResponse.json(
+      { error: 'Failed to export canvas', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
