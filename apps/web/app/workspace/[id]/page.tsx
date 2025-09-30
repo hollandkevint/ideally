@@ -10,6 +10,14 @@ import BmadInterface from '../../components/bmad/BmadInterface'
 import StateBridge from '../../components/dual-pane/StateBridge'
 import { PaneErrorBoundary, LoadingPane, OfflineIndicator, useOnlineStatus } from '../../components/dual-pane/PaneErrorBoundary'
 import { useSharedInput } from '../../components/workspace/useSharedInput'
+import CanvasContextSync from '../../components/canvas/CanvasContextSync'
+import dynamic from 'next/dynamic'
+
+// Dynamically import canvas components (SSR-safe)
+const EnhancedCanvasWorkspace = dynamic(
+  () => import('../../components/canvas/EnhancedCanvasWorkspace'),
+  { ssr: false }
+)
 
 interface ChatMessage {
   id: string
@@ -41,6 +49,13 @@ export default function WorkspacePage() {
   const [messageInput, setMessageInput] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('chat')
+  const [canvasState, setCanvasState] = useState<{
+    mode: 'draw' | 'diagram'
+    diagramCode?: string
+    diagramType?: string
+    drawingSnapshot?: string
+    lastModified: Date
+  } | null>(null)
   const isOnline = useOnlineStatus()
   const { preserveInput, hasPreservedInput, peekPreservedInput, clearPreservedInput } = useSharedInput(params.id as string)
 
@@ -536,7 +551,30 @@ export default function WorkspacePage() {
                   </div>
                 )}
               </div>
-              
+
+              {/* Canvas Context Sync */}
+              <div className="mt-4">
+                <CanvasContextSync
+                  workspaceId={workspace.id}
+                  messages={workspace.chat_context.map(msg => ({
+                    id: msg.id,
+                    role: msg.role as 'user' | 'assistant',
+                    content: msg.content,
+                    timestamp: new Date(msg.timestamp)
+                  }))}
+                  canvasState={canvasState}
+                  onCanvasUpdate={(diagramCode, type) => {
+                    setCanvasState({
+                      mode: 'diagram',
+                      diagramCode,
+                      diagramType: type,
+                      lastModified: new Date()
+                    })
+                  }}
+                  autoPopulate={false}
+                />
+              </div>
+
               <form onSubmit={handleSendMessage} className="mt-4">
                 <div className="flex gap-2">
                   <input 
@@ -596,17 +634,18 @@ export default function WorkspacePage() {
         </header>
         
         <div className="canvas-container">
-          <div className="h-full flex items-center justify-center text-secondary">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-canvas-grid flex items-center justify-center">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </div>
-              <p>Canvas ready for sketches and diagrams</p>
-              <p className="text-sm mt-2">Integration with Excalidraw & Mermaid coming soon</p>
-            </div>
-          </div>
+          <EnhancedCanvasWorkspace
+            workspaceId={workspace.id}
+            initialMode={canvasState?.mode || 'draw'}
+            initialDiagramCode={canvasState?.diagramCode}
+            initialDiagramType={canvasState?.diagramType as any}
+            onStateChange={(newState) => {
+              setCanvasState({
+                ...newState,
+                lastModified: new Date()
+              })
+            }}
+          />
         </div>
         </div>
       </PaneErrorBoundary>
