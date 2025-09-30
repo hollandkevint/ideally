@@ -4,7 +4,6 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function updateSession(request: NextRequest) {
   // Special handling for auth callback route - don't interfere with OAuth flow
   if (request.nextUrl.pathname === '/auth/callback') {
-    console.log('Middleware: Skipping auth callback route to prevent OAuth interference')
     return NextResponse.next({
       request,
     })
@@ -12,7 +11,6 @@ export async function updateSession(request: NextRequest) {
 
   // Special handling for post-OAuth dashboard access - bypass session check on OAuth success
   if (request.nextUrl.pathname === '/dashboard' && request.nextUrl.searchParams.get('auth_success') === 'true') {
-    console.log('Middleware: OAuth success detected, bypassing initial auth check for session sync')
     return NextResponse.next({
       request,
     })
@@ -72,8 +70,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  console.log('Middleware: Processing request to:', request.nextUrl.pathname, 'User:', user?.email || 'No user')
-
   // SECURITY FIX: Remove dangerous development mode bypass
   // This was allowing unauthorized access in production if NODE_ENV wasn't set correctly
   // Instead, handle protected routes properly with proper auth checks
@@ -99,7 +95,6 @@ export async function updateSession(request: NextRequest) {
   // SECURITY: In production, restrict access to test routes
   const isProduction = process.env.NODE_ENV === 'production'
   if (isProduction && isTestRoute) {
-    console.log('Middleware: Production - blocking access to test route:', request.nextUrl.pathname)
     return NextResponse.redirect(new URL('/', request.url))
   }
 
@@ -108,7 +103,6 @@ export async function updateSession(request: NextRequest) {
   const isTestApiRequest = request.nextUrl.pathname.startsWith('/api/bmad') && referer.includes('/test-bmad-buttons');
 
   if (isTestApiRequest && isProduction && !user) {
-    console.log('Middleware: Production - blocking unauthenticated test API access')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   
@@ -116,7 +110,6 @@ export async function updateSession(request: NextRequest) {
 
   // SECURITY: Proper auth enforcement for protected routes
   if (!user && !shouldSkipAuth) {
-    console.log('Middleware: Redirecting unauthenticated user to login from:', request.nextUrl.pathname)
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     // Store the attempted URL to redirect after login (avoid redirect loops)
@@ -129,7 +122,6 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users away from auth pages (but allow landing page)
   const authPages = ['/login', '/signup']
   if (user && authPages.includes(request.nextUrl.pathname)) {
-    console.log('Middleware: Redirecting authenticated user to dashboard from:', request.nextUrl.pathname)
     const redirectParam = request.nextUrl.searchParams.get('redirect')
     const url = request.nextUrl.clone()
     url.pathname = redirectParam || '/dashboard'
