@@ -24,6 +24,7 @@ import {
   analyzePriority
 } from '@/lib/bmad/pathways/priority-scoring';
 import { FeatureBriefGenerator } from '@/lib/bmad/generators/feature-brief-generator';
+import { BusinessModelPathwayOrchestrator } from '@/lib/bmad/pathways/business-model-pathway-orchestrator';
 
 /**
  * BMad Method API Endpoints
@@ -137,6 +138,25 @@ export async function POST(request: NextRequest) {
 
       case 'sync_session_state':
         return await handleSyncSessionState(params);
+
+      // Business Model Pathway endpoints
+      case 'analyze_revenue_streams':
+        return await handleAnalyzeRevenueStreams(userId, params);
+
+      case 'segment_customers':
+        return await handleSegmentCustomers(userId, params);
+
+      case 'generate_monetization_strategy':
+        return await handleGenerateMonetizationStrategy(userId, params);
+
+      case 'generate_implementation_roadmap':
+        return await handleGenerateImplementationRoadmap(userId, params);
+
+      case 'run_business_model_pathway':
+        return await handleRunBusinessModelPathway(userId, params);
+
+      case 'generate_business_model_canvas':
+        return await handleGenerateBusinessModelCanvas(userId, params);
 
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -1063,6 +1083,267 @@ async function handleSyncSessionState(params: { sessionId: string, partialUpdate
     console.error('Sync session state error:', error);
     return NextResponse.json(
       { error: 'Failed to sync session state', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Business Model Pathway Handlers
+
+async function handleAnalyzeRevenueStreams(userId: string, params: { sessionId: string, conversationHistory: any[], context?: any }) {
+  try {
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+    const result = await orchestrator.runPhase(
+      'revenue-analysis',
+      { id: params.sessionId, userId } as any,
+      params.conversationHistory,
+      undefined,
+      params.context
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+
+    // Save to session
+    await BmadDatabase.saveResponse(params.sessionId, 'revenue-analysis', { data: result.data });
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      metadata: result.metadata
+    });
+  } catch (error) {
+    console.error('Analyze revenue streams error:', error);
+    return NextResponse.json(
+      { error: 'Failed to analyze revenue streams', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleSegmentCustomers(userId: string, params: { sessionId: string, conversationHistory: any[], revenueStreams?: any[], context?: any }) {
+  try {
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+
+    // Get revenue analysis results
+    const previousResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'revenue-analysis');
+    const revenueAnalysis = previousResults.length > 0 ? previousResults[0].response_data.data : undefined;
+
+    const result = await orchestrator.runPhase(
+      'customer-segmentation',
+      { id: params.sessionId, userId } as any,
+      params.conversationHistory,
+      { revenueAnalysis },
+      params.context
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+
+    // Save to session
+    await BmadDatabase.saveResponse(params.sessionId, 'customer-segmentation', { data: result.data });
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      metadata: result.metadata
+    });
+  } catch (error) {
+    console.error('Segment customers error:', error);
+    return NextResponse.json(
+      { error: 'Failed to segment customers', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleGenerateMonetizationStrategy(userId: string, params: { sessionId: string, conversationHistory: any[], context?: any }) {
+  try {
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+
+    // Get previous analysis results
+    const revenueResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'revenue-analysis');
+    const customerResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'customer-segmentation');
+
+    const previousResults = {
+      revenueAnalysis: revenueResults.length > 0 ? revenueResults[0].response_data.data : undefined,
+      customerAnalysis: customerResults.length > 0 ? customerResults[0].response_data.data : undefined
+    };
+
+    const result = await orchestrator.runPhase(
+      'monetization-strategy',
+      { id: params.sessionId, userId } as any,
+      params.conversationHistory,
+      previousResults,
+      params.context
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+
+    // Save to session
+    await BmadDatabase.saveResponse(params.sessionId, 'monetization-strategy', { data: result.data });
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      metadata: result.metadata
+    });
+  } catch (error) {
+    console.error('Generate monetization strategy error:', error);
+    return NextResponse.json(
+      { error: 'Failed to generate monetization strategy', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleGenerateImplementationRoadmap(userId: string, params: { sessionId: string, conversationHistory: any[], context?: any }) {
+  try {
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+
+    // Get all previous analysis results
+    const revenueResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'revenue-analysis');
+    const customerResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'customer-segmentation');
+    const strategyResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'monetization-strategy');
+
+    const previousResults = {
+      revenueAnalysis: revenueResults.length > 0 ? revenueResults[0].response_data.data : undefined,
+      customerAnalysis: customerResults.length > 0 ? customerResults[0].response_data.data : undefined,
+      monetizationStrategy: strategyResults.length > 0 ? strategyResults[0].response_data.data : undefined
+    };
+
+    const result = await orchestrator.runPhase(
+      'implementation-roadmap',
+      { id: params.sessionId, userId } as any,
+      params.conversationHistory,
+      previousResults,
+      params.context
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+
+    // Save to session
+    await BmadDatabase.saveResponse(params.sessionId, 'implementation-roadmap', { data: result.data });
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      metadata: result.metadata
+    });
+  } catch (error) {
+    console.error('Generate implementation roadmap error:', error);
+    return NextResponse.json(
+      { error: 'Failed to generate implementation roadmap', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleRunBusinessModelPathway(userId: string, params: { sessionId: string, conversationHistory: any[], context?: any }) {
+  try {
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+
+    const result = await orchestrator.runPathway(
+      { id: params.sessionId, userId } as any,
+      params.conversationHistory,
+      params.context
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 400 }
+      );
+    }
+
+    // Save all results to session
+    const data = result.data!;
+
+    if (data.revenueAnalysis) {
+      await BmadDatabase.saveResponse(params.sessionId, 'revenue-analysis', { data: data.revenueAnalysis });
+    }
+    if (data.customerAnalysis) {
+      await BmadDatabase.saveResponse(params.sessionId, 'customer-segmentation', { data: data.customerAnalysis });
+    }
+    if (data.monetizationStrategy) {
+      await BmadDatabase.saveResponse(params.sessionId, 'monetization-strategy', { data: data.monetizationStrategy });
+    }
+    if (data.implementationRoadmap) {
+      await BmadDatabase.saveResponse(params.sessionId, 'implementation-roadmap', { data: data.implementationRoadmap });
+    }
+    if (data.businessModelCanvas) {
+      await BmadDatabase.saveResponse(params.sessionId, 'business-model-canvas', { data: data.businessModelCanvas });
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      metadata: result.metadata
+    });
+  } catch (error) {
+    console.error('Run business model pathway error:', error);
+    return NextResponse.json(
+      { error: 'Failed to run business model pathway', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleGenerateBusinessModelCanvas(userId: string, params: { sessionId: string }) {
+  try {
+    // Get all analysis results
+    const revenueResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'revenue-analysis');
+    const customerResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'customer-segmentation');
+    const strategyResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'monetization-strategy');
+    const roadmapResults = await BmadDatabase.getResponsesByPhase(params.sessionId, 'implementation-roadmap');
+
+    const analysisResults = {
+      revenueAnalysis: revenueResults.length > 0 ? revenueResults[0].response_data.data : undefined,
+      customerAnalysis: customerResults.length > 0 ? customerResults[0].response_data.data : undefined,
+      monetizationStrategy: strategyResults.length > 0 ? strategyResults[0].response_data.data : undefined,
+      implementationRoadmap: roadmapResults.length > 0 ? roadmapResults[0].response_data.data : undefined
+    };
+
+    if (!analysisResults.revenueAnalysis || !analysisResults.customerAnalysis) {
+      return NextResponse.json(
+        { error: 'Revenue analysis and customer segmentation required to generate Business Model Canvas' },
+        { status: 400 }
+      );
+    }
+
+    const orchestrator = new BusinessModelPathwayOrchestrator();
+    // Use private method via type assertion for canvas generation
+    const canvas = (orchestrator as any).generateBusinessModelCanvas(analysisResults);
+
+    // Save to session
+    await BmadDatabase.saveResponse(params.sessionId, 'business-model-canvas', { data: canvas });
+
+    return NextResponse.json({
+      success: true,
+      data: canvas
+    });
+  } catch (error) {
+    console.error('Generate business model canvas error:', error);
+    return NextResponse.json(
+      { error: 'Failed to generate business model canvas', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
