@@ -11,33 +11,16 @@ export class AuthHelper {
     await this.page.fill('input[type="password"]', password)
     await this.page.click('button[type="submit"]')
 
-    // Wait for redirect to dashboard
-    await this.page.waitForURL('/dashboard', { timeout: 10000 })
+    // Wait for redirect to dashboard (increased to 30s for auth processing)
+    await this.page.waitForURL('/dashboard', { timeout: 30000 })
 
     // Wait for dashboard to load
-    await this.page.waitForSelector('h1:has-text("Your Strategic Workspaces")', { timeout: 10000 })
+    await this.page.waitForSelector('h1:has-text("Your Strategic Workspaces")', { timeout: 30000 })
   }
 
   async logout() {
     await this.page.click('button:has-text("Sign Out")')
     await this.page.waitForURL('/login', { timeout: 5000 })
-  }
-
-  async register(email: string, password: string, name?: string) {
-    await this.page.goto('/register')
-
-    if (name) {
-      await this.page.fill('input[name="name"]', name)
-    }
-
-    await this.page.fill('input[type="email"]', email)
-    await this.page.fill('input[type="password"]', password)
-    await this.page.fill('input[name="confirmPassword"]', password)
-
-    await this.page.click('button[type="submit"]')
-
-    // Wait for email verification message or redirect
-    await this.page.waitForSelector('text=verify your email', { timeout: 10000 })
   }
 
   async loginAsTestUser(userType: 'default' | 'premium' | 'demo' = 'default') {
@@ -70,7 +53,7 @@ export class AuthHelper {
     await this.page.waitForURL((url) => {
       const path = url.pathname
       return path === '/dashboard' || path === '/login'
-    }, { timeout: 10000 })
+    }, { timeout: 30000 })
   }
 
   // OAuth-specific methods

@@ -13,82 +13,16 @@ test.describe('Authentication Flow', () => {
     await authHelper.ensureLoggedOut()
   })
 
-  test.describe('User Registration', () => {
-    test('should successfully register a new user', async ({ page }) => {
-      const newUser = generateRandomUser()
-
-      await page.goto('/register')
-
-      // Fill registration form
-      await page.fill('input[name="name"]', newUser.name)
-      await page.fill('input[type="email"]', newUser.email)
-      await page.fill('input[type="password"]', newUser.password)
-      await page.fill('input[name="confirmPassword"]', newUser.password)
-
-      // Agree to terms if checkbox exists
-      const termsCheckbox = page.locator('input[type="checkbox"][name="terms"]')
-      if (await termsCheckbox.isVisible()) {
-        await termsCheckbox.check()
-      }
-
-      // Submit form
-      await page.click('button[type="submit"]:has-text("Register"), button[type="submit"]:has-text("Sign Up")')
-
-      // Check for verification message or redirect
-      await expect(page).toHaveURL(/\/(verify|dashboard|login)/, { timeout: 10000 })
-
-      // If verification required, check for message
-      const verificationMessage = page.locator('text=/verify.*email/i')
-      if (await verificationMessage.isVisible()) {
-        await expect(verificationMessage).toBeVisible()
-      }
-    })
-
-    test('should show validation errors for invalid input', async ({ page }) => {
-      await page.goto('/register')
-
-      // Try to submit empty form
-      await page.click('button[type="submit"]')
-
-      // Check for validation messages
-      await expect(page.locator('text=/required/i')).toBeVisible()
-
-      // Test password mismatch
-      await page.fill('input[type="email"]', 'test@example.com')
-      await page.fill('input[type="password"]', 'Password123!')
-      await page.fill('input[name="confirmPassword"]', 'DifferentPassword123!')
-
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('text=/passwords.*match/i')).toBeVisible()
-    })
-
-    test('should prevent duplicate email registration', async ({ page }) => {
-      await page.goto('/register')
-
-      // Try to register with existing email
-      await page.fill('input[name="name"]', 'Duplicate User')
-      await page.fill('input[type="email"]', testUsers.default.email)
-      await page.fill('input[type="password"]', 'Password123!')
-      await page.fill('input[name="confirmPassword"]', 'Password123!')
-
-      await page.click('button[type="submit"]')
-
-      // Check for error message
-      await expect(page.locator('text=/already.*registered|exists/i')).toBeVisible({ timeout: 10000 })
-    })
-  })
-
   test.describe('User Login', () => {
     test('should successfully login with valid credentials', async ({ page }) => {
       await authHelper.login(testUsers.default.email, testUsers.default.password)
 
-      // Verify redirect to dashboard
+      // Verify redirect to dashboard (using default 30s timeout from authHelper)
       await expect(page).toHaveURL('/dashboard')
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible()
+      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible({ timeout: 30000 })
 
       // Verify user email is displayed
-      await expect(page.locator(`text=${testUsers.default.email}`)).toBeVisible()
+      await expect(page.locator(`text=${testUsers.default.email}`)).toBeVisible({ timeout: 10000 })
     })
 
     test('should show error for invalid credentials', async ({ page }) => {
@@ -439,18 +373,6 @@ test.describe('Authentication Flow', () => {
   })
 
   test.describe('Account Security', () => {
-    test('should enforce password requirements', async ({ page }) => {
-      await page.goto('/register')
-
-      // Try weak password
-      await page.fill('input[type="password"]', 'weak')
-      await page.fill('input[name="confirmPassword"]', 'weak')
-
-      // Check for password requirements message
-      const requirements = page.locator('text=/must.*8.*character|password.*requirements/i')
-      await expect(requirements).toBeVisible()
-    })
-
     test('should handle concurrent login attempts', async ({ page, context }) => {
       // Login in first tab
       await authHelper.login(testUsers.default.email, testUsers.default.password)

@@ -44,10 +44,23 @@ export class OAuthMockProvider {
       const redirectUri = url.searchParams.get('redirect_uri')
       const state = url.searchParams.get('state')
 
+      // Validate required parameters
+      if (!redirectUri) {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: 'invalid_request',
+            error_description: 'redirect_uri is required'
+          })
+        })
+        return
+      }
+
       // Redirect to callback with authorization code
-      const callbackUrl = new URL(redirectUri!)
+      const callbackUrl = new URL(redirectUri)
       callbackUrl.searchParams.set('code', 'mock_auth_code_12345')
-      callbackUrl.searchParams.set('state', state!)
+      callbackUrl.searchParams.set('state', state || '')
 
       await route.fulfill({
         status: 302,
@@ -111,11 +124,24 @@ export class OAuthMockProvider {
       const redirectUri = url.searchParams.get('redirect_uri')
       const state = url.searchParams.get('state')
 
+      // Validate required parameters
+      if (!redirectUri) {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            error: 'invalid_request',
+            error_description: 'redirect_uri is required'
+          })
+        })
+        return
+      }
+
       // Redirect to callback with error
-      const callbackUrl = new URL(redirectUri!)
+      const callbackUrl = new URL(redirectUri)
       callbackUrl.searchParams.set('error', error)
       callbackUrl.searchParams.set('error_description', this.getErrorDescription(error))
-      callbackUrl.searchParams.set('state', state!)
+      callbackUrl.searchParams.set('state', state || '')
 
       await route.fulfill({
         status: 302,
