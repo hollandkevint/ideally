@@ -43,14 +43,26 @@ export default function ExportOptions({
         throw new Error(`Failed to export as ${format}`)
       }
 
-      const data = await response.json()
-      const exportData: ExportFormat = data.export
-
-      // Download the file
-      downloadFile(exportData.content, exportData.filename, format)
+      // Handle PDF binary response differently
+      if (format === 'pdf') {
+        // PDF returns binary data directly
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${brief.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-brief.pdf`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      } else {
+        // Text formats return JSON with content
+        const data = await response.json()
+        downloadFile(data.data.content, data.data.filename, data.data.mimeType)
+      }
 
       // Notify parent
-      onExport?.(exportData)
+      onExport?.({ content: '', filename: '', mimeType: '', format } as any)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed')
     } finally {
@@ -77,14 +89,10 @@ export default function ExportOptions({
       }
 
       const data = await response.json()
-      const success = await copyToClipboard(data.export.content)
+      await copyToClipboard(data.data.content)
 
-      if (success) {
-        setCopySuccess(true)
-        setTimeout(() => setCopySuccess(false), 3000)
-      } else {
-        throw new Error('Failed to copy to clipboard')
-      }
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 3000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Copy failed')
     }
@@ -109,7 +117,7 @@ export default function ExportOptions({
 
       const data = await response.json()
       const subject = encodeURIComponent(`Feature Brief: ${brief.title}`)
-      const body = encodeURIComponent(data.export.content)
+      const body = encodeURIComponent(data.data.content)
 
       window.location.href = `mailto:?subject=${subject}&body=${body}`
     } catch (err) {
@@ -184,7 +192,7 @@ export default function ExportOptions({
               <span className="text-3xl mb-2">📑</span>
               <span className="text-sm font-semibold text-gray-900">PDF</span>
               <span className="text-xs text-gray-500 text-center mt-1">
-                For professional sharing
+                Professional format with branding
               </span>
               {isExporting && exportingFormat === 'pdf' && (
                 <span className="text-xs text-purple-600 mt-2">Exporting...</span>
@@ -200,14 +208,18 @@ export default function ExportOptions({
           </h4>
 
           <div className="flex flex-wrap gap-3">
-            {/* Copy to Clipboard */}
+            {/* Copy Markdown to Clipboard */}
             <button
               onClick={handleCopyToClipboard}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className={`flex items-center gap-2 px-4 py-2 bg-white border-2 rounded-lg transition-all ${
+                copySuccess
+                  ? 'border-green-400 bg-green-50'
+                  : 'border-blue-300 hover:border-blue-400 hover:bg-blue-50'
+              }`}
             >
-              <span className="text-lg">📋</span>
+              <span className="text-lg">{copySuccess ? '✓' : '📋'}</span>
               <span className="text-sm font-medium text-gray-700">
-                {copySuccess ? '✓ Copied!' : 'Copy to Clipboard'}
+                {copySuccess ? 'Copied as Markdown!' : 'Copy as Markdown'}
               </span>
             </button>
 

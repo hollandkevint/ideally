@@ -937,8 +937,35 @@ async function handleExportFeatureBrief(params: {
 
     const brief = briefResponse[0].response_data.data as FeatureBrief;
 
-    // Import export formatters dynamically
-    const { formatBriefAsMarkdown, formatBriefAsText, formatBriefAsPDF } =
+    // Handle PDF export separately (binary response)
+    if (format === 'pdf') {
+      const { generateFeatureBriefPDF, getPDFMimeType } =
+        await import('@/lib/export/pdf-generator');
+
+      const result = await generateFeatureBriefPDF(brief, {
+        branding: {
+          companyName: 'ThinkHaven',
+        },
+      });
+
+      if (!result.success || !result.buffer) {
+        return NextResponse.json(
+          { error: 'PDF generation failed', details: result.error },
+          { status: 500 }
+        );
+      }
+
+      // Return PDF as binary response
+      return new Response(result.buffer, {
+        headers: {
+          'Content-Type': getPDFMimeType(),
+          'Content-Disposition': `attachment; filename="${result.fileName}"`,
+        },
+      });
+    }
+
+    // Import text formatters for markdown and text
+    const { formatBriefAsMarkdown, formatBriefAsText } =
       await import('@/lib/bmad/exports/brief-formatters');
 
     let content: string;
@@ -955,11 +982,6 @@ async function handleExportFeatureBrief(params: {
         content = formatBriefAsText(brief);
         filename = `feature-brief-${brief.id}.txt`;
         mimeType = 'text/plain';
-        break;
-      case 'pdf':
-        content = await formatBriefAsPDF(brief);
-        filename = `feature-brief-${brief.id}.pdf`;
-        mimeType = 'application/pdf';
         break;
       default:
         return NextResponse.json(

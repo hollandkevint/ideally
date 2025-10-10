@@ -8,12 +8,68 @@ import { EXPORT_FORMATS } from '../templates/feature-brief-templates';
 
 /**
  * Format feature brief as Markdown
- * Professional formatting for technical documentation
+ * Enhanced with GFM (GitHub Flavored Markdown) tables and better formatting
  */
 export function formatBriefAsMarkdown(brief: FeatureBrief): string {
   const markdown = `# ${brief.title}
 
-*Generated on ${new Date(brief.generatedAt).toLocaleDateString('en-US', {
+> *Generated on ${new Date(brief.generatedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })}*
+
+## 📋 Description
+
+${brief.description}
+
+## 🎯 Priority Context
+
+| Metric | Value |
+|--------|-------|
+| **Priority Score** | ${brief.priorityContext.score.toFixed(2)} |
+| **Category** | \`${brief.priorityContext.category}\` |
+| **Quadrant** | ${brief.priorityContext.quadrant} |
+
+## 👥 User Stories
+
+${brief.userStories.map((story, index) => `${index + 1}. ${story}`).join('\n')}
+
+## ✅ Acceptance Criteria
+
+${brief.acceptanceCriteria.map((ac, index) => `${index + 1}. ${ac}`).join('\n')}
+
+## 📊 Success Metrics
+
+${brief.successMetrics.map((metric, index) => `${index + 1}. ${metric}`).join('\n')}
+
+## 💡 Implementation Notes
+
+${brief.implementationNotes.map((note, index) => `${index + 1}. ${note}`).join('\n')}
+
+---
+
+<details>
+<summary><strong>Metadata</strong></summary>
+
+- **Version**: ${brief.version}
+- **Last Edited**: ${new Date(brief.lastEditedAt).toLocaleDateString()}
+- **Generated with**: BMad Method Feature Refinement Pathway
+
+</details>
+`;
+
+  return markdown;
+}
+
+/**
+ * Format feature brief as Markdown (plain version without emojis)
+ * For platforms that don't support emojis well
+ */
+export function formatBriefAsMarkdownPlain(brief: FeatureBrief): string {
+  const markdown = `# ${brief.title}
+
+> *Generated on ${new Date(brief.generatedAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -25,9 +81,11 @@ ${brief.description}
 
 ## Priority Context
 
-- **Priority Score**: ${brief.priorityContext.score.toFixed(2)}
-- **Category**: ${brief.priorityContext.category}
-- **Quadrant**: ${brief.priorityContext.quadrant}
+| Metric | Value |
+|--------|-------|
+| **Priority Score** | ${brief.priorityContext.score.toFixed(2)} |
+| **Category** | \`${brief.priorityContext.category}\` |
+| **Quadrant** | ${brief.priorityContext.quadrant} |
 
 ## User Stories
 
