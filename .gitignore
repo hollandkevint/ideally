@@ -66,3 +66,6 @@ next-env.d.ts
 # Test artifacts
 apps/web/playwright-report/
 apps/web/test-results/
+
+# Work tracking (local only)
+WORK_SUMMARY.md
