@@ -133,7 +133,7 @@ class OAuthTestReporter implements Reporter {
     return 'Unknown failure reason'
   }
 
-  onEnd() {
+  async onEnd() {
     const totalTime = Date.now() - this.startTime
     const successRate = this.metrics.totalOAuthTests > 0
       ? (this.metrics.passedOAuthTests / this.metrics.totalOAuthTests) * 100
@@ -186,10 +186,10 @@ class OAuthTestReporter implements Reporter {
     }
 
     // Generate JSON report for CI/CD
-    this.generateJSONReport()
+    await this.generateJSONReport()
   }
 
-  private generateJSONReport() {
+  private async generateJSONReport() {
     const report = {
       timestamp: new Date().toISOString(),
       summary: {
@@ -214,13 +214,13 @@ class OAuthTestReporter implements Reporter {
       }
     }
 
-    // Write to file for CI/CD consumption
-    const fs = require('fs')
-    const path = require('path')
+    // Write to file for CI/CD consumption using ESM dynamic import
+    const { writeFileSync, mkdirSync } = await import('fs')
+    const { join, dirname } = await import('path')
 
-    const reportPath = path.join(process.cwd(), 'playwright-report', 'oauth-test-results.json')
-    fs.mkdirSync(path.dirname(reportPath), { recursive: true })
-    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
+    const reportPath = join(process.cwd(), 'playwright-report', 'oauth-test-results.json')
+    mkdirSync(dirname(reportPath), { recursive: true })
+    writeFileSync(reportPath, JSON.stringify(report, null, 2))
 
     console.log(`\n📄 JSON report saved to: ${reportPath}`)
   }
