@@ -20,7 +20,7 @@ export async function updateSession(request: NextRequest) {
   request.cookies.getAll().forEach(cookie => {
     response.cookies.set(cookie.name, cookie.value, {
       path: '/',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       secure: true,
       httpOnly: cookie.name.includes('auth-token'),
     })
