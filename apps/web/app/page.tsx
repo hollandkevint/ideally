@@ -417,19 +417,19 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Method Demo</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Strategic Templates</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Weekly Insights</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Success Stories</a></li>
+                <li><a href="/demo" className="hover:text-white transition-colors">Live Demo</a></li>
+                <li><span className="text-gray-500">Strategic Templates (Coming Soon)</span></li>
+                <li><span className="text-gray-500">Weekly Insights (Coming Soon)</span></li>
+                <li><span className="text-gray-500">Success Stories (Coming Soon)</span></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Compliance</a></li>
+                <li><span className="text-gray-500">Privacy Policy (Coming Soon)</span></li>
+                <li><span className="text-gray-500">Terms of Service (Coming Soon)</span></li>
+                <li><a href="https://vercel.com/security" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Security</a></li>
+                <li><span className="text-gray-500">Compliance (Coming Soon)</span></li>
               </ul>
             </div>
           </div>
