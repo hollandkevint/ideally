@@ -22,8 +22,12 @@
 - **[Technical Reference](current/technical-reference/PRD-Claude-Sonnet-4-Integration.md)** - Original PRD (source of truth)
 
 #### **📚 Archive & Historical Context**
-- **[Outdated Implementation Docs](archive/outdated-implementation-docs/)** - Pre-deployment documentation (DO NOT USE)
-- **[Historical Documents](archive/historical/)** - Original vision documents and user stories
+- **[Archive Index](archive/README.md)** - Comprehensive archive organization
+  - `2025-status-snapshots/` - Historical status tracking documents
+  - `session-summaries/` - Quarterly development session summaries
+  - `milestones-2025/` - Epic 2 & 3 implementation summaries
+  - `code-artifacts/` - Orphaned code files moved from docs root
+  - `historical/` - Original vision documents and reference materials
 - **[Future Enhancements](future/)** - Post-MVP roadmap and enhancement planning
 
 ---
