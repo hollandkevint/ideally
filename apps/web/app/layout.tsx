@@ -32,10 +32,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Navigation />
-          {/* WorkspaceProvider temporarily disabled - missing user_workspace table */}
-          {/* <WorkspaceProvider> */}
+          <WorkspaceProvider>
             {children}
-          {/* </WorkspaceProvider> */}
+          </WorkspaceProvider>
         </AuthProvider>
       </body>
     </html>
