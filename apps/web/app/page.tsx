@@ -235,7 +235,7 @@ export default function Home() {
                 <Button size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
                   🎯 View Live Demo - No Signup Required
                 </Button>
-                <Button variant="outline" size="lg" className="px-8 py-4" onClick={() => router.push('/method-demo')}>
+                <Button variant="outline" size="lg" className="px-8 py-4" onClick={() => router.push('/demo')}>
                   🎬 Watch Method Demo
                 </Button>
               </>
@@ -387,7 +387,7 @@ export default function Home() {
                   <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/demo')}>
                     🎯 Try Before You Buy - View Demo
                   </Button>
-                  <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => router.push('/method-demo')}>
+                  <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => router.push('/demo')}>
                     🎬 Watch Method Demo
                   </Button>
                 </>
