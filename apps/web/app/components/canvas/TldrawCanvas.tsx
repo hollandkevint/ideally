@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect } from 'react';
-import { Tldraw, TLComponents, Editor, TLUiOverrides } from 'tldraw';
+import { Tldraw, TLComponents, Editor, TLUiOverrides, getSnapshot, loadSnapshot } from 'tldraw';
 import 'tldraw/tldraw.css';
 
 export interface TldrawCanvasProps {
@@ -33,7 +33,7 @@ export const TldrawCanvas: React.FC<TldrawCanvasProps> = ({
     // Load initial snapshot if provided
     if (initialSnapshot) {
       try {
-        editor.store.loadSnapshot(initialSnapshot);
+        loadSnapshot(editor.store, initialSnapshot);
       } catch (error) {
         console.error('Failed to load initial snapshot:', error);
       }
@@ -48,7 +48,7 @@ export const TldrawCanvas: React.FC<TldrawCanvasProps> = ({
 
     const saveInterval = setInterval(() => {
       try {
-        const snapshot = editor.store.getSnapshot();
+        const snapshot = getSnapshot(editor.store);
         onSave?.(snapshot);
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -63,7 +63,7 @@ export const TldrawCanvas: React.FC<TldrawCanvasProps> = ({
     return () => {
       if (editor && !readOnly) {
         try {
-          const snapshot = editor.store.getSnapshot();
+          const snapshot = getSnapshot(editor.store);
           onSave?.(snapshot);
         } catch (error) {
           console.error('Save on unmount failed:', error);
@@ -88,7 +88,7 @@ export const TldrawCanvas: React.FC<TldrawCanvasProps> = ({
           kbd: '$s',
           onSelect() {
             try {
-              const snapshot = editor.store.getSnapshot();
+              const snapshot = getSnapshot(editor.store);
               onSave?.(snapshot);
             } catch (error) {
               console.error('Manual save failed:', error);
