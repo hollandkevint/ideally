@@ -150,11 +150,16 @@ export default function WorkspacePage() {
       await streamClaudeResponse(userMessage)
       
     } catch (err) {
-      console.error('Error sending message:', err)
-      // Add error message for user
+      console.error('[Workspace] Error sending message:', {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined
+      });
+
+      // Add detailed error message for user
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       await addChatMessage({
-        role: 'assistant',
-        content: 'I apologize, but I encountered an issue. Please try again shortly.'
+        role: 'system',
+        content: `❌ **Error:** ${errorMessage}\n\n**Troubleshooting:**\n- Check your internet connection\n- Verify you're signed in\n- Try refreshing the page\n- If the problem persists, contact support`
       })
     } finally {
       setSendingMessage(false)
@@ -163,6 +168,12 @@ export default function WorkspacePage() {
 
   const streamClaudeResponse = async (message: string) => {
     try {
+      console.log('[Workspace] Sending message to Claude:', {
+        messageLength: message.length,
+        workspaceId: workspace?.id,
+        historyLength: workspace?.chat_context?.length || 0
+      });
+
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: {
@@ -173,10 +184,27 @@ export default function WorkspacePage() {
           workspaceId: workspace?.id,
           conversationHistory: workspace?.chat_context?.slice(-10) || [] // Last 10 messages for context
         }),
-      })
+      });
+
+      console.log('[Workspace] Got response:', {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText
+      });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        // Try to parse error details from response
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.details || errorData?.error || response.statusText || 'Unknown error';
+        const errorHint = errorData?.hint || 'Please try again';
+
+        console.error('[Workspace] HTTP error:', {
+          status: response.status,
+          message: errorMessage,
+          hint: errorHint
+        });
+
+        throw new Error(`${errorMessage} (${errorHint})`);
       }
 
       if (!response.body) {
@@ -188,11 +216,18 @@ export default function WorkspacePage() {
       
       let assistantContent = ''
       const assistantMessageId = crypto.randomUUID()
+      let chunkCount = 0;
+
+      console.log('[Workspace] Starting to read stream...');
 
       while (true) {
         const { done, value } = await reader.read()
-        if (done) break
+        if (done) {
+          console.log('[Workspace] Stream complete, received', chunkCount, 'chunks');
+          break;
+        }
 
+        chunkCount++;
         const chunk = decoder.decode(value)
         const lines = chunk.split('\n')
 
@@ -202,6 +237,7 @@ export default function WorkspacePage() {
 
             // Skip [DONE] signal
             if (dataStr === '[DONE]') {
+              console.log('[Workspace] Received [DONE] signal');
               continue
             }
 
@@ -213,20 +249,30 @@ export default function WorkspacePage() {
                 // Update streaming message in UI
                 updateStreamingMessage(assistantMessageId, assistantContent)
               } else if (data.type === 'complete') {
+                console.log('[Workspace] Stream marked complete');
                 // Finalize the message in database
                 await finalizeAssistantMessage(assistantContent)
               } else if (data.type === 'error') {
-                throw new Error(data.error)
+                console.error('[Workspace] Received error from stream:', data);
+                throw new Error(data.error || 'Stream error')
+              } else if (data.type === 'metadata') {
+                console.log('[Workspace] Received metadata:', data);
               }
             } catch (parseError) {
-              console.error('Failed to parse stream data:', dataStr, parseError)
+              console.error('[Workspace] Failed to parse stream data:', {
+                dataStr: dataStr.substring(0, 100),
+                error: parseError instanceof Error ? parseError.message : 'Unknown error'
+              });
             }
           }
         }
       }
     } catch (error) {
-      console.error('Streaming error:', error)
-      throw error
+      console.error('[Workspace] Streaming error:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
     }
   }
 

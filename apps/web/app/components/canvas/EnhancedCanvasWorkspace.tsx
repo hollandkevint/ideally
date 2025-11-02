@@ -44,11 +44,20 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
   onSave,
   readOnly = false
 }) => {
+  console.log('[EnhancedCanvasWorkspace] Component mounted/updated:', {
+    workspaceId,
+    sessionId,
+    initialMode,
+    hasInitialDiagramCode: !!initialDiagramCode,
+    readOnly
+  });
+
   const [mode, setMode] = useState<CanvasMode>(initialMode);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [mermaidCode, setMermaidCode] = useState(initialDiagramCode);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Handle tldraw mount
   const handleTldrawMount = useCallback((editor: Editor) => {
@@ -127,7 +136,15 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
   // Load initial state
   useEffect(() => {
     const loadCanvasState = async () => {
+      // Skip loading if no sessionId
+      if (!sessionId) {
+        console.log('[EnhancedCanvasWorkspace] No sessionId, skipping canvas state load');
+        return;
+      }
+
       try {
+        console.log('[EnhancedCanvasWorkspace] Loading canvas state for session:', sessionId);
+
         const response = await fetch('/api/bmad', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -139,20 +156,52 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
 
         if (response.ok) {
           const { data } = await response.json();
+          console.log('[EnhancedCanvasWorkspace] Loaded canvas state:', data);
+
           if (data?.canvasState) {
             if (data.canvasState.mode === 'diagram' && data.canvasState.mermaidCode) {
               setMermaidCode(data.canvasState.mermaidCode);
               setMode('diagram');
             }
           }
+        } else {
+          console.warn('[EnhancedCanvasWorkspace] Failed to load canvas state:', response.status, response.statusText);
         }
       } catch (error) {
-        console.error('Failed to load canvas state:', error);
+        console.error('[EnhancedCanvasWorkspace] Error loading canvas state:', error);
+        // Don't set error state for load failures - just log them
+        // Canvas can still work without loaded state
       }
     };
 
     loadCanvasState();
   }, [sessionId]);
+
+  // Show error state if something went wrong
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full bg-gray-50 p-4">
+        <div className="max-w-md text-center">
+          <div className="text-red-600 mb-4">
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Canvas Error</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => {
+              setError(null);
+              window.location.reload();
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full w-full bg-gray-50">

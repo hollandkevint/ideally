@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../lib/auth/AuthContext'
 import { Button } from '../../../components/ui/button'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '../../../components/ui/dropdown-menu'
 import { Menu, User, LogOut, LogIn, UserPlus, ChevronDown } from 'lucide-react'
+import { CreditGuard } from '../monetization/CreditGuard'
 
 interface NavigationProps {
   className?: string
@@ -56,14 +57,17 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={() => router.push('/demo')}
           className="text-gray-600 hover:text-gray-900"
         >
           Demo
         </Button>
-        
+
+        {/* Credit Balance - only show for logged-in users */}
+        {user && <CreditGuard userId={user.id} />}
+
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

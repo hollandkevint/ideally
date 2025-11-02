@@ -120,9 +120,9 @@ CREATE POLICY "Users can view their own payment history" ON payment_history
 CREATE OR REPLACE FUNCTION grant_free_credit()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Create user_credits record with 1 free credit
+    -- Create user_credits record with 2 free credits (MVP trial)
     INSERT INTO user_credits (user_id, balance, total_granted)
-    VALUES (NEW.id, 1, 1);
+    VALUES (NEW.id, 2, 2);
 
     -- Log the transaction
     INSERT INTO credit_transactions (
@@ -135,9 +135,9 @@ BEGIN
     VALUES (
         NEW.id,
         'grant',
-        1,
-        1,
-        'Welcome! Your first session is on us.'
+        2,
+        2,
+        'Welcome! Try 2 free sessions to experience ThinkHaven.'
     );
 
     RETURN NEW;
@@ -376,6 +376,6 @@ COMMENT ON TABLE credit_transactions IS 'Audit trail for all credit changes (gra
 COMMENT ON TABLE credit_packages IS 'Defines available credit packages and pricing tiers';
 COMMENT ON TABLE payment_history IS 'Records Stripe payment transactions';
 
-COMMENT ON FUNCTION grant_free_credit() IS 'Automatically grants 1 free credit to new users upon registration';
+COMMENT ON FUNCTION grant_free_credit() IS 'Automatically grants 2 free credits to new users upon registration (MVP trial)';
 COMMENT ON FUNCTION deduct_credit_transaction(UUID, UUID) IS 'Atomically deducts 1 credit with row locking to prevent race conditions';
 COMMENT ON FUNCTION add_credits_transaction(UUID, INTEGER, TEXT, TEXT, TEXT) IS 'Adds credits from purchase or grant with transaction logging';

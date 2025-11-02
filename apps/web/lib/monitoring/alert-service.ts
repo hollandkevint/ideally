@@ -46,16 +46,20 @@ class AlertService {
   }
 
   private getDefaultConfig(): AlertConfig {
+    // Disable alerts in development to avoid noise during testing
+    const isDevelopment = process.env.NODE_ENV === 'development' ||
+                         process.env.NEXT_PUBLIC_ENV === 'development'
+
     return {
-      enabled: true,
+      enabled: !isDevelopment, // Disable in development
       successRateWarning: 95,
       successRateCritical: 90,
       latencyWarningMs: 5000,
       latencyCriticalMs: 10000,
       errorRateThresholdPercent: 5,
       channels: {
-        console: true,
-        vercelLogs: true
+        console: !isDevelopment, // Only log to console in production
+        vercelLogs: !isDevelopment // Only log to Vercel in production
       }
     }
   }

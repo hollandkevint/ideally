@@ -1,6 +1,6 @@
-import { 
-  BmadSession, 
-  PathwayType, 
+import {
+  BmadSession,
+  PathwayType,
   BmadPhase,
   BmadTemplate,
   BmadMethodError,
@@ -20,6 +20,7 @@ import { NewIdeaPathway, createNewIdeaPathway } from './pathways/new-idea-pathwa
 import { NEW_IDEA_TEMPLATE } from './templates/new-idea-templates';
 import { MarketPositioningAnalyzer, createMarketPositioningAnalyzer } from './analysis/market-positioning';
 import { ConceptDocumentGenerator, createConceptDocumentGenerator } from './generators/concept-document-generator';
+import { hasCredits, deductCredit } from '@/lib/monetization/credit-manager';
 
 /**
  * Session configuration for initialization
@@ -71,6 +72,16 @@ export class SessionOrchestrator {
    */
   async createSession(config: SessionConfiguration): Promise<BmadSession> {
     try {
+      // Check if user has credits (MVP trial: requires 1 credit per session)
+      const userHasCredits = await hasCredits(config.userId, 1);
+      if (!userHasCredits) {
+        throw new BmadMethodError(
+          'Insufficient credits to start a new session',
+          'INSUFFICIENT_CREDITS',
+          { userId: config.userId, required: 1 }
+        );
+      }
+
       // Get pathway configuration
       const pathway = pathwayRouter.getPathway(config.pathway);
       if (!pathway) {
@@ -107,6 +118,18 @@ export class SessionOrchestrator {
         currentPhase: firstPhase.id,
         currentTemplate: firstTemplate.id
       });
+
+      // Deduct credit atomically after session creation
+      const deductResult = await deductCredit(config.userId, sessionId);
+      if (!deductResult.success) {
+        // Rollback: Delete the session if credit deduction fails
+        await BmadDatabase.deleteSession(sessionId);
+        throw new BmadMethodError(
+          deductResult.message || 'Failed to deduct credit',
+          'CREDIT_DEDUCTION_FAILED',
+          { userId: config.userId, sessionId, deductResult }
+        );
+      }
 
       // Build complete session object
       const session: BmadSession = {

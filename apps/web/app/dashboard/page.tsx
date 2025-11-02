@@ -159,6 +159,14 @@ function DashboardContent() {
     }
   }, [isFromOAuth, user, authWaitCount])
 
+  // Handle redirect to login when not authenticated (moved to useEffect to prevent setState during render)
+  useEffect(() => {
+    if (!user && !authLoading && !isFromOAuth) {
+      console.log('Dashboard: No authenticated user found after wait, redirecting to login')
+      router.push('/login')
+    }
+  }, [user, authLoading, isFromOAuth, router])
+
   const createWorkspace = async () => {
     if (!newWorkspaceName.trim() || creating) return
 
@@ -270,15 +278,7 @@ function DashboardContent() {
       )
     }
 
-    // Only redirect if auth is fully loaded and user is definitely not authenticated
-    if (!authLoading) {
-      console.log('Dashboard: No authenticated user found after wait, redirecting to login')
-      router.push('/login')
-    } else {
-      console.log('Dashboard: No user yet but auth still loading, waiting...')
-    }
-
-    // Show loading state while determining redirect
+    // Show loading state while redirect happens (handled in useEffect above)
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

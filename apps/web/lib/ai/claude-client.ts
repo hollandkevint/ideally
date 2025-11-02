@@ -1,6 +1,14 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { maryPersona, type CoachingContext } from './mary-persona';
 
+// Validate API key on module load
+if (!process.env.ANTHROPIC_API_KEY) {
+  console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set');
+  throw new Error('ANTHROPIC_API_KEY environment variable is required');
+}
+
+console.log('[Claude Client] Initializing with API key:', process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...');
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
