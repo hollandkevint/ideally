@@ -250,8 +250,8 @@ export default function WorkspacePage() {
                 updateStreamingMessage(assistantMessageId, assistantContent)
               } else if (data.type === 'complete') {
                 console.log('[Workspace] Stream marked complete');
-                // Finalize the message in database
-                await finalizeAssistantMessage(assistantContent)
+                // Finalize the message in database (pass the messageId)
+                await finalizeAssistantMessage(assistantContent, assistantMessageId)
               } else if (data.type === 'error') {
                 console.error('[Workspace] Received error from stream:', data);
                 throw new Error(data.error || 'Stream error')
@@ -303,13 +303,46 @@ export default function WorkspacePage() {
     })
   }
 
-  const finalizeAssistantMessage = async (content: string) => {
+  const finalizeAssistantMessage = async (content: string, messageId: string) => {
     if (!workspace) return
-    
-    await addChatMessage({
-      role: 'assistant',
-      content: content
-    })
+
+    // Find the existing streaming message in chat_context
+    const existingMessageIndex = workspace.chat_context.findIndex(msg => msg.id === messageId)
+
+    if (existingMessageIndex === -1) {
+      console.error('[Workspace] Could not find streaming message to finalize:', messageId)
+      // Fallback: add as new message
+      await addChatMessage({
+        role: 'assistant',
+        content: content
+      })
+      return
+    }
+
+    // The message is already in the state from streaming, just save it to database
+    const updatedChatContext = [...workspace.chat_context]
+
+    try {
+      const { error } = await supabase
+        .from('user_workspace')
+        .update({
+          workspace_state: {
+            name: workspace.name,
+            description: workspace.description,
+            chat_context: updatedChatContext,
+            canvas_elements: workspace.canvas_elements,
+            updated_at: new Date().toISOString()
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', workspace.id)
+
+      if (error) throw error
+
+      console.log('[Workspace] Finalized assistant message:', messageId)
+    } catch (error) {
+      console.error('[Workspace] Error finalizing message:', error)
+    }
   }
 
   const handleTabSwitch = (tab: WorkspaceTab) => {
