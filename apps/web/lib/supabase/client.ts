@@ -1,13 +1,30 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient, type SupabaseClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// Lazy initialization to avoid build-time errors
+let _supabaseClient: SupabaseClient | null = null
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.')
+function getSupabaseClient(): SupabaseClient {
+  if (!_supabaseClient) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.')
+    }
+
+    _supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  }
+
+  return _supabaseClient
 }
 
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+// Export with getter to maintain backward compatibility
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const client = getSupabaseClient()
+    return client[prop as keyof SupabaseClient]
+  }
+})
 
 export type Database = {
   public: {
