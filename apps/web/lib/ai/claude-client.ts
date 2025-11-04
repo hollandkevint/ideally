@@ -6,17 +6,33 @@ let anthropic: Anthropic | null = null;
 
 function getAnthropicClient(): Anthropic {
   if (!anthropic) {
+    // Debug logging for troubleshooting
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    console.log('[Claude Client] DEBUG: Getting Anthropic client', {
+      hasApiKey: !!apiKey,
+      apiKeyLength: apiKey?.length || 0,
+      apiKeyPrefix: apiKey?.substring(0, 15) || 'undefined',
+      nodeEnv: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    });
+
     // Validate API key at runtime (not module load time)
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!apiKey) {
       console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set');
       throw new Error('ANTHROPIC_API_KEY environment variable is required');
     }
 
-    console.log('[Claude Client] Initializing with API key:', process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...');
+    console.log('[Claude Client] Initializing Anthropic client...');
 
-    anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    try {
+      anthropic = new Anthropic({
+        apiKey: apiKey,
+      });
+      console.log('[Claude Client] Successfully initialized Anthropic client');
+    } catch (error) {
+      console.error('[Claude Client] Failed to initialize Anthropic client:', error);
+      throw error;
+    }
   }
   return anthropic;
 }
@@ -52,18 +68,32 @@ export class ClaudeClient {
     coachingContext?: CoachingContext
   ): Promise<StreamingResponse> {
     try {
+      console.log('[Claude Client] sendMessage called', {
+        messageLength: message.length,
+        historyLength: conversationHistory.length,
+        hasCoachingContext: !!coachingContext,
+        timestamp: new Date().toISOString()
+      });
+
       // Filter conversation history to only include role and content
       const cleanHistory = conversationHistory.map(msg => ({
         role: msg.role,
         content: msg.content
       }));
-      
+
       const messages = [
         ...cleanHistory,
         { role: 'user' as const, content: message }
       ];
 
+      console.log('[Claude Client] Getting Anthropic client...');
       const client = getAnthropicClient();
+
+      console.log('[Claude Client] Calling Anthropic API...', {
+        model: 'claude-sonnet-4-20250514',
+        messageCount: messages.length
+      });
+
       const stream = await client.messages.create({
         model: 'claude-sonnet-4-20250514', // Claude Sonnet 4 - upgraded per API docs
         max_tokens: 4096,
@@ -72,6 +102,8 @@ export class ClaudeClient {
         messages: messages,
         stream: true,
       });
+
+      console.log('[Claude Client] Successfully created Anthropic stream');
 
       const { content, usage } = await this.processStreamWithUsage(stream);
       
