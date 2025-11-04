@@ -1,17 +1,25 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { maryPersona, type CoachingContext } from './mary-persona';
 
-// Validate API key on module load
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set');
-  throw new Error('ANTHROPIC_API_KEY environment variable is required');
+// Initialize Anthropic client (lazy initialization to avoid build-time errors)
+let anthropic: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropic) {
+    // Validate API key at runtime (not module load time)
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set');
+      throw new Error('ANTHROPIC_API_KEY environment variable is required');
+    }
+
+    console.log('[Claude Client] Initializing with API key:', process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...');
+
+    anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+  return anthropic;
 }
-
-console.log('[Claude Client] Initializing with API key:', process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...');
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export interface TokenUsage {
   input_tokens: number;
@@ -55,7 +63,8 @@ export class ClaudeClient {
         { role: 'user' as const, content: message }
       ];
 
-      const stream = await anthropic.messages.create({
+      const client = getAnthropicClient();
+      const stream = await client.messages.create({
         model: 'claude-sonnet-4-20250514', // Claude Sonnet 4 - upgraded per API docs
         max_tokens: 4096,
         temperature: 0.7,
@@ -157,7 +166,8 @@ export class ClaudeClient {
 
   async testConnection(): Promise<boolean> {
     try {
-      const response = await anthropic.messages.create({
+      const client = getAnthropicClient();
+      const response = await client.messages.create({
         model: 'claude-sonnet-4-20250514', // Claude Sonnet 4 - upgraded per API docs
         max_tokens: 10,
         messages: [{ role: 'user', content: 'test' }],
