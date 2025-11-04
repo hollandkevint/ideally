@@ -829,4 +829,115 @@ export class BmadDatabase {
       );
     }
   }
+
+  /**
+   * Get canvas state for a session
+   */
+  static async getCanvasState(sessionId: string): Promise<{
+    canvas_data: any;
+    canvas_version: number;
+    canvas_updated_at: string;
+  } | null> {
+    // Validate required parameters
+    if (!sessionId) {
+      throw new BmadMethodError(
+        'sessionId is required for canvas state retrieval',
+        'INVALID_PARAMETERS',
+        { sessionId }
+      );
+    }
+
+    // Return mock data for test mode
+    if (this.isTestMode()) {
+      console.log('BmadDatabase: Returning null canvas state for test mode');
+      return null;
+    }
+
+    try {
+      const supabase = await createClient();
+
+      const { data, error } = await supabase
+        .from('bmad_sessions')
+        .select('canvas_data, canvas_version, canvas_updated_at')
+        .eq('id', sessionId)
+        .single();
+
+      if (error) {
+        // If no canvas state exists yet, return null (not an error)
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        throw error;
+      }
+
+      // Return null if no canvas data exists
+      if (!data || !data.canvas_data) {
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      throw new BmadMethodError(
+        `Failed to retrieve canvas state: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CANVAS_STATE_RETRIEVAL_ERROR',
+        { sessionId, originalError: error }
+      );
+    }
+  }
+
+  /**
+   * Save canvas state for a session
+   */
+  static async saveCanvasState(
+    sessionId: string,
+    canvasData: {
+      canvas_data: any;
+      canvas_version: number;
+      canvas_updated_at: Date;
+    }
+  ): Promise<void> {
+    // Validate required parameters
+    if (!sessionId) {
+      throw new BmadMethodError(
+        'sessionId is required for canvas state save',
+        'INVALID_PARAMETERS',
+        { sessionId }
+      );
+    }
+
+    if (!canvasData || typeof canvasData.canvas_version !== 'number') {
+      throw new BmadMethodError(
+        'Valid canvas data with version is required',
+        'INVALID_PARAMETERS',
+        { sessionId, canvasData }
+      );
+    }
+
+    // Skip save in test mode
+    if (this.isTestMode()) {
+      console.log('BmadDatabase: Skipping canvas state save in test mode');
+      return;
+    }
+
+    try {
+      const supabase = await createClient();
+
+      const { error } = await supabase
+        .from('bmad_sessions')
+        .update({
+          canvas_data: canvasData.canvas_data,
+          canvas_version: canvasData.canvas_version,
+          canvas_updated_at: canvasData.canvas_updated_at.toISOString()
+        })
+        .eq('id', sessionId);
+
+      if (error) throw error;
+    } catch (error) {
+      throw new BmadMethodError(
+        `Failed to save canvas state: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'CANVAS_STATE_SAVE_ERROR',
+        { sessionId, canvasData, originalError: error }
+      );
+    }
+  }
 }

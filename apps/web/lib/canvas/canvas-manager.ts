@@ -51,12 +51,11 @@ export interface Viewport {
  * Manages canvas state persistence and recovery
  */
 export class CanvasManager {
-  private database: BmadDatabase;
   private stateCache = new Map<string, CanvasState>();
   private autoSaveTimers = new Map<string, NodeJS.Timeout>();
 
-  constructor(database?: BmadDatabase) {
-    this.database = database || new BmadDatabase();
+  constructor() {
+    // Database methods are now static, no need to store instance
   }
 
   /**
@@ -77,8 +76,8 @@ export class CanvasManager {
       // Update cache
       this.stateCache.set(sessionId, updatedState);
 
-      // Save to database
-      await this.database.saveCanvasState(sessionId, {
+      // Save to database using static method
+      await BmadDatabase.saveCanvasState(sessionId, {
         canvas_data: updatedState,
         canvas_version: updatedState.version,
         canvas_updated_at: updatedState.lastModified
@@ -100,8 +99,8 @@ export class CanvasManager {
         return cachedState;
       }
 
-      // Load from database
-      const canvasData = await this.database.getCanvasState(sessionId);
+      // Load from database using static method
+      const canvasData = await BmadDatabase.getCanvasState(sessionId);
       if (!canvasData) {
         return null;
       }
