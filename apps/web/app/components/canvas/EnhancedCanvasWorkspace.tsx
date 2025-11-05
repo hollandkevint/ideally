@@ -58,10 +58,30 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
 
   // Handle tldraw mount
   const handleTldrawMount = useCallback((editor: Editor) => {
     setEditor(editor);
+  }, []);
+
+  // Listen for canvas highlight events
+  useEffect(() => {
+    const handleHighlight = (event: CustomEvent) => {
+      const { suggestionId } = event.detail;
+      setHighlightedElement(suggestionId);
+
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedElement(null);
+      }, 3000);
+    };
+
+    window.addEventListener('canvas:highlight' as any, handleHighlight as EventListener);
+
+    return () => {
+      window.removeEventListener('canvas:highlight' as any, handleHighlight as EventListener);
+    };
   }, []);
 
   // Handle tldraw save
@@ -264,7 +284,17 @@ export const EnhancedCanvasWorkspace: React.FC<EnhancedCanvasWorkspaceProps> = (
       )}
 
       {/* Canvas Area */}
-      <div className="flex-1 overflow-hidden">
+      <div
+        className={`flex-1 overflow-hidden relative transition-all duration-300 ${
+          highlightedElement ? 'ring-4 ring-green-500 ring-opacity-50 shadow-lg' : ''
+        }`}
+        data-canvas-container
+      >
+        {highlightedElement && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-full shadow-lg animate-in fade-in slide-in-from-top-4 duration-300">
+            ✨ New content added here
+          </div>
+        )}
         {mode === 'draw' ? (
           <TldrawCanvas
             sessionId={sessionId}

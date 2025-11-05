@@ -35,6 +35,7 @@ interface CanvasContextSyncProps {
   onCanvasUpdate?: (diagramCode: string, type: string) => void
   onContextShare?: (context: string) => void
   autoPopulate?: boolean
+  autoDismissDelay?: number // Auto-dismiss notification after N milliseconds
   className?: string
 }
 
@@ -48,10 +49,12 @@ export default function CanvasContextSync({
   onCanvasUpdate,
   onContextShare,
   autoPopulate = false,
+  autoDismissDelay = 8000, // 8 seconds default
   className = '',
 }: CanvasContextSyncProps) {
   const lastProcessedMessageId = useRef<string | null>(null)
   const canvasUpdateDebounce = useRef<NodeJS.Timeout | null>(null)
+  const dismissTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Canvas sync hook
   const {
@@ -116,6 +119,32 @@ export default function CanvasContextSync({
       }
     }
   }, [canvasState, syncEnabled, onContextShare])
+
+  /**
+   * Auto-dismiss success notification after delay
+   */
+  useEffect(() => {
+    if (activeSuggestion && autoDismissDelay > 0) {
+      // Clear any existing timeout
+      if (dismissTimeout.current) {
+        clearTimeout(dismissTimeout.current)
+      }
+
+      // Set new timeout to dismiss
+      dismissTimeout.current = setTimeout(() => {
+        // Find the suggestion ID and dismiss it
+        if (activeSuggestion.id) {
+          dismissSuggestion(activeSuggestion.id)
+        }
+      }, autoDismissDelay)
+
+      return () => {
+        if (dismissTimeout.current) {
+          clearTimeout(dismissTimeout.current)
+        }
+      }
+    }
+  }, [activeSuggestion, autoDismissDelay, dismissSuggestion])
 
   /**
    * Handle suggestion application
@@ -200,10 +229,44 @@ export default function CanvasContextSync({
         />
       )}
 
-      {/* Active Suggestion Indicator */}
+      {/* Active Suggestion Indicator - Enhanced */}
       {activeSuggestion && (
-        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-          ✅ Applied: {activeSuggestion.title}
+        <div className="mt-2 p-3 bg-green-50 border-l-4 border-green-500 rounded shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 text-sm font-medium text-green-800">
+                <span className="flex-shrink-0">✅</span>
+                <span className="truncate">Added to Canvas</span>
+              </div>
+              <div className="mt-1 text-xs text-green-700 leading-relaxed">
+                "{activeSuggestion.title}" was added to your canvas workspace
+              </div>
+              <div className="mt-1 text-xs text-green-600">
+                Type: {activeSuggestion.type.replace('-', ' ')} •
+                Confidence: {Math.round(activeSuggestion.confidence * 100)}%
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                // Scroll canvas into view and highlight the new element
+                const canvasContainer = document.querySelector('[data-canvas-container]');
+                if (canvasContainer) {
+                  canvasContainer.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                  });
+                  // Dispatch event for canvas to highlight the new element
+                  window.dispatchEvent(new CustomEvent('canvas:highlight', {
+                    detail: { suggestionId: activeSuggestion.id }
+                  }));
+                }
+              }}
+              className="flex-shrink-0 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition-colors shadow-sm hover:shadow"
+              title="Scroll to and highlight the canvas element"
+            >
+              View on Canvas →
+            </button>
+          </div>
         </div>
       )}
     </div>
