@@ -6,9 +6,13 @@ let anthropic: Anthropic | null = null;
 
 function getAnthropicClient(): Anthropic {
   if (!anthropic) {
-    // Debug logging for troubleshooting
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    // Get and sanitize API key (remove whitespace/newlines)
+    const rawApiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = rawApiKey?.trim();
+
     console.log('[Claude Client] DEBUG: Getting Anthropic client', {
+      hasRawKey: !!rawApiKey,
+      rawKeyLength: rawApiKey?.length || 0,
       hasApiKey: !!apiKey,
       apiKeyLength: apiKey?.length || 0,
       apiKeyPrefix: apiKey?.substring(0, 15) || 'undefined',
@@ -18,7 +22,7 @@ function getAnthropicClient(): Anthropic {
 
     // Validate API key at runtime (not module load time)
     if (!apiKey) {
-      console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set');
+      console.error('[Claude Client] FATAL: ANTHROPIC_API_KEY environment variable is not set or empty after trim');
       throw new Error('ANTHROPIC_API_KEY environment variable is required');
     }
 
