@@ -83,7 +83,8 @@ export async function getCreditBalance(userId: string): Promise<CreditBalance | 
  */
 export async function hasCredits(userId: string, required: number = 1): Promise<boolean> {
   // Bypass credit checks in launch mode (for initial testing period)
-  const isLaunchMode = process.env.NEXT_PUBLIC_LAUNCH_MODE === 'true';
+  // Use server-only env var (no NEXT_PUBLIC prefix) to prevent client manipulation
+  const isLaunchMode = process.env.LAUNCH_MODE === 'true';
   if (isLaunchMode) {
     console.log('[LAUNCH_MODE] Bypassing credit check for user:', userId);
     return true;
@@ -113,7 +114,8 @@ export async function deductCredit(
   sessionId?: string
 ): Promise<DeductCreditResult> {
   // Bypass credit deduction in launch mode (for initial testing period)
-  const isLaunchMode = process.env.NEXT_PUBLIC_LAUNCH_MODE === 'true';
+  // Use server-only env var (no NEXT_PUBLIC prefix) to prevent client manipulation
+  const isLaunchMode = process.env.LAUNCH_MODE === 'true';
   if (isLaunchMode) {
     console.log('[LAUNCH_MODE] Bypassing credit deduction for user:', userId, 'session:', sessionId);
     return {

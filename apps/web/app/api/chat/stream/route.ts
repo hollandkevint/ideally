@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server';
 import { CoachingContext } from '@/lib/ai/mary-persona';
 import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
 import {
-  canSendMessage,
   incrementMessageCount,
   checkMessageLimit,
   getLimitReachedMessage,
@@ -90,6 +89,7 @@ export async function POST(request: NextRequest) {
 
     // Get or create BMad session for message limit tracking
     let sessionId: string | null = null;
+    let limitStatus: any = null;
     try {
       const { data: bmadSession } = await supabase
         .from('bmad_sessions')
@@ -105,18 +105,39 @@ export async function POST(request: NextRequest) {
       console.warn('Could not find BMad session for message limit tracking:', error);
     }
 
-    // Check message limit before processing (if session exists and LAUNCH_MODE enabled)
+    // ATOMIC: Increment message count FIRST to prevent race conditions
+    // Then check if this message pushed us over the limit
     if (sessionId) {
-      const canSend = await canSendMessage(sessionId);
-      if (!canSend) {
-        console.log('[Chat Stream] Message limit reached for session:', sessionId);
-        return new Response(JSON.stringify({
-          error: 'MESSAGE_LIMIT_REACHED',
-          message: getLimitReachedMessage(),
-          limitStatus: await checkMessageLimit(sessionId),
-        }), {
-          status: 429, // Too Many Requests
-          headers: { 'Content-Type': 'application/json' }
+      const incrementResult = await incrementMessageCount(sessionId);
+
+      if (incrementResult) {
+        // Check if THIS increment pushed us over the limit
+        if (incrementResult.limitReached && incrementResult.newCount > incrementResult.messageLimit) {
+          console.log('[Chat Stream] Message limit exceeded:', {
+            sessionId,
+            newCount: incrementResult.newCount,
+            limit: incrementResult.messageLimit
+          });
+
+          // Get current status for error response
+          limitStatus = await checkMessageLimit(sessionId);
+
+          return new Response(JSON.stringify({
+            error: 'MESSAGE_LIMIT_REACHED',
+            message: getLimitReachedMessage(),
+            limitStatus,
+          }), {
+            status: 429, // Too Many Requests
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Update limitStatus for later use in response
+        limitStatus = await checkMessageLimit(sessionId);
+        console.log('[Chat Stream] Message count pre-incremented:', {
+          sessionId,
+          newCount: incrementResult.newCount,
+          remaining: limitStatus?.remaining,
         });
       }
     }
@@ -225,20 +246,8 @@ export async function POST(request: NextRequest) {
           // which updates user_workspace.workspace_state.chat_context
           // No additional database storage needed here
 
-          // Increment message count after successful message (if session exists)
-          let limitStatus = null;
-          if (sessionId) {
-            const incrementResult = await incrementMessageCount(sessionId);
-            if (incrementResult) {
-              limitStatus = await checkMessageLimit(sessionId);
-              console.log('[Chat Stream] Message count incremented:', {
-                sessionId,
-                newCount: incrementResult.newCount,
-                limitReached: incrementResult.limitReached,
-                remaining: limitStatus?.remaining,
-              });
-            }
-          }
+          // Message count was already incremented atomically BEFORE processing
+          // to prevent race conditions (see lines 109-144)
 
           console.log('[Chat Stream] Stream complete:', {
             contentLength: fullContent.length,
