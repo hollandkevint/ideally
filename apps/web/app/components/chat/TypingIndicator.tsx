@@ -64,10 +64,15 @@ export default function TypingIndicator({
 }
 
 // Alternative typing indicator for inline use
-export function InlineTypingIndicator({ 
+interface InlineTypingIndicatorProps {
+  isTyping?: boolean;
+  className?: string;
+}
+
+export function InlineTypingIndicator({
   isTyping = false,
   className = ''
-}: { isTyping?: boolean, className?: string }) {
+}: InlineTypingIndicatorProps) {
   if (!isTyping) return null
 
   return (
@@ -78,15 +83,17 @@ export function InlineTypingIndicator({
 }
 
 // Typing status for message bubbles
+interface MessageTypingStatusProps {
+  isTyping?: boolean;
+  typingSpeed?: 'slow' | 'normal' | 'fast';
+  className?: string;
+}
+
 export function MessageTypingStatus({
   isTyping = false,
   typingSpeed = 'normal',
   className = ''
-}: {
-  isTyping?: boolean
-  typingSpeed?: 'slow' | 'normal' | 'fast'
-  className?: string
-}) {
+}: MessageTypingStatusProps) {
   if (!isTyping) return null
 
   const speedIndicator = {
@@ -104,17 +111,19 @@ export function MessageTypingStatus({
 }
 
 // Progress bar for long responses
+interface StreamingProgressProps {
+  progress?: number;
+  isStreaming?: boolean;
+  estimatedTotal?: number;
+  className?: string;
+}
+
 export function StreamingProgress({
   progress = 0,
   isStreaming = false,
-  estimatedTotal?: number,
+  estimatedTotal,
   className = ''
-}: {
-  progress?: number
-  isStreaming?: boolean
-  estimatedTotal?: number
-  className?: string
-}) {
+}: StreamingProgressProps) {
   if (!isStreaming) return null
 
   const percentage = estimatedTotal ? Math.min(100, (progress / estimatedTotal) * 100) : undefined

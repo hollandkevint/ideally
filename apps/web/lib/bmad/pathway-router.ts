@@ -315,7 +315,7 @@ export class PathwayRouter {
 
     const keywords = pathwayKeywords[pathway];
     let totalScore = 0;
-    let maxScore = (keywords.primary.length * 10) + (keywords.secondary.length * 7) + (keywords.contextual.length * 5);
+    const maxScore = (keywords.primary.length * 10) + (keywords.secondary.length * 7) + (keywords.contextual.length * 5);
 
     // Score primary keywords
     keywords.primary.forEach(keyword => {

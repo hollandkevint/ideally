@@ -202,7 +202,7 @@ export class AuthHelper {
 
   async verifyPKCEFlow() {
     // Verify PKCE (Proof Key for Code Exchange) parameters
-    let codeVerifier: string = ''
+    const codeVerifier: string = ''
     let codeChallenge: string = ''
 
     await this.page.route('**/auth/v1/authorize**', async (route) => {

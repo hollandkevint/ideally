@@ -109,7 +109,7 @@ test.describe('Demo Flow', () => {
     await page.goto('/demo/0')
     
     // Continue through most of the conversation to trigger conversion
-    let continueButton = page.locator('button:has-text("Continue Session")')
+    const continueButton = page.locator('button:has-text("Continue Session")')
     
     // Keep clicking continue until we reach the end or conversion appears
     let attempts = 0

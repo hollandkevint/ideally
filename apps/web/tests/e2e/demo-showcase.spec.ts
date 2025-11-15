@@ -226,7 +226,7 @@ test.describe('Demo Mode & Public Showcase', () => {
       )
 
       // Continue through demo to trigger conversion
-      let continueButton = page.locator('button:has-text("Continue Session"), button:has-text("Continue")')
+      const continueButton = page.locator('button:has-text("Continue Session"), button:has-text("Continue")')
 
       let attempts = 0
       while (await continueButton.isVisible() && attempts < 5) {

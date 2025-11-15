@@ -979,8 +979,8 @@ export class PricingModelAnalyzer {
     // Scoring based on segment characteristics and model fit
     let segmentFit = 70; // Base score
     let marketFit = 70;
-    let competitiveFit = 70;
-    let implementationFeasibility = 80;
+    const competitiveFit = 70;
+    const implementationFeasibility = 80;
     
     // Adjust based on segment size
     if (segment.size === 'large' && modelType === PricingModelType.VALUE_BASED) {

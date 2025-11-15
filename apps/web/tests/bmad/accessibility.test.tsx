@@ -7,6 +7,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
+import { vi } from 'vitest'
 import BmadInterface from '@/app/components/bmad/BmadInterface'
 import EnhancedSessionManager from '@/app/components/bmad/EnhancedSessionManager'
 import SessionHistoryManager from '@/app/components/bmad/SessionHistoryManager'
@@ -20,30 +21,30 @@ const mockBmadSession = {
   currentSession: null,
   isLoading: false,
   error: null,
-  createSession: jest.fn(),
-  advanceSession: jest.fn(),
-  getSession: jest.fn(),
-  pauseSession: jest.fn(),
-  resumeSession: jest.fn(),
-  exitSession: jest.fn()
+  createSession: vi.fn(),
+  advanceSession: vi.fn(),
+  getSession: vi.fn(),
+  pauseSession: vi.fn(),
+  resumeSession: vi.fn(),
+  exitSession: vi.fn()
 }
 
-jest.mock('@/app/components/bmad/useBmadSession', () => ({
+vi.mock('@/app/components/bmad/useBmadSession', () => ({
   useBmadSession: () => mockBmadSession
 }))
 
-global.fetch = jest.fn()
+global.fetch = vi.fn() as any
 
 describe('BMad Method Accessibility', () => {
   const mockWorkspaceId = 'test-workspace-123'
   
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockBmadSession.currentSession = null
     mockBmadSession.isLoading = false
     mockBmadSession.error = null
     
-    ;(fetch as jest.Mock).mockResolvedValue({
+    ;(fetch as vi.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: { sessions: [] } })
     })
@@ -636,15 +637,15 @@ describe('BMad Method Accessibility', () => {
       // Mock prefers-reduced-motion
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation(query => ({
           matches: query === '(prefers-reduced-motion: reduce)',
           media: query,
           onchange: null,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
         })),
       })
       

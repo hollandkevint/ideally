@@ -69,3 +69,6 @@ apps/web/test-results/
 
 # Work tracking (local only)
 WORK_SUMMARY.md
+
+# BMAD personal development files (local only)
+.bmad-core/expansion-packs/

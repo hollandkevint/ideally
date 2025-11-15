@@ -616,7 +616,7 @@ Focus on ${request.analysisType} analysis with actionable insights for the ${req
   }
 
   private calculateConfidence(request: CompetitivePricingAnalysisRequest): number {
-    let confidence = 0.5;
+    const confidence = 0.5;
     
     // Data quality factors
     const dataRecency = request.competitors.every(c => 

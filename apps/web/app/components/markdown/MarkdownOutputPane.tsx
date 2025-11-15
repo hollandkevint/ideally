@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Download, Edit3, Eye } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface MarkdownOutputPaneProps {
   initialMarkdown?: string;
@@ -52,6 +53,7 @@ export default function MarkdownOutputPane({
       } catch (error) {
         console.error('Failed to save markdown:', error);
         setSaveError('Failed to auto-save');
+        toast.error('Failed to auto-save changes');
       } finally {
         setIsSaving(false);
       }
@@ -66,24 +68,30 @@ export default function MarkdownOutputPane({
   }, [initialMarkdown]);
 
   const handleExportMarkdown = useCallback(() => {
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `strategic-session-${new Date().toISOString().split('T')[0]}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `strategic-session-${new Date().toISOString().split('T')[0]}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Markdown file downloaded');
+    } catch (error) {
+      console.error('Failed to export markdown:', error);
+      toast.error('Failed to export markdown file');
+    }
   }, [markdown]);
 
   const handleCopyMarkdown = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(markdown);
-      // Could add toast notification here
-      console.log('Markdown copied to clipboard');
+      toast.success('Markdown copied to clipboard');
     } catch (error) {
       console.error('Failed to copy markdown:', error);
+      toast.error('Failed to copy markdown to clipboard');
     }
   }, [markdown]);
 

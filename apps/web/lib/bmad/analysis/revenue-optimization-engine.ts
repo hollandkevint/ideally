@@ -1184,7 +1184,7 @@ export class RevenueOptimizationEngine {
   // Results projection methods...
   private projectRevenueGrowth(performance: RevenuePerformanceSnapshot, roadmap: OptimizationRoadmap): RevenueProjection[] {
     const baseRevenue = performance.totalRevenue;
-    let cumulativeImpact = 0;
+    const cumulativeImpact = 0;
     
     return [
       { period: 'Month 3', baselineRevenue: baseRevenue, optimizedRevenue: baseRevenue + roadmap.immediate.expectedRevenue, revenueUplift: roadmap.immediate.expectedRevenue, cumulativeImpact: roadmap.immediate.expectedRevenue },

@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from '../lib/auth/AuthContext';
 import { WorkspaceProvider } from '../lib/workspace/WorkspaceContext';
 import Navigation from './components/ui/navigation';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
             {children}
           </WorkspaceProvider>
         </AuthProvider>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

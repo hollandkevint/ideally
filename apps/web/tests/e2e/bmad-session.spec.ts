@@ -255,7 +255,7 @@ test.describe('BMad Method Session Tests', () => {
       await bmadHelper.selectPathway('feature-refinement')
 
       // Monitor phase changes
-      let previousPhase = await page.locator('[data-testid="session-phase"]').textContent()
+      const previousPhase = await page.locator('[data-testid="session-phase"]').textContent()
 
       // Progress session
       const options = await bmadHelper.getElicitationOptions()
