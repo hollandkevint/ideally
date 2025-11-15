@@ -4,6 +4,12 @@ import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
 import { createClient } from '@/lib/supabase/server';
 import { CoachingContext } from '@/lib/ai/mary-persona';
 import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
+import {
+  canSendMessage,
+  incrementMessageCount,
+  checkMessageLimit,
+  getLimitReachedMessage,
+} from '@/lib/bmad/message-limit-manager';
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,6 +87,39 @@ export async function POST(request: NextRequest) {
       workspaceUserId: workspace.user_id,
       hasState: !!workspace.workspace_state
     });
+
+    // Get or create BMad session for message limit tracking
+    let sessionId: string | null = null;
+    try {
+      const { data: bmadSession } = await supabase
+        .from('bmad_sessions')
+        .select('id')
+        .eq('workspace_id', workspaceId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      sessionId = bmadSession?.id || null;
+    } catch (error) {
+      console.warn('Could not find BMad session for message limit tracking:', error);
+    }
+
+    // Check message limit before processing (if session exists and LAUNCH_MODE enabled)
+    if (sessionId) {
+      const canSend = await canSendMessage(sessionId);
+      if (!canSend) {
+        console.log('[Chat Stream] Message limit reached for session:', sessionId);
+        return new Response(JSON.stringify({
+          error: 'MESSAGE_LIMIT_REACHED',
+          message: getLimitReachedMessage(),
+          limitStatus: await checkMessageLimit(sessionId),
+        }), {
+          status: 429, // Too Many Requests
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
 
     // Build or use provided coaching context
     let finalCoachingContext: CoachingContext | undefined = coachingContext;
@@ -186,13 +225,32 @@ export async function POST(request: NextRequest) {
           // which updates user_workspace.workspace_state.chat_context
           // No additional database storage needed here
 
+          // Increment message count after successful message (if session exists)
+          let limitStatus = null;
+          if (sessionId) {
+            const incrementResult = await incrementMessageCount(sessionId);
+            if (incrementResult) {
+              limitStatus = await checkMessageLimit(sessionId);
+              console.log('[Chat Stream] Message count incremented:', {
+                sessionId,
+                newCount: incrementResult.newCount,
+                limitReached: incrementResult.limitReached,
+                remaining: limitStatus?.remaining,
+              });
+            }
+          }
+
           console.log('[Chat Stream] Stream complete:', {
             contentLength: fullContent.length,
-            usage: claudeResponse.usage
+            usage: claudeResponse.usage,
+            limitStatus,
           });
 
-          // Send completion signal with usage data
-          controller.enqueue(encoder.encodeComplete(claudeResponse.usage));
+          // Send completion signal with usage data and limit status
+          controller.enqueue(encoder.encodeComplete(
+            claudeResponse.usage,
+            limitStatus
+          ));
           controller.enqueue(encoder.encodeDone());
           controller.close();
 

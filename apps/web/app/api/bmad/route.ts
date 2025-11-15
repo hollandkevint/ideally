@@ -1383,11 +1383,20 @@ async function handleGenerateBusinessModelCanvas(userId: string, params: { sessi
 
 // Canvas Workspace Handlers
 
-async function handleSaveCanvasState(userId: string, params: { sessionId: string, canvasState: any }) {
+async function handleSaveCanvasState(userId: string, params: { sessionId?: string; workspaceId?: string; canvasState: any }) {
   try {
+    // Accept either sessionId or workspaceId as identifier
+    const identifier = params.sessionId || params.workspaceId;
+    if (!identifier) {
+      return NextResponse.json(
+        { error: 'Either sessionId or workspaceId is required' },
+        { status: 400 }
+      );
+    }
+
     const { canvasManager } = await import('@/lib/canvas/canvas-manager');
 
-    await canvasManager.saveState(params.sessionId, params.canvasState);
+    await canvasManager.saveState(identifier, params.canvasState);
 
     return NextResponse.json({
       success: true,
@@ -1402,11 +1411,20 @@ async function handleSaveCanvasState(userId: string, params: { sessionId: string
   }
 }
 
-async function handleLoadCanvasState(userId: string, params: { sessionId: string }) {
+async function handleLoadCanvasState(userId: string, params: { sessionId?: string; workspaceId?: string }) {
   try {
+    // Accept either sessionId or workspaceId as identifier
+    const identifier = params.sessionId || params.workspaceId;
+    if (!identifier) {
+      return NextResponse.json(
+        { error: 'Either sessionId or workspaceId is required' },
+        { status: 404 }
+      );
+    }
+
     const { canvasManager } = await import('@/lib/canvas/canvas-manager');
 
-    const canvasState = await canvasManager.loadState(params.sessionId);
+    const canvasState = await canvasManager.loadState(identifier);
 
     return NextResponse.json({
       success: true,

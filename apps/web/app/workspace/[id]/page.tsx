@@ -11,6 +11,8 @@ import StateBridge from '../../components/dual-pane/StateBridge'
 import { PaneErrorBoundary, LoadingPane, OfflineIndicator, useOnlineStatus } from '../../components/dual-pane/PaneErrorBoundary'
 import { useSharedInput } from '../../components/workspace/useSharedInput'
 import CanvasContextSync from '../../../components/canvas/CanvasContextSync'
+import { MessageLimitWarning } from '../../components/chat/MessageLimitWarning'
+import type { MessageLimitStatus } from '../../../lib/bmad/message-limit-manager'
 import dynamic from 'next/dynamic'
 
 // Dynamically import canvas components (SSR-safe)
@@ -56,6 +58,7 @@ export default function WorkspacePage() {
     drawingSnapshot?: string
     lastModified: Date
   } | null>(null)
+  const [limitStatus, setLimitStatus] = useState<MessageLimitStatus | null>(null)
   const isOnline = useOnlineStatus()
   const { preserveInput, hasPreservedInput, peekPreservedInput, clearPreservedInput } = useSharedInput(params.id as string)
 
@@ -250,6 +253,10 @@ export default function WorkspacePage() {
                 updateStreamingMessage(assistantMessageId, assistantContent)
               } else if (data.type === 'complete') {
                 console.log('[Workspace] Stream marked complete');
+                // Extract limitStatus from completion metadata
+                if (data.limitStatus) {
+                  setLimitStatus(data.limitStatus);
+                }
                 // Finalize the message in database (pass the messageId)
                 await finalizeAssistantMessage(assistantContent, assistantMessageId)
               } else if (data.type === 'error') {
@@ -653,6 +660,18 @@ export default function WorkspacePage() {
                   autoPopulate={false}
                 />
               </div>
+
+              {/* Message Limit Warning */}
+              <MessageLimitWarning
+                limitStatus={limitStatus}
+                onExport={() => {
+                  // TODO: Implement export functionality
+                  alert('Export functionality coming soon!')
+                }}
+                onNewSession={() => {
+                  window.location.href = '/dashboard'
+                }}
+              />
 
               <form onSubmit={handleSendMessage} className="mt-4">
                 <div className="flex gap-2">

@@ -62,3 +62,4 @@ tmp/
 *.tsbuildinfo
 next-env.d.ts
 ../../.specstory/
+.bmad-core/

@@ -1,4 +1,5 @@
 import { CoachingContext } from './mary-persona';
+import type { MessageLimitStatus } from '@/lib/bmad/message-limit-manager';
 
 export interface StreamChunk {
   type: 'metadata' | 'content' | 'complete' | 'error' | 'typing';
@@ -19,6 +20,7 @@ export interface StreamChunk {
     total_tokens: number;
     cost_estimate_usd: number;
   };
+  limitStatus?: MessageLimitStatus | null;
 }
 
 export class StreamEncoder {
@@ -49,8 +51,8 @@ export class StreamEncoder {
     return this.encodeChunk(chunk);
   }
 
-  encodeComplete(usage?: StreamChunk['usage']): Uint8Array {
-    const chunk: StreamChunk = { type: 'complete', usage };
+  encodeComplete(usage?: StreamChunk['usage'], limitStatus?: MessageLimitStatus | null): Uint8Array {
+    const chunk: StreamChunk = { type: 'complete', usage, limitStatus };
     return this.encodeChunk(chunk);
   }
 

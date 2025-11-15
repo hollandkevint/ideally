@@ -77,8 +77,18 @@ export async function getCreditBalance(userId: string): Promise<CreditBalance | 
 
 /**
  * Check if user has sufficient credits
+ *
+ * Note: In LAUNCH_MODE, credit checks are bypassed to allow unlimited sessions
+ * during the initial testing period (target: 100 sessions with message limits).
  */
 export async function hasCredits(userId: string, required: number = 1): Promise<boolean> {
+  // Bypass credit checks in launch mode (for initial testing period)
+  const isLaunchMode = process.env.NEXT_PUBLIC_LAUNCH_MODE === 'true';
+  if (isLaunchMode) {
+    console.log('[LAUNCH_MODE] Bypassing credit check for user:', userId);
+    return true;
+  }
+
   const balance = await getCreditBalance(userId);
   return balance !== null && balance.balance >= required;
 }
@@ -91,6 +101,9 @@ export async function hasCredits(userId: string, required: number = 1): Promise<
  * Atomically deduct 1 credit from user's balance
  * Uses database-level locking to prevent race conditions
  *
+ * Note: In LAUNCH_MODE, credit deductions are bypassed to allow unlimited sessions
+ * during the initial testing period.
+ *
  * @param userId - User ID
  * @param sessionId - Optional BMad session ID for tracking
  * @returns Result with success status and new balance
@@ -99,6 +112,17 @@ export async function deductCredit(
   userId: string,
   sessionId?: string
 ): Promise<DeductCreditResult> {
+  // Bypass credit deduction in launch mode (for initial testing period)
+  const isLaunchMode = process.env.NEXT_PUBLIC_LAUNCH_MODE === 'true';
+  if (isLaunchMode) {
+    console.log('[LAUNCH_MODE] Bypassing credit deduction for user:', userId, 'session:', sessionId);
+    return {
+      success: true,
+      balance: 999, // Arbitrary high number for launch mode
+      message: 'Launch mode: credit deduction bypassed',
+    };
+  }
+
   const supabase = await createClient();
 
   try {
