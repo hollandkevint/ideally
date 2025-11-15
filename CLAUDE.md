@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-10-28*
+*Last Updated: 2025-11-15*
 
 ## Project Context
 **ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
@@ -38,8 +38,17 @@ npm run test:oauth:report # Generate OAuth test report
 ### Database Migrations
 ```bash
 # Migrations are in apps/web/supabase/migrations/
-# Run in order: 001 → 002 → 003 → 004 → 005 → 006
+# Run in order: 001 → 002 → 003 → 004 → 005 → 006 → 007 → 008 → 009
+# Migration 008: Message limits for launch mode (APPLIED ✅)
+# Migration 009: Markdown output for text-only UX (PENDING - in feature branch)
 # Use Supabase dashboard or CLI to apply
+```
+
+### Feature Flags
+```bash
+# .env.local / Vercel environment variables
+LAUNCH_MODE=true          # Server-only: Bypass credit system for SLC launch (100 sessions)
+ENABLE_CANVAS=false       # Feature flag: Restore canvas workspace (default: false)
 ```
 
 ## Architecture Overview
@@ -68,11 +77,35 @@ npm run test:oauth:report # Generate OAuth test report
 - **Trial**: 2 free credits on signup (grant_free_credit trigger)
 - **Atomic deductions**: Row-level locking prevents race conditions
 
-**Canvas Workspace** (`apps/web/lib/canvas/`)
+**Launch Mode (SLC Testing Period)** (`LAUNCH_MODE=true` - ACTIVE ✅)
+- **Purpose**: Enable 100-session testing period before Stripe integration
+- **Credit Bypass**: `hasCredits()` and `deductCredit()` return true when LAUNCH_MODE enabled
+- **Message Limits**: 20-message session limits enforced via database tracking
+- **Migration 008**: Adds message_count, message_limit, limit_reached_at to bmad_sessions
+- **Message Limit Manager** (`lib/bmad/message-limit-manager.ts`): Business logic for limits
+- **Warning UI** (`components/chat/MessageLimitWarning.tsx`): Yellow/orange/red warnings
+- **Security Fix**: Changed NEXT_PUBLIC_LAUNCH_MODE → LAUNCH_MODE (server-only)
+- **Race Condition Fix**: Atomic increment-first pattern prevents concurrent message exploits
+- **Rollback**: Migration 008_rollback available if needed
+
+**Text-Only Markdown UX** (🚧 IN PROGRESS - feature/text-only-markdown branch)
+- **Status**: Part 1/3 complete (foundation), Part 2/3 next (integration)
+- **Migration 009**: Adds markdown_output, output_metadata to user_workspace
+- **MarkdownOutputPane** (`components/markdown/MarkdownOutputPane.tsx`): Edit/preview toggle, export .md
+- **OutputSuggestionBar** (`components/markdown/OutputSuggestionBar.tsx`): Generate summary/lean canvas
+- **Replaces**: Canvas workspace (tldraw, Mermaid) with simple text-based markdown
+- **Auto-Generation**: After 2/5/10 questions → Summary/Business Model/Lean Canvas
+- **Feature Flag**: `ENABLE_CANVAS=false` allows instant rollback to canvas
+- **Code Removal**: ~2,000 lines of canvas code to be commented out (Part 3/3)
+
+**Canvas Workspace** (`apps/web/lib/canvas/`) - ⚠️ DEPRECATED (feature-flagged)
+- **Status**: Being replaced by text-only markdown UX (see above)
+- **Feature Flag**: `ENABLE_CANVAS=false` disables canvas, `true` restores it
 - **canvas-manager.ts**: Manages tldraw canvas instances with pooling
 - **visual-suggestion-parser.ts**: Parses AI suggestions into Mermaid diagrams
 - **canvas-export.ts**: Export to PNG (5 resolutions) and SVG with metadata
 - **useCanvasSync.ts**: Bidirectional AI↔Canvas synchronization
+- **Future**: Will be commented out (not deleted) for rollback capability
 
 **Authentication** (`apps/web/lib/auth/`)
 - **AuthContext.tsx**: Simplified auth context (32% code reduction vs previous)
@@ -268,6 +301,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Nov 15**: 🚧 Text-only markdown UX (Part 1/3) - Replaced canvas with markdown output pane (in progress)
+- **Nov 15**: 🔒 Security fixes DEPLOYED - Fixed race condition, server-only LAUNCH_MODE, rollback migration
+- **Nov 14-15**: 🚀 Launch mode implementation DEPLOYED - 20-message limits, credit bypass, message warnings
 - **Oct 28**: Canvas tldraw v4 API fix - Updated snapshot methods to use standalone functions
 - **Oct 14**: Epic 4 Monetization (30% complete) - Credit system, Stripe integration
 - **Oct 13**: Middleware disabled, route fixes, production stabilization

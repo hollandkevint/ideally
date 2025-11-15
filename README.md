@@ -49,6 +49,13 @@ thinkhaven/
 - Real-time session management with database persistence
 - 30-minute structured BMad Method sessions
 
+**🚀 Launch Mode (Active - SLC Testing):**
+- Text-only markdown output (replacing visual canvas)
+- Edit/preview markdown with auto-save
+- Export strategic sessions as `.md` files
+- 20-message session limits for focused thinking
+- Credit system bypass for initial 100 sessions
+
 **Testing & Quality:**
 - Comprehensive E2E testing with Playwright
 - OAuth testing with 39+ test scenarios
