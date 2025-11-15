@@ -115,9 +115,8 @@ export class BmadKnowledgeBase {
         throw new Error(`Knowledge entry ${entryId} not found`);
       }
 
-      // This would normally save to database
-      // For now, we'll just validate the reference
-      console.log(`Recording knowledge reference: ${entry.title} for session ${sessionId}`);
+      // TODO: Save knowledge reference to database
+      // For now, we just validate the reference exists
 
     } catch (error) {
       throw new BmadMethodError(
