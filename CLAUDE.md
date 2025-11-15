@@ -113,6 +113,27 @@ ENABLE_CANVAS=false       # Feature flag: Restore canvas workspace (default: fal
 - **Note**: Middleware disabled (middleware.ts.disabled) due to Edge Runtime incompatibility
 - **Session management**: API routes handle sessions, not middleware
 
+**Toast Notifications** (`sonner`)
+- **Library**: Sonner v1.7.3 - Modern, accessible toast notifications
+- **Setup**: `<Toaster position="bottom-right" richColors />` in root layout (`apps/web/app/layout.tsx`)
+- **Usage**:
+  ```typescript
+  import { toast } from 'sonner';
+
+  // Success notification
+  toast.success('File downloaded successfully');
+
+  // Error notification
+  toast.error('Failed to save changes');
+  ```
+- **When to Use**:
+  - ✅ User-facing success/error feedback (copy, download, save operations)
+  - ✅ Brief status updates that auto-dismiss
+  - ❌ Critical errors (use error boundaries instead)
+  - ❌ Debug logging (use `console.error()` instead)
+- **Examples**: MarkdownOutputPane (copy, export, save), form submissions, API errors
+- **Styling**: Automatically themed with `richColors` for success (green), error (red)
+
 **Export System** (`apps/web/lib/export/`)
 - **pdf-generator.ts**: @react-pdf/renderer integration
 - **pdf-templates/FeatureBriefPDF.tsx**: Professional PDF layouts with branding
@@ -217,11 +238,14 @@ const reader = response.body.getReader();
 
 ## Testing Strategy
 
+⚠️ **KNOWN ISSUES**: Test suite has infrastructure problems affecting 260+ tests. See [`apps/web/tests/TEST-INFRASTRUCTURE-ISSUES.md`](apps/web/tests/TEST-INFRASTRUCTURE-ISSUES.md) for details. Tests are informational only until infrastructure is fixed. **Build success and TypeScript checking are the validation gates.**
+
 ### Unit Tests (Vitest)
 - Located in `**/*.test.{ts,tsx}` files
 - Setup: `apps/web/tests/setup.ts`
 - Coverage: Canvas parsers, utility functions, business logic
 - Run: `npm test` (watch) or `npm run test:run` (once)
+- **Status**: 260+ failures due to jsdom/environment setup (NOT code issues)
 
 ### E2E Tests (Playwright)
 - Located in `apps/web/tests/e2e/`
@@ -301,6 +325,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Nov 15**: ✅ QA Cleanup - Toast notifications (sonner), TypeScript fixes (TypingIndicator), test infrastructure docs
 - **Nov 15**: 🚧 Text-only markdown UX (Part 1/3) - Replaced canvas with markdown output pane (in progress)
 - **Nov 15**: 🔒 Security fixes DEPLOYED - Fixed race condition, server-only LAUNCH_MODE, rollback migration
 - **Nov 14-15**: 🚀 Launch mode implementation DEPLOYED - 20-message limits, credit bypass, message warnings
