@@ -89,13 +89,14 @@ export default function WorkspacePage() {
     } finally {
       setLoading(false)
     }
-  }, [params.id, user?.id])
+  }, [params.id])
 
   useEffect(() => {
     if (user && params.id) {
       fetchWorkspace()
     }
-  }, [user, params.id, fetchWorkspace])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, params.id])
 
   const addChatMessage = async (message: Omit<ChatMessage, 'id' | 'timestamp'>) => {
     if (!workspace) return
