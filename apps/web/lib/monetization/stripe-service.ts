@@ -51,7 +51,7 @@ export const CREDIT_PACKAGES = {
     id: 'starter',
     name: 'Starter Pack',
     credits: 5,
-    priceCents: 1900, // $19.00
+    priceCents: 1000, // $10.00
     stripePriceId: process.env.STRIPE_PRICE_ID_STARTER || '',
     description: 'Perfect for trying out ThinkHaven',
   },
@@ -59,7 +59,7 @@ export const CREDIT_PACKAGES = {
     id: 'professional',
     name: 'Professional Pack',
     credits: 10,
-    priceCents: 3900, // $39.00
+    priceCents: 3000, // $30.00
     stripePriceId: process.env.STRIPE_PRICE_ID_PROFESSIONAL || '',
     description: 'Best value for regular users',
   },
@@ -67,7 +67,7 @@ export const CREDIT_PACKAGES = {
     id: 'business',
     name: 'Business Pack',
     credits: 20,
-    priceCents: 7900, // $79.00
+    priceCents: 10000, // $100.00
     stripePriceId: process.env.STRIPE_PRICE_ID_BUSINESS || '',
     description: 'For teams and frequent users',
   },

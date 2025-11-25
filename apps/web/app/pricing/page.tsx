@@ -27,8 +27,8 @@ const packages: Package[] = [
     id: 'starter',
     name: 'Starter',
     credits: 5,
-    price: 19,
-    pricePerCredit: '$3.80',
+    price: 10,
+    pricePerCredit: '$2.00',
     description: 'Perfect for trying out ThinkHaven',
     features: [
       '5 strategic coaching sessions',
@@ -42,8 +42,8 @@ const packages: Package[] = [
     id: 'professional',
     name: 'Professional',
     credits: 10,
-    price: 39,
-    pricePerCredit: '$3.90',
+    price: 30,
+    pricePerCredit: '$3.00',
     description: 'Best value for regular users',
     features: [
       '10 strategic coaching sessions',
@@ -58,8 +58,8 @@ const packages: Package[] = [
     id: 'business',
     name: 'Business',
     credits: 20,
-    price: 79,
-    pricePerCredit: '$3.95',
+    price: 100,
+    pricePerCredit: '$5.00',
     description: 'For teams and frequent users',
     features: [
       '20 strategic coaching sessions',
