@@ -215,6 +215,58 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Pricing Preview Section */}
+      <div className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Start free, then unlock unlimited strategic coaching sessions
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <Card className="border-gray-200">
+                <CardContent className="p-6 text-center">
+                  <h3 className="font-bold text-lg mb-2">Starter</h3>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">$10</div>
+                  <p className="text-sm text-gray-600">5 coaching sessions</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-blue-500 border-2 shadow-lg relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-blue-500 text-white">POPULAR</Badge>
+                </div>
+                <CardContent className="p-6 text-center pt-8">
+                  <h3 className="font-bold text-lg mb-2">Professional</h3>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">$30</div>
+                  <p className="text-sm text-gray-600">10 coaching sessions</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-gray-200">
+                <CardContent className="p-6 text-center">
+                  <h3 className="font-bold text-lg mb-2">Business</h3>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">$100</div>
+                  <p className="text-sm text-gray-600">20 coaching sessions</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => router.push('/pricing')}
+              className="px-8"
+            >
+              View Full Pricing Details →
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Final CTA Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20">
         <div className="container mx-auto px-4 text-center">
@@ -226,14 +278,25 @@ export default function Home() {
               Take the 5-minute assessment now and get your personalized strategic thinking scorecard with specific recommendations.
             </p>
 
-            <Button
-              size="lg"
-              variant="secondary"
-              className="px-12 py-6 text-xl font-bold mb-6 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
-              onClick={() => router.push('/assessment')}
-            >
-              🧠 Start Your Free Assessment
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
+                onClick={() => router.push('/assessment')}
+              >
+                🧠 Start Your Free Assessment
+              </Button>
+
+              <Button
+                size="lg"
+                variant="outline"
+                className="px-8 py-6 text-lg font-semibold bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 transition-all"
+                onClick={() => router.push('/pricing')}
+              >
+                View Pricing
+              </Button>
+            </div>
 
             <p className="text-blue-200 text-sm">
               ✓ Takes 5 minutes • ✓ Instant personalized results • ✓ Completely free<br />
@@ -267,8 +330,8 @@ export default function Home() {
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="/assessment" className="hover:text-white transition-colors">Free Assessment</a></li>
+                <li><a href="/pricing" className="hover:text-white transition-colors">Pricing</a></li>
                 <li><a href="/demo" className="hover:text-white transition-colors">Live Demo</a></li>
-                <li><span className="text-gray-500">Blog (Coming Soon)</span></li>
               </ul>
             </div>
             <div>
