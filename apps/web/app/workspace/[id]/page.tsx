@@ -639,28 +639,30 @@ export default function WorkspacePage() {
                 )}
               </div>
 
-              {/* Canvas Context Sync */}
-              <div className="mt-4">
-                <CanvasContextSync
-                  workspaceId={workspace.id}
-                  messages={workspace.chat_context.map(msg => ({
-                    id: msg.id,
-                    role: msg.role as 'user' | 'assistant',
-                    content: msg.content,
-                    timestamp: new Date(msg.timestamp)
-                  }))}
-                  canvasState={canvasState}
-                  onCanvasUpdate={(diagramCode, type) => {
-                    setCanvasState({
-                      mode: 'diagram',
-                      diagramCode,
-                      diagramType: type,
-                      lastModified: new Date()
-                    })
-                  }}
-                  autoPopulate={false}
-                />
-              </div>
+              {/* Canvas Context Sync - Only shown when ENABLE_CANVAS=true */}
+              {process.env.NEXT_PUBLIC_ENABLE_CANVAS === 'true' && (
+                <div className="mt-4">
+                  <CanvasContextSync
+                    workspaceId={workspace.id}
+                    messages={workspace.chat_context.map(msg => ({
+                      id: msg.id,
+                      role: msg.role as 'user' | 'assistant',
+                      content: msg.content,
+                      timestamp: new Date(msg.timestamp)
+                    }))}
+                    canvasState={canvasState}
+                    onCanvasUpdate={(diagramCode, type) => {
+                      setCanvasState({
+                        mode: 'diagram',
+                        diagramCode,
+                        diagramType: type,
+                        lastModified: new Date()
+                      })
+                    }}
+                    autoPopulate={false}
+                  />
+                </div>
+              )}
 
               {/* Message Limit Warning */}
               <MessageLimitWarning
@@ -675,19 +677,32 @@ export default function WorkspacePage() {
               />
 
               <form onSubmit={handleSendMessage} className="mt-4">
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
+                <div className="flex gap-2 items-end">
+                  <textarea
                     value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    placeholder="Type your strategic question or challenge..."
+                    onChange={(e) => {
+                      setMessageInput(e.target.value)
+                      // Auto-resize textarea
+                      e.target.style.height = 'auto'
+                      e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px'
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        if (messageInput.trim() && !sendingMessage) {
+                          handleSendMessage(e)
+                        }
+                      }
+                    }}
+                    placeholder="Type your strategic question... (Shift+Enter for new line)"
                     disabled={sendingMessage}
-                    className="flex-1 px-4 py-2 border border-divider rounded-lg focus:border-primary focus:outline-none disabled:opacity-50"
+                    rows={1}
+                    className="flex-1 px-4 py-3 border border-divider rounded-lg focus:border-primary focus:outline-none disabled:opacity-50 resize-none min-h-[50px] max-h-[200px]"
                   />
                   <button
                     type="submit"
                     disabled={!messageInput.trim() || sendingMessage}
-                    className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary transition-colors"
+                    className="px-4 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary transition-colors self-end"
                   >
                     {sendingMessage ? 'Sending...' : 'Send'}
                   </button>
