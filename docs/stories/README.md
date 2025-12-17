@@ -6,21 +6,28 @@ This directory contains user stories organized by epic and completion status.
 
 | Epic | Status | Description |
 |------|--------|-------------|
+| **Strategic Pivot** | **P0** | Enable BMad, define use case, test pricing |
 | Epic 0 | **Done** | Authentication fixes |
 | Epic 1 | **Done** | Core platform improvements |
 | Epic 2 | **Done** | BMad Method pathways |
 | Epic 3 | **Partial** | Framework export (3.1 done, 3.2 deferred) |
-| Epic 4 | **Ready** | Monetization - Session credit system |
+| Epic 4 | **Paused** | Monetization - Pending pricing validation |
 | Epic 5 | **Future** | Analytics - Requires Epic 4 |
 
 ## Directory Structure
+
+### Priority: Strategic Pivot (P0)
+- **`strategic-pivot/`** - Critical positioning and PMF stories (SP.x) - **Active**
+  - SP.1: Enable BMad Pathways as Default Experience
+  - SP.2: Define Single Urgent Use Case (Idea Validation)
+  - SP.3: Test Premium Pricing ($99 One-Time)
 
 ### Active Development Stories
 - **`epic-0-auth-fixes/`** - Authentication-related fixes (Stories 0.x) - **Done**
 - **`epic-1-core-improvements/`** - Core platform improvements (Stories 1.x) - **Done**
 - **`epic-2-bmad-pathways/`** - BMad Method pathway implementations (Stories 2.x) - **Done**
 - **`epic-3-framework-export/`** - PDF & Markdown export (Stories 3.x) - **Partial**
-- **`epic-4-monetization/`** - Session credit system, Stripe integration (Stories 4.x) - **Ready**
+- **`epic-4-monetization/`** - Session credit system, Stripe integration (Stories 4.x) - **Paused**
 - **`epic-5-analytics/`** - Business model assumption testing (Stories 5.x) - **Future**
 
 ### Support Directories
@@ -63,17 +70,29 @@ Stories use the following status labels:
 
 ## Next Steps Priority
 
-1. **Epic 4: Monetization** - Session credit system (enables revenue)
-   - Story 4.1: Session Credit System - Ready to start
-   - Prerequisites: Stripe account, email service
+### P0: Strategic Pivot (This Week)
+Critical for product-market fit validation:
 
-2. **Epic 5: Analytics** - After Epic 4 completion
-   - Story 5.1: Business Model Assumption Testing
+1. **SP.1: Enable BMad Pathways** - Make structured pathways the default experience
+2. **SP.2: Idea Validation Use Case** - "Validate your startup idea in 30 minutes"
+3. **SP.3: Premium Pricing Test** - $99 one-time vs. credit-based
 
-3. **Epic 3 Completion** - After user feedback
-   - Story 3.2: Advanced Integrations (Notion, Airtable, email)
+### P1: After Pricing Validated
+4. **Epic 4: Monetization** - Implement winning pricing model
+   - Story 4.1: Adapt based on SP.3 results
+
+### P2: After PMF Signals
+5. **Epic 5: Analytics** - Track assumption validation
+6. **Epic 3.2: Advanced Integrations** - Based on user feedback
 
 ## Cleanup History
+
+**December 16, 2025 - Strategic Pivot Stories**
+- Created `strategic-pivot/` folder for PMF validation
+- Added SP.1: Enable BMad Pathways as Default Experience
+- Added SP.2: Define Single Urgent Use Case (Idea Validation)
+- Added SP.3: Test Premium Pricing ($99 One-Time)
+- Paused Epic 4 pending pricing validation
 
 **December 16, 2025 - Story Reorganization**
 - Created `epic-5-analytics/` folder for future analytics work
