@@ -18,14 +18,24 @@ import Stripe from 'stripe';
 // CONFIGURATION
 // ============================================================================
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+// Lazy initialization to avoid build-time errors when env vars aren't set
+let stripeInstance: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!stripeInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+    }
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-12-18.acacia',
+      typescript: true,
+    });
+  }
+  return stripeInstance;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
-});
+// Export the getter function
+export { getStripe };
 
 // Webhook secret for signature verification
 export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -120,7 +130,7 @@ export async function createCheckoutSession(
   }
 
   // Create checkout session
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: [
@@ -177,7 +187,7 @@ export async function createIdeaValidationCheckout(
         quantity: 1,
       }];
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: lineItems,
@@ -223,7 +233,7 @@ export function constructWebhookEvent(
   }
 
   try {
-    const event = stripe.webhooks.constructEvent(
+    const event = getStripe().webhooks.constructEvent(
       body,
       signature,
       STRIPE_WEBHOOK_SECRET
@@ -249,7 +259,7 @@ export function constructWebhookEvent(
 export async function retrieveCheckoutSession(
   sessionId: string
 ): Promise<Stripe.Checkout.Session> {
-  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+  const session = await getStripe().checkout.sessions.retrieve(sessionId, {
     expand: ['line_items', 'payment_intent'],
   });
 
@@ -269,7 +279,7 @@ export async function retrieveCheckoutSession(
 export async function retrievePaymentIntent(
   paymentIntentId: string
 ): Promise<Stripe.PaymentIntent> {
-  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
   return paymentIntent;
 }
 
@@ -289,7 +299,7 @@ export async function createRefund(
   paymentIntentId: string,
   reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer'
 ): Promise<Stripe.Refund> {
-  const refund = await stripe.refunds.create({
+  const refund = await getStripe().refunds.create({
     payment_intent: paymentIntentId,
     reason,
   });
@@ -315,7 +325,7 @@ export async function getOrCreateCustomer(
   name?: string
 ): Promise<Stripe.Customer> {
   // Search for existing customer
-  const existingCustomers = await stripe.customers.list({
+  const existingCustomers = await getStripe().customers.list({
     email,
     limit: 1,
   });
@@ -325,7 +335,7 @@ export async function getOrCreateCustomer(
   }
 
   // Create new customer
-  const customer = await stripe.customers.create({
+  const customer = await getStripe().customers.create({
     email,
     name,
     metadata: {
@@ -385,7 +395,7 @@ export async function createTestClock(): Promise<string> {
     throw new Error('Test clocks are only available in development');
   }
 
-  const testClock = await stripe.testHelpers.testClocks.create({
+  const testClock = await getStripe().testHelpers.testClocks.create({
     frozen_time: Math.floor(Date.now() / 1000),
   });
 
@@ -398,7 +408,7 @@ export async function createTestClock(): Promise<string> {
  */
 export async function verifyStripeConnection(): Promise<boolean> {
   try {
-    await stripe.balance.retrieve();
+    await getStripe().balance.retrieve();
     return true;
   } catch (error) {
     console.error('Stripe connection failed:', error);

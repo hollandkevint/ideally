@@ -2,7 +2,7 @@
 
 import { useAuth } from '../lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -10,12 +10,38 @@ import { Badge } from '@/components/ui/badge'
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard')
     }
   }, [user, loading, router])
+
+  const handleCheckout = async () => {
+    if (!user) {
+      router.push('/login?redirect=/&checkout=true')
+      return
+    }
+
+    setCheckoutLoading(true)
+    try {
+      const response = await fetch('/api/checkout/idea-validation', {
+        method: 'POST',
+      })
+      const data = await response.json()
+
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('No checkout URL returned:', data)
+        setCheckoutLoading(false)
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      setCheckoutLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -52,9 +78,10 @@ export default function Home() {
             <Button
               size="lg"
               className="px-12 py-6 text-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-              onClick={() => router.push('/dashboard')}
+              onClick={handleCheckout}
+              disabled={checkoutLoading}
             >
-              🎯 Validate My Idea - $99
+              {checkoutLoading ? 'Loading...' : '🎯 Validate My Idea - $99'}
             </Button>
             <Button
               size="lg"
@@ -241,9 +268,10 @@ export default function Home() {
                 size="lg"
                 variant="secondary"
                 className="px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
-                onClick={() => router.push('/dashboard')}
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
               >
-                🎯 Validate My Idea - $99
+                {checkoutLoading ? 'Loading...' : '🎯 Validate My Idea - $99'}
               </Button>
             </div>
 
