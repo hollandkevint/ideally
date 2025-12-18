@@ -30,70 +30,80 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Hero Section - Frustration Hook */}
+      {/* Hero Section - Idea Validation Hook */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto text-center">
           <Badge variant="secondary" className="px-4 py-2 text-sm font-semibold mb-6">
-            🎯 Free Strategic Thinking Assessment • 5 Minutes
+            🚀 Validate Your Startup Idea in 30 Minutes
           </Badge>
 
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Feeling frustrated that strategic decisions feel like <span className="text-red-600">guesswork</span>
+            Don&apos;t waste 6 months building something
             <br />
-            <span className="text-primary">even though you have data?</span>
+            <span className="text-red-600">nobody wants</span>
           </h1>
 
           <p className="text-2xl text-gray-700 mb-8 max-w-3xl mx-auto font-medium">
-            Answer 15 questions to find out <strong>why</strong> your strategic thinking isn't systematic—and what to do about it
+            Get your startup idea validated by AI in 30 minutes. <strong>Know if you should build it</strong> before you invest your time and money.
           </p>
 
           {/* Primary CTA */}
-          <Button
-            size="lg"
-            className="px-12 py-6 text-xl font-bold mb-4 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-            onClick={() => router.push('/assessment')}
-          >
-            🧠 Take the Free Assessment Now
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+            <Button
+              size="lg"
+              className="px-12 py-6 text-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+              onClick={() => router.push('/dashboard')}
+            >
+              🎯 Validate My Idea - $99
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-12 py-6 text-xl font-bold"
+              onClick={() => router.push('/assessment')}
+            >
+              Try Free Assessment First
+            </Button>
+          </div>
 
           <p className="text-sm text-gray-600 mb-12">
-            ✓ Takes 5 minutes • ✓ Instant results • ✓ Completely free • ✓ No signup required
+            ✓ 30-minute AI session • ✓ 10 critical questions answered • ✓ Professional validation report • ✓ Money-back guarantee
           </p>
 
-          {/* Value Proposition - 3 Key Areas */}
+          {/* Value Proposition - What You Get */}
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              This assessment will measure and improve three key areas:
+              What you get in your 30-minute validation session:
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-left">
                 <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">📊</span>
+                  <span className="text-3xl">🔍</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Evidence-Based Decision Making</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">10 Critical Questions Answered</h3>
                 <p className="text-gray-600">
-                  Stop relying on gut feeling. Learn how to ground every strategic choice in verifiable data and research.
+                  Problem clarity, target market, competition, differentiation, business model - the questions that matter.
                 </p>
               </div>
 
               <div className="text-left">
                 <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">🎯</span>
+                  <span className="text-3xl">📋</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Systematic Framework Mastery</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Validation Scorecard</h3>
                 <p className="text-gray-600">
-                  Transform analysis from art into science using proven methodologies like the bMAD Method.
+                  Clear verdict: Build it, Pivot, or Kill it - with specific scores and reasoning you can share with co-founders.
                 </p>
               </div>
 
               <div className="text-left">
                 <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">🚀</span>
+                  <span className="text-3xl">📄</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Actionable Strategic Outputs</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Professional PDF Report</h3>
                 <p className="text-gray-600">
-                  Generate professional documents and roadmaps that stakeholders understand and executives approve.
+                  Export your validation report to share with advisors, investors, or your team.
                 </p>
               </div>
             </div>
@@ -220,29 +230,30 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to discover your strategic thinking gaps?
+              Stop guessing. Start validating.
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Take the 5-minute assessment now and get your personalized strategic thinking scorecard with specific recommendations.
+              73% of startups fail because they build something nobody wants. Don&apos;t be one of them.
             </p>
 
-            <Button
-              size="lg"
-              variant="secondary"
-              className="px-12 py-6 text-xl font-bold mb-6 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
-              onClick={() => router.push('/assessment')}
-            >
-              🧠 Start Your Free Assessment
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
+                onClick={() => router.push('/dashboard')}
+              >
+                🎯 Validate My Idea - $99
+              </Button>
+            </div>
 
             <p className="text-blue-200 text-sm">
-              ✓ Takes 5 minutes • ✓ Instant personalized results • ✓ Completely free<br />
-              ✓ No credit card • ✓ No signup required • ✓ Privacy protected
+              ✓ 30-minute session • ✓ Professional validation report • ✓ Money-back guarantee
             </p>
 
             <div className="mt-8 pt-8 border-t border-blue-400">
               <p className="text-blue-100 text-sm">
-                After your assessment, you'll get 2 free strategic coaching sessions with Mary AI
+                Not ready to commit? <a href="/assessment" className="underline hover:text-white">Take the free 5-minute assessment first</a>
               </p>
             </div>
           </div>
