@@ -42,9 +42,30 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http:
 // ============================================================================
 
 /**
- * Credit packages definition
- * These should match the database credit_packages table
+ * Products definition
  * Stripe Price IDs must be configured in Stripe Dashboard
+ */
+
+// Primary product: Idea Validation ($99 one-time)
+export const IDEA_VALIDATION_PRODUCT = {
+  id: 'idea_validation',
+  name: 'Startup Idea Validation',
+  priceCents: 9900, // $99.00
+  stripePriceId: process.env.STRIPE_PRICE_ID_IDEA_VALIDATION || '',
+  description: '30-minute AI-powered validation session with professional PDF report',
+  features: [
+    '30-minute structured validation session',
+    '10 critical questions answered',
+    'Validation scorecard with clear verdict',
+    'Professional PDF report',
+    'Share with co-founders & advisors',
+    'Money-back guarantee',
+  ],
+} as const;
+
+/**
+ * Credit packages definition (legacy - kept for existing users)
+ * These should match the database credit_packages table
  */
 export const CREDIT_PACKAGES = {
   starter: {
@@ -121,6 +142,59 @@ export async function createCheckoutSession(
     // Enable automatic tax calculation if configured
     automatic_tax: {
       enabled: true,
+    },
+  });
+
+  return session;
+}
+
+/**
+ * Create a Stripe Checkout session for Idea Validation purchase
+ * Primary product: $99 one-time validation session
+ *
+ * @param userId - User ID making the purchase
+ * @param customerEmail - Optional customer email for receipt
+ * @returns Stripe Checkout Session with URL for redirect
+ */
+export async function createIdeaValidationCheckout(
+  userId: string,
+  customerEmail?: string
+): Promise<Stripe.Checkout.Session> {
+  const product = IDEA_VALIDATION_PRODUCT;
+
+  // Create checkout session with dynamic pricing if no Stripe Price ID
+  const lineItems = product.stripePriceId
+    ? [{ price: product.stripePriceId, quantity: 1 }]
+    : [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: product.name,
+            description: product.description,
+          },
+          unit_amount: product.priceCents,
+        },
+        quantity: 1,
+      }];
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    line_items: lineItems,
+    success_url: `${APP_URL}/validate/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${APP_URL}/?cancelled=true`,
+    customer_email: customerEmail,
+    client_reference_id: userId,
+    metadata: {
+      userId,
+      productType: 'idea_validation',
+      priceCents: product.priceCents.toString(),
+    },
+    // Money-back guarantee messaging
+    custom_text: {
+      submit: {
+        message: '30-day money-back guarantee. Not satisfied? Full refund, no questions asked.',
+      },
     },
   });
 
