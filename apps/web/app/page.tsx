@@ -2,14 +2,15 @@
 
 import { useAuth } from '../lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Lightbulb, Target, FileText, Menu, X } from 'lucide-react'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && user) {
@@ -19,271 +20,320 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Loading ThinkHaven...</p>
+          <p className="text-muted">Loading ThinkHaven...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Hero Section - Frustration Hook */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-5xl mx-auto text-center">
-          <Badge variant="secondary" className="px-4 py-2 text-sm font-semibold mb-6">
-            🎯 Free Strategic Thinking Assessment • 5 Minutes
-          </Badge>
+    <div className="min-h-screen bg-background">
+      {/* Sticky Navigation */}
+      <nav className="sticky top-0 z-50 bg-background border-b border-border">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="font-bold text-xl text-foreground">
+              ThinkHaven
+            </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Feeling frustrated that strategic decisions feel like <span className="text-red-600">guesswork</span>
-            <br />
-            <span className="text-primary">even though you have data?</span>
-          </h1>
+            {/* Desktop Navigation Links */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-muted hover:text-foreground transition-colors">
+                Features
+              </a>
+              <a href="#product" className="text-muted hover:text-foreground transition-colors">
+                Product
+              </a>
+              <a href="/demo" className="text-muted hover:text-foreground transition-colors">
+                Demo
+              </a>
+            </div>
 
-          <p className="text-2xl text-gray-700 mb-8 max-w-3xl mx-auto font-medium">
-            Answer 15 questions to find out <strong>why</strong> your strategic thinking isn't systematic—and what to do about it
-          </p>
+            {/* Desktop CTAs */}
+            <div className="hidden md:flex items-center gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => router.push('/login')}
+              >
+                Log in
+              </Button>
+              <Button
+                onClick={() => router.push('/signup')}
+              >
+                Get started
+              </Button>
+            </div>
 
-          {/* Primary CTA */}
-          <Button
-            size="lg"
-            className="px-12 py-6 text-xl font-bold mb-4 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-            onClick={() => router.push('/assessment')}
-          >
-            🧠 Take the Free Assessment Now
-          </Button>
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
 
-          <p className="text-sm text-gray-600 mb-12">
-            ✓ Takes 5 minutes • ✓ Instant results • ✓ Completely free • ✓ No signup required
-          </p>
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-border">
+              <div className="flex flex-col gap-4">
+                <a
+                  href="#features"
+                  className="text-muted hover:text-foreground transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Features
+                </a>
+                <a
+                  href="#product"
+                  className="text-muted hover:text-foreground transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Product
+                </a>
+                <a
+                  href="/demo"
+                  className="text-muted hover:text-foreground transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Demo
+                </a>
+                <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                  <Button
+                    variant="ghost"
+                    onClick={() => router.push('/login')}
+                    className="w-full"
+                  >
+                    Log in
+                  </Button>
+                  <Button
+                    onClick={() => router.push('/signup')}
+                    className="w-full"
+                  >
+                    Get started
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
 
-          {/* Value Proposition - 3 Key Areas */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              This assessment will measure and improve three key areas:
+      {/* Hero Section */}
+      <section className="py-24 md:py-32">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left: Text Content */}
+            <div>
+              <h1 className="text-[2.75rem] md:text-[3.5rem] font-bold text-foreground leading-tight mb-6">
+                Think strategically.
+                <br />
+                Build with clarity.
+              </h1>
+              <p className="text-lg md:text-xl text-muted mb-8 leading-relaxed">
+                ThinkHaven helps product leaders transform ideas into actionable strategies using AI-powered analysis and the proven BMad Method framework.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  size="lg"
+                  onClick={() => router.push('/signup')}
+                  className="text-base"
+                >
+                  Get started free
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => router.push('/demo')}
+                  className="text-base"
+                >
+                  See how it works
+                </Button>
+              </div>
+            </div>
+
+            {/* Right: Visual Placeholder */}
+            <div className="hidden md:block">
+              <div className="bg-surface border border-border rounded-xl p-8 aspect-square flex items-center justify-center">
+                <div className="text-center text-muted">
+                  <Lightbulb size={64} className="mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">Product mockup placeholder</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof Bar */}
+      <section className="py-12 bg-surface border-y border-border">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="text-center">
+            <p className="text-sm text-muted mb-8">
+              Trusted by strategic thinkers at innovative companies
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-12 opacity-50">
+              {/* Placeholder for company logos */}
+              <div className="text-muted font-semibold text-lg">Company 1</div>
+              <div className="text-muted font-semibold text-lg">Company 2</div>
+              <div className="text-muted font-semibold text-lg">Company 3</div>
+              <div className="text-muted font-semibold text-lg">Company 4</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Cards */}
+      <section id="features" className="py-24 md:py-32">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Strategic thinking made systematic
             </h2>
+            <p className="text-lg text-muted max-w-2xl mx-auto">
+              From initial concept to detailed execution plan, ThinkHaven guides you through every step with AI-powered insights.
+            </p>
+          </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-left">
-                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">📊</span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Feature 1: AI-Guided Analysis */}
+            <Card className="transition-all hover:shadow-md">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Lightbulb className="text-primary" size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Evidence-Based Decision Making</h3>
-                <p className="text-gray-600">
-                  Stop relying on gut feeling. Learn how to ground every strategic choice in verifiable data and research.
-                </p>
-              </div>
+                <CardTitle className="text-xl">AI-Guided Analysis</CardTitle>
+                <CardDescription className="text-base">
+                  Mary AI walks you through structured frameworks, asking the right questions to uncover strategic insights you might have missed.
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-              <div className="text-left">
-                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">🎯</span>
+            {/* Feature 2: BMad Method Framework */}
+            <Card className="transition-all hover:shadow-md">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Target className="text-primary" size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Systematic Framework Mastery</h3>
-                <p className="text-gray-600">
-                  Transform analysis from art into science using proven methodologies like the bMAD Method.
-                </p>
-              </div>
+                <CardTitle className="text-xl">BMad Method Framework</CardTitle>
+                <CardDescription className="text-base">
+                  Proven systematic approach to strategic thinking. Transform gut feelings into evidence-based decisions with clear documentation.
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-              <div className="text-left">
-                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-4 mx-auto md:mx-0">
-                  <span className="text-3xl">🚀</span>
+            {/* Feature 3: Professional Documents */}
+            <Card className="transition-all hover:shadow-md">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <FileText className="text-primary" size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Actionable Strategic Outputs</h3>
-                <p className="text-gray-600">
-                  Generate professional documents and roadmaps that stakeholders understand and executives approve.
-                </p>
-              </div>
-            </div>
+                <CardTitle className="text-xl">Professional Documents</CardTitle>
+                <CardDescription className="text-base">
+                  Export polished strategy documents, feature briefs, and lean canvas reports that stakeholders understand and executives approve.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Creator Credibility Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Photo placeholder */}
-              <div className="order-2 md:order-1">
-                <div className="bg-gray-200 rounded-2xl h-80 flex items-center justify-center">
-                  <span className="text-gray-400 text-lg">Kevin Holland Photo</span>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div className="order-1 md:order-2">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Created by Kevin Holland
-                </h2>
-                <p className="text-lg text-gray-700 mb-4">
-                  <strong>Clinical Informatics Lead</strong> with 15+ years transforming healthcare data chaos into strategic clarity.
-                </p>
-                <ul className="space-y-3 text-gray-700 mb-6">
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Built data products used by millions of patients</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Developed bMAD Method for systematic strategic analysis</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Former Hopkins Medicine & SF Health Network</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Now helping strategic thinkers escape guesswork</span>
-                  </li>
-                </ul>
-
-                {/* Research Stats */}
-                <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
-                  <p className="text-sm text-gray-600 mb-2">Research Finding</p>
-                  <p className="font-bold text-lg text-gray-900">
-                    73% of strategic decisions lack systematic frameworks
-                  </p>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Based on analysis of 500+ business strategy documents
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Social Proof Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-              What Strategic Thinkers Are Saying
+      {/* Product Preview */}
+      <section id="product" className="py-24 md:py-32 bg-surface">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Your strategic workspace
             </h2>
+            <p className="text-lg text-muted max-w-2xl mx-auto">
+              Dual-pane interface combines AI conversation with visual canvas for comprehensive strategy development.
+            </p>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-yellow-400 text-xl">★★★★★</div>
+          {/* Product Screenshot/Demo */}
+          <div className="bg-background border border-border rounded-xl shadow-sm overflow-hidden max-w-[1000px] mx-auto">
+            <div className="aspect-video bg-surface flex items-center justify-center p-12">
+              <div className="text-center text-muted">
+                <div className="grid grid-cols-2 gap-4 max-w-2xl">
+                  <div className="bg-background border border-border rounded-lg p-8">
+                    <p className="text-sm font-semibold mb-2">AI Chat</p>
+                    <p className="text-xs">Strategic conversation with Mary AI</p>
                   </div>
-                  <p className="text-gray-700 mb-4 italic">
-                    "The assessment pinpointed exactly where my strategic thinking was weak. Within 2 weeks of using ThinkHaven, my recommendations started getting approved consistently."
-                  </p>
-                  <p className="text-gray-900 font-semibold">Sarah Chen</p>
-                  <p className="text-gray-600 text-sm">Senior Product Manager, Healthcare SaaS</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-yellow-400 text-xl">★★★★★</div>
+                  <div className="bg-background border border-border rounded-lg p-8">
+                    <p className="text-sm font-semibold mb-2">Visual Canvas</p>
+                    <p className="text-xs">Interactive diagrams and frameworks</p>
                   </div>
-                  <p className="text-gray-700 mb-4 italic">
-                    "I've tried other strategic frameworks, but bMAD Method is the first that felt systematic enough for someone with a technical background. Game changer."
-                  </p>
-                  <p className="text-gray-900 font-semibold">Marcus Rodriguez</p>
-                  <p className="text-gray-600 text-sm">Engineering Director, Biotech</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <div className="text-4xl font-bold text-blue-600 mb-2">2,000+</div>
-                <div className="text-sm text-gray-600">Assessments Completed</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-green-600 mb-2">4.8/5</div>
-                <div className="text-sm text-gray-600">Average Rating</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-purple-600 mb-2">5 min</div>
-                <div className="text-sm text-gray-600">Average Completion</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-orange-600 mb-2">92%</div>
-                <div className="text-sm text-gray-600">Find It Valuable</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Final CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to discover your strategic thinking gaps?
+      <section className="py-24 md:py-32">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="bg-foreground text-background rounded-2xl p-12 md:p-16 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to think strategically?
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Take the 5-minute assessment now and get your personalized strategic thinking scorecard with specific recommendations.
+            <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+              Start your first strategic session for free. No credit card required.
             </p>
-
-            <Button
-              size="lg"
-              variant="secondary"
-              className="px-12 py-6 text-xl font-bold mb-6 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
-              onClick={() => router.push('/assessment')}
-            >
-              🧠 Start Your Free Assessment
-            </Button>
-
-            <p className="text-blue-200 text-sm">
-              ✓ Takes 5 minutes • ✓ Instant personalized results • ✓ Completely free<br />
-              ✓ No credit card • ✓ No signup required • ✓ Privacy protected
-            </p>
-
-            <div className="mt-8 pt-8 border-t border-blue-400">
-              <p className="text-blue-100 text-sm">
-                After your assessment, you'll get 2 free strategic coaching sessions with Mary AI
-              </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => router.push('/signup')}
+                className="text-base bg-background text-foreground hover:bg-background/90"
+              >
+                Get started free
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => router.push('/demo')}
+                className="text-base border-background/20 text-background hover:bg-background/10"
+              >
+                View demo
+              </Button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <div className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="md:col-span-2">
-              <h3 className="text-xl font-bold mb-4">ThinkHaven</h3>
-              <p className="text-gray-400 mb-4">
-                Transform strategic analysis from art into science with the bMAD Method
-              </p>
-              <div className="space-y-2">
-                <p className="text-sm text-gray-400">📧 kevin@thinkhaven.co</p>
-                <p className="text-sm text-gray-400">📍 San Francisco, CA</p>
-              </div>
+      {/* Minimal Footer */}
+      <footer className="border-t border-border py-12">
+        <div className="max-w-[var(--container-landing)] mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            {/* Footer Links */}
+            <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm">
+              <a href="/demo" className="text-muted hover:text-foreground transition-colors">
+                Demo
+              </a>
+              <a href="#" className="text-muted hover:text-foreground transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="text-muted hover:text-foreground transition-colors">
+                Terms of Service
+              </a>
+              <a href="mailto:kevin@thinkhaven.co" className="text-muted hover:text-foreground transition-colors">
+                Contact
+              </a>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/assessment" className="hover:text-white transition-colors">Free Assessment</a></li>
-                <li><a href="/demo" className="hover:text-white transition-colors">Live Demo</a></li>
-                <li><span className="text-gray-500">Blog (Coming Soon)</span></li>
-              </ul>
+
+            {/* Copyright */}
+            <div className="text-sm text-muted">
+              &copy; 2025 ThinkHaven. All rights reserved.
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><span className="text-gray-500">Privacy Policy (Coming Soon)</span></li>
-                <li><span className="text-gray-500">Terms of Service (Coming Soon)</span></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 ThinkHaven. All rights reserved.</p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
