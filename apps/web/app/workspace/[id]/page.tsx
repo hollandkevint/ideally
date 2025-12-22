@@ -6,6 +6,7 @@ import { useAuth } from '../../../lib/auth/AuthContext'
 import { supabase } from '../../../lib/supabase/client'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import BmadInterface from '../../components/bmad/BmadInterface'
 import StateBridge from '../../components/dual-pane/StateBridge'
 import { PaneErrorBoundary, LoadingPane, OfflineIndicator, useOnlineStatus } from '../../components/dual-pane/PaneErrorBoundary'
@@ -419,47 +420,44 @@ export default function WorkspacePage() {
       {/* Main Content Pane - 60% */}
       <PaneErrorBoundary paneName="chat">
         <div className="chat-pane">
-        <header className="mb-4 flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Link href="/dashboard" className="text-primary hover:text-primary-hover transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </Link>
-              <h1 className="text-2xl font-bold text-primary">{workspace.name}</h1>
-            </div>
-            <p className="text-secondary">AI-powered strategic workspace</p>
+        <header className="h-14 mb-4 flex justify-between items-center px-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard" style={{ color: 'var(--primary)' }} className="hover:opacity-80 transition-opacity">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </Link>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{workspace.name}</h1>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-secondary mb-2">Welcome, {user.email}</p>
-            <div className="flex gap-2">
-              <Link
-                href="/account"
-                className="text-xs px-3 py-1 border border-divider rounded hover:bg-primary/5 transition-colors"
-              >
-                Account
-              </Link>
-              <button
-                onClick={signOut}
-                className="text-xs px-3 py-1 border border-divider rounded hover:bg-primary/5 transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
+          <div className="flex items-center gap-3 text-xs">
+            <span style={{ color: 'var(--muted)' }}>{user.email}</span>
+            <Link
+              href="/account"
+              className="px-3 py-1 rounded transition-colors"
+              style={{ border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            >
+              Account
+            </Link>
+            <button
+              onClick={signOut}
+              className="px-3 py-1 rounded transition-colors"
+              style={{ border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            >
+              Sign Out
+            </button>
           </div>
         </header>
         
         {/* Tab Navigation */}
-        <div className="mb-4 border-b border-divider">
+        <div className="mb-4 px-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <div className="flex gap-4">
             <button
               onClick={() => handleTabSwitch('chat')}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'chat'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-secondary hover:text-primary hover:border-primary/50'
-              }`}
+              className="pb-3 px-1 text-sm font-medium border-b-2 transition-colors"
+              style={{
+                borderColor: activeTab === 'chat' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'chat' ? 'var(--primary)' : 'var(--muted)'
+              }}
             >
               <div className="flex items-center gap-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -467,7 +465,8 @@ export default function WorkspacePage() {
                 </svg>
                 Mary Chat
                 {workspace.chat_context.length > 0 && (
-                  <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                  <span className="text-xs px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: 'rgba(0, 121, 255, 0.1)', color: 'var(--primary)' }}>
                     {workspace.chat_context.length}
                   </span>
                 )}
@@ -499,7 +498,8 @@ export default function WorkspacePage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {activeTab === 'chat' ? (
             <>
-              <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto p-8">
+                <div className="max-w-4xl mx-auto space-y-6">
                 {workspace.chat_context.length === 0 && (
                   <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
                     <div className="flex items-start gap-3 mb-4">
@@ -578,52 +578,105 @@ export default function WorkspacePage() {
                 )}
                 
                 {workspace.chat_context.map((message) => (
-                  <div 
-                    key={message.id} 
-                    className={
-                      message.role === 'user' 
-                        ? 'chat-message-user' 
-                        : message.role === 'assistant' 
-                          ? 'chat-message-assistant' 
-                          : 'chat-message-system'
-                    }
-                  >
-                    {message.role === 'assistant' ? (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-semibold text-sm">M</span>
+                  <div key={message.id} className="mb-6">
+                    {message.role === 'user' ? (
+                      <div className="flex justify-end">
+                        <div className="flex items-start gap-3 max-w-[70%]">
+                          <div className="px-5 py-4 rounded-xl" style={{ backgroundColor: 'rgba(0, 121, 255, 0.1)' }}>
+                            <p style={{ color: 'var(--foreground)' }}>{message.content}</p>
                           </div>
-                          <strong className="text-blue-900">Mary</strong>
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                               style={{ backgroundColor: 'var(--primary)', color: 'white' }}>
+                            {user?.email?.[0]?.toUpperCase() || 'U'}
+                          </div>
                         </div>
-                        <div className="ml-10 prose prose-sm max-w-none">
-                          <ReactMarkdown
-                            components={{
-                              p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
-                              ul: ({ children }) => <ul className="mb-3 ml-4 space-y-1">{children}</ul>,
-                              ol: ({ children }) => <ol className="mb-3 ml-4 space-y-1">{children}</ol>,
-                              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                              h1: ({ children }) => <h1 className="text-lg font-semibold mb-2 text-blue-900">{children}</h1>,
-                              h2: ({ children }) => <h2 className="text-md font-semibold mb-2 text-blue-800">{children}</h2>,
-                              h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 text-blue-700">{children}</h3>,
-                              strong: ({ children }) => <strong className="font-semibold text-blue-900">{children}</strong>,
-                              code: ({ children }) => <code className="bg-blue-50 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                              blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-300 pl-4 italic my-2">{children}</blockquote>
-                            }}
-                          >
-                            {message.content}
-                          </ReactMarkdown>
+                      </div>
+                    ) : message.role === 'assistant' ? (
+                      <div className="flex justify-start">
+                        <div className="flex items-start gap-3 max-w-[70%]">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                               style={{ backgroundColor: '#6b6b6b', color: 'white' }}>
+                            M
+                          </div>
+                          <div className="px-5 py-4 rounded-xl" style={{ backgroundColor: 'var(--surface)' }}>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              className="prose prose-sm max-w-none"
+                              components={{
+                                code({ inline, className, children, ...props }: any) {
+                                  return inline ? (
+                                    <code className="px-1.5 py-0.5 rounded text-sm"
+                                          style={{
+                                            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                                            fontFamily: 'var(--font-mono)'
+                                          }}>
+                                      {children}
+                                    </code>
+                                  ) : (
+                                    <pre className="p-4 rounded-lg overflow-x-auto"
+                                         style={{ backgroundColor: '#f9f9f9' }}>
+                                      <code style={{ fontFamily: 'var(--font-mono)' }}>
+                                        {children}
+                                      </code>
+                                    </pre>
+                                  );
+                                },
+                                h1: ({ children }) => (
+                                  <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+                                    {children}
+                                  </h1>
+                                ),
+                                h2: ({ children }) => (
+                                  <h2 className="text-xl font-bold mb-3" style={{ color: 'var(--foreground)' }}>
+                                    {children}
+                                  </h2>
+                                ),
+                                h3: ({ children }) => (
+                                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                                    {children}
+                                  </h3>
+                                ),
+                                p: ({ children }) => (
+                                  <p className="mb-4 leading-relaxed" style={{ color: 'var(--foreground)' }}>
+                                    {children}
+                                  </p>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc pl-6 mb-4 space-y-1">
+                                    {children}
+                                  </ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal pl-6 mb-4 space-y-1">
+                                    {children}
+                                  </ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li style={{ color: 'var(--foreground)' }}>
+                                    {children}
+                                  </li>
+                                ),
+                              }}
+                            >
+                              {message.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </div>
                     ) : (
-                      <p>
-                        <strong>{message.role === 'user' ? 'You' : 'System'}:</strong> {message.content}
-                      </p>
+                      <div className="flex justify-center">
+                        <div className="px-5 py-4 rounded-xl bg-gray-100 max-w-[70%]">
+                          <p className="text-sm" style={{ color: 'var(--muted)' }}>
+                            <strong>System:</strong> {message.content}
+                          </p>
+                        </div>
+                      </div>
                     )}
                     {message.metadata?.strategic_tags && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {message.metadata.strategic_tags.map((tag, i) => (
-                          <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                          <span key={i} className="text-xs px-2 py-1 rounded"
+                                style={{ backgroundColor: 'rgba(0, 121, 255, 0.1)', color: 'var(--primary)' }}>
                             {tag}
                           </span>
                         ))}
@@ -633,10 +686,19 @@ export default function WorkspacePage() {
                 ))}
                 
                 {sendingMessage && (
-                  <div className="chat-message-assistant opacity-50">
-                    <p><strong>Mary:</strong> <span className="loading-shimmer h-4 w-32 inline-block rounded"></span></p>
+                  <div className="flex justify-start mb-6 opacity-50">
+                    <div className="flex items-start gap-3 max-w-[70%]">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                           style={{ backgroundColor: '#6b6b6b', color: 'white' }}>
+                        M
+                      </div>
+                      <div className="px-5 py-4 rounded-xl" style={{ backgroundColor: 'var(--surface)' }}>
+                        <span className="loading-shimmer h-4 w-32 inline-block rounded"></span>
+                      </div>
+                    </div>
                   </div>
                 )}
+                </div>
               </div>
 
               {/* Canvas Context Sync - Only shown when ENABLE_CANVAS=true */}
@@ -726,23 +788,23 @@ export default function WorkspacePage() {
       {/* Canvas Pane - 40% */}
       <PaneErrorBoundary paneName="canvas">
         <div className="canvas-pane">
-        <header className="mb-4 flex justify-between items-start">
+        <header className="h-14 mb-4 flex justify-between items-center" style={{ borderBottom: '1px solid var(--border)' }}>
           <div>
-            <h2 className="text-xl font-bold text-primary">Visual Canvas</h2>
-            <p className="text-secondary">Sketches & diagrams</p>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Visual Canvas</h2>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>Sketches & diagrams</p>
           </div>
           <div className="text-right text-xs">
             <div className="mb-1">
-              <span className="text-secondary">Messages:</span> 
-              <span className="font-medium ml-1">{workspace.chat_context.length}</span>
+              <span style={{ color: 'var(--muted)' }}>Messages:</span>
+              <span className="font-medium ml-1" style={{ color: 'var(--foreground)' }}>{workspace.chat_context.length}</span>
             </div>
             <div className="mb-1">
-              <span className="text-secondary">Elements:</span> 
-              <span className="font-medium ml-1">{workspace.canvas_elements.length}</span>
+              <span style={{ color: 'var(--muted)' }}>Elements:</span>
+              <span className="font-medium ml-1" style={{ color: 'var(--foreground)' }}>{workspace.canvas_elements.length}</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-success rounded-full"></div>
-              <span className="text-secondary">Auto-saved</span>
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#10b981' }}></div>
+              <span style={{ color: 'var(--muted)' }}>Auto-saved</span>
             </div>
           </div>
         </header>
