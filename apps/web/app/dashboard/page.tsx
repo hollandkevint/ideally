@@ -1,508 +1,383 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useAuth } from '../../lib/auth/AuthContext'
-import { supabase } from '../../lib/supabase/client'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import ErrorState from '../components/ui/ErrorState'
-import OfflineNotice from '../components/ui/OfflineNotice'
-import ErrorBoundary from '../components/ui/ErrorBoundary'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { createClient } from '@/lib/supabase/client';
+import { Card } from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/app/components/ui/dropdown-menu';
+import {
+  PlusIcon,
+  MoreVertical,
+  LogOut,
+  Settings,
+  Sparkles,
+  MessageSquare,
+  Lightbulb,
+  Folder,
+} from 'lucide-react';
 
-interface UserWorkspace {
-  user_id: string
-  workspace_state: {
-    name?: string
-    description?: string
-    dual_pane_state?: Record<string, unknown>
-    chat_context?: Array<Record<string, unknown>>
-    canvas_elements?: Array<Record<string, unknown>>
-    created_at?: string
-    initialized?: boolean
-  }
-  updated_at: string
+interface BmadSession {
+  id: string;
+  user_id: string;
+  session_type: string;
+  current_step: string;
+  session_data: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
-interface Workspace {
-  id: string
-  name: string
-  description: string
-  dual_pane_state: Record<string, unknown>
-  created_at: string
-  updated_at: string
-  chat_context: Array<Record<string, unknown>>
-  canvas_elements: Array<Record<string, unknown>>
+interface UserStats {
+  totalSessions: number;
+  totalMessages: number;
+  totalInsights: number;
 }
 
-function DashboardContent() {
-  const { user, loading: authLoading, signOut } = useAuth()
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
-  const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [showCreateForm, setShowCreateForm] = useState(false)
-  const [newWorkspaceName, setNewWorkspaceName] = useState('')
-  const [newWorkspaceDescription, setNewWorkspaceDescription] = useState('')
-  const [error, setError] = useState<string>('')
-  const [retryCount, setRetryCount] = useState(0)
-  const [authWaitCount, setAuthWaitCount] = useState(0)
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const isFromOAuth = searchParams.get('auth_success') === 'true'
-
-  const fetchWorkspaces = useCallback(async (retryAttempt = 0) => {
-    try {
-      setError('')
-      const { data, error } = await supabase
-        .from('user_workspace')
-        .select('user_id, workspace_state, updated_at')
-        .eq('user_id', user?.id)
-        .single()
-
-      if (error) {
-        console.error('Error fetching workspaces:', error)
-
-        // Check if this is a retryable error
-        const isRetryableError = error.code === 'PGRST001' ||
-                               error.message?.includes('network') ||
-                               error.message?.includes('timeout') ||
-                               error.message?.includes('connection')
-
-        if (isRetryableError && retryAttempt < 3) {
-          // Exponential backoff: 1s, 2s, 4s
-          const delay = Math.pow(2, retryAttempt) * 1000
-          console.log(`Retrying workspace fetch in ${delay}ms (attempt ${retryAttempt + 1}/3)`)
-          setTimeout(() => fetchWorkspaces(retryAttempt + 1), delay)
-          return
-        }
-
-        // Handle specific database errors with improved messaging
-        if (error.code === 'PGRST205') {
-          console.error('PGRST205 Schema Error:', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          })
-          if (error.message.includes('dual_pane_state')) {
-            setError('Database schema mismatch detected for dual_pane_state field. This should be resolved with the latest update. Please refresh the page.')
-          } else {
-            setError('Database schema error detected. Please try again or contact support.')
-          }
-        } else if (error.message?.includes('schema')) {
-          console.error('Schema-related error:', error)
-          setError('Database schema error detected. Please try again or contact support.')
-        } else if (error.code === 'PGRST001' || error.message?.includes('authentication')) {
-          console.error('Authentication error:', error)
-          setError('Authentication error. Please sign out and sign in again.')
-        } else {
-          console.error('General database error:', error)
-          setError(`Database error: ${error.message || 'Unknown error occurred'}`)
-        }
-
-        // Don't redirect on database errors - show error state instead
-        setWorkspaces([])
-      } else {
-        console.log('Dashboard: Successfully fetched user workspace:', data ? 'Found' : 'Not found', data)
-
-        // Transform UserWorkspace data to Workspace format (single workspace per user)
-        const transformedWorkspaces: Workspace[] = data ? [{
-          id: data.user_id,
-          name: data.workspace_state?.name || 'My Strategic Workspace',
-          description: data.workspace_state?.description || 'Strategic thinking and planning workspace',
-          dual_pane_state: data.workspace_state?.dual_pane_state || {
-            chat_width: 50,
-            canvas_width: 50,
-            active_pane: 'chat',
-            collapsed: false
-          },
-          created_at: data.workspace_state?.created_at || data.updated_at,
-          updated_at: data.updated_at,
-          chat_context: data.workspace_state?.chat_context || [],
-          canvas_elements: data.workspace_state?.canvas_elements || []
-        }] : []
-
-        setWorkspaces(transformedWorkspaces)
-        setRetryCount(0) // Reset retry count on success
-      }
-    } catch (error) {
-      console.error('Error fetching workspaces:', error)
-
-      // Check if this is a retryable network error
-      if (retryAttempt < 3) {
-        const delay = Math.pow(2, retryAttempt) * 1000
-        console.log(`Retrying workspace fetch after network error in ${delay}ms (attempt ${retryAttempt + 1}/3)`)
-        setTimeout(() => fetchWorkspaces(retryAttempt + 1), delay)
-        return
-      }
-
-      setError('Network error. Please check your connection and try again.')
-      // Graceful fallback - empty workspace list instead of crash
-      setWorkspaces([])
-    } finally {
-      setLoading(false)
-    }
-  }, [user?.id])
+export default function DashboardPage() {
+  const router = useRouter();
+  const { user, signOut } = useAuth();
+  const [sessions, setSessions] = useState<BmadSession[]>([]);
+  const [stats, setStats] = useState<UserStats>({
+    totalSessions: 0,
+    totalMessages: 0,
+    totalInsights: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      fetchWorkspaces()
+      fetchSessions();
+      fetchStats();
     }
-  }, [user, fetchWorkspaces])
+  }, [user]);
 
-  // Handle OAuth authentication wait timing
-  useEffect(() => {
-    if (isFromOAuth && !user && authWaitCount < 5) {
-      const timer = setTimeout(() => {
-        setAuthWaitCount(prev => prev + 1)
-      }, 1000) // Wait 1 second between checks
-      return () => clearTimeout(timer)
-    }
-  }, [isFromOAuth, user, authWaitCount])
-
-  // Handle redirect to login when not authenticated (moved to useEffect to prevent setState during render)
-  useEffect(() => {
-    if (!user && !authLoading && !isFromOAuth) {
-      console.log('Dashboard: No authenticated user found after wait, redirecting to login')
-      router.push('/login')
-    }
-  }, [user, authLoading, isFromOAuth, router])
-
-  const createWorkspace = async () => {
-    if (!newWorkspaceName.trim() || creating) return
-
-    setCreating(true)
+  const fetchSessions = async () => {
     try {
-      // Update the user's workspace with custom name and description
-      const updatedWorkspaceState = {
-        name: newWorkspaceName.trim(),
-        description: newWorkspaceDescription.trim(),
-        dual_pane_state: {
-          chat_width: 50,
-          canvas_width: 50,
-          active_pane: 'chat',
-          collapsed: false
-        },
-        chat_context: [],
-        canvas_elements: [],
-        initialized: true,
-        created_at: new Date().toISOString()
-      }
-
-      const { error } = await supabase
-        .from('user_workspace')
-        .upsert({
-          user_id: user?.id,
-          workspace_state: updatedWorkspaceState,
-          updated_at: new Date().toISOString()
-        })
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('bmad_sessions')
+        .select('*')
         .eq('user_id', user?.id)
-        .select()
-        .single()
+        .order('updated_at', { ascending: false });
 
-      if (error) throw error
-
-      // Redirect to the workspace (using user_id as workspace id)
-      router.push(`/workspace/${user?.id}`)
-    } catch (error: unknown) {
-      console.error('Error creating workspace:', error)
-
-      // Handle specific creation errors
-      const errorObj = error as { code?: string; message?: string; details?: string; hint?: string }
-      if (errorObj.code === 'PGRST205') {
-        console.error('PGRST205 Error during workspace creation:', {
-          message: errorObj.message,
-          details: errorObj.details,
-          hint: errorObj.hint,
-          code: errorObj.code
-        })
-        setError('Database schema error during workspace creation. Please try again.')
-      } else if (errorObj.message?.includes('dual_pane_state')) {
-        console.error('dual_pane_state field error during creation:', error)
-        setError('Error with workspace dual-pane configuration. Please try again.')
-      } else {
-        setError('Failed to create workspace. Please try again.')
-      }
+      if (error) throw error;
+      setSessions(data || []);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
     } finally {
-      setCreating(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const deleteWorkspace = async (id: string) => {
-    if (!confirm('Are you sure you want to reset this workspace? This will clear all data.')) return
+  const fetchStats = async () => {
+    try {
+      const supabase = createClient();
+
+      // Get total sessions
+      const { count: sessionCount } = await supabase
+        .from('bmad_sessions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      // Get total messages
+      const { count: messageCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      // Get total conversations (as proxy for insights)
+      const { count: conversationCount } = await supabase
+        .from('conversations')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      setStats({
+        totalSessions: sessionCount || 0,
+        totalMessages: messageCount || 0,
+        totalInsights: conversationCount || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const handleNewSession = () => {
+    router.push('/bmad');
+  };
+
+  const handleSessionClick = (sessionId: string) => {
+    router.push(`/workspace/${sessionId}`);
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (!confirm('Are you sure you want to delete this session?')) return;
 
     try {
-      // Reset the workspace to default state instead of deleting
+      const supabase = createClient();
       const { error } = await supabase
-        .from('user_workspace')
-        .update({
-          workspace_state: {
-            initialized: true,
-            created_at: new Date().toISOString()
-          },
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', id)
+        .from('bmad_sessions')
+        .delete()
+        .eq('id', sessionId);
 
-      if (error) throw error
+      if (error) throw error;
 
-      // Refresh the workspace list
-      fetchWorkspaces()
+      // Refresh sessions
+      fetchSessions();
+      fetchStats();
     } catch (error) {
-      console.error('Error deleting workspace:', error)
+      console.error('Error deleting session:', error);
     }
-  }
+  };
 
-  if (authLoading) {
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    if (diffInHours < 48) return 'Yesterday';
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  const getSessionTitle = (session: BmadSession) => {
+    return session.session_data?.title || session.session_data?.concept?.name || 'Untitled Session';
+  };
+
+  const getSessionDescription = (session: BmadSession) => {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Loading your strategic workspaces...</p>
-        </div>
-      </div>
-    )
-  }
+      session.session_data?.description ||
+      session.session_data?.concept?.description ||
+      'No description available'
+    );
+  };
+
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
   if (!user) {
-    // If coming from OAuth, wait a bit longer for the session to sync
-    if (isFromOAuth && authWaitCount < 5) {
-      console.log(`Dashboard: Coming from OAuth, waiting for auth sync (attempt ${authWaitCount + 1}/5)`)
-
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-            <p className="text-secondary">Completing Google sign-in...</p>
-          </div>
-        </div>
-      )
-    }
-
-    // Show loading state while redirect happens (handled in useEffect above)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Verifying authentication...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Loading your strategic workspaces...</p>
-        </div>
-      </div>
-    )
+    return null;
   }
 
   return (
-    <ErrorBoundary
-      onError={(error, errorInfo) => {
-        console.error('Dashboard Error Boundary:', error, errorInfo)
-      }}
-    >
-      <OfflineNotice />
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="bg-white border-b border-divider">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-primary">Thinkhaven</h1>
-                <p className="text-secondary">AI-powered strategic thinking sessions</p>
-              </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-secondary">Welcome, {user.email}</span>
-              <Link
-                href="/account"
-                className="text-sm px-3 py-1 border border-divider rounded hover:bg-primary/5 transition-colors"
-              >
-                Account
-              </Link>
+    <div className="flex h-screen bg-white">
+      {/* Fixed Sidebar */}
+      <aside className="fixed left-0 top-0 h-full w-60 border-r flex flex-col" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)' }}>
+        {/* Logo */}
+        <div className="px-4 py-6">
+          <h1 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Thinkhaven</h1>
+        </div>
+
+        {/* New Session Button */}
+        <div className="px-4 mb-6">
+          <Button
+            onClick={handleNewSession}
+            className="w-full text-white"
+            style={{ backgroundColor: 'var(--primary)' }}
+          >
+            <PlusIcon className="w-4 h-4 mr-2" />
+            New Session
+          </Button>
+        </div>
+
+        {/* Session List */}
+        <div className="flex-1 overflow-y-auto px-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--muted)' }}>
+            Recent Sessions
+          </h2>
+          <div className="space-y-1">
+            {sessions.slice(0, 5).map((session) => (
               <button
-                onClick={signOut}
-                className="text-sm px-3 py-1 border border-divider rounded hover:bg-primary/5 transition-colors"
+                key={session.id}
+                onClick={() => handleSessionClick(session.id)}
+                className="w-full text-left px-3 py-2 rounded-lg hover:bg-white transition-colors group"
               >
-                Sign Out
+                <div className="flex items-center gap-2">
+                  <Folder className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--muted)' }} />
+                  <span className="text-sm truncate" style={{ color: 'var(--foreground)' }}>
+                    {getSessionTitle(session)}
+                  </span>
+                </div>
               </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Quick Start Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Ready for Strategic Thinking?</h2>
-            <p className="text-gray-600 mb-4">
-              Start a new strategic session with Mary, your AI coach, or continue working on an existing project.
-            </p>
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors"
-            >
-              + New Strategic Session
-            </button>
+            ))}
           </div>
         </div>
 
-        {/* Create Workspace Form */}
-        {showCreateForm && (
-          <div className="mb-8 bg-white rounded-lg border border-divider p-6">
-            <h3 className="text-lg font-semibold mb-4">Create New Strategic Session</h3>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
-                  Session Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={newWorkspaceName}
-                  onChange={(e) => setNewWorkspaceName(e.target.value)}
-                  placeholder="e.g., Product Strategy Review, New Business Idea..."
-                  className="w-full px-3 py-2 border border-divider rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
-                  Description (optional)
-                </label>
-                <textarea
-                  id="description"
-                  value={newWorkspaceDescription}
-                  onChange={(e) => setNewWorkspaceDescription(e.target.value)}
-                  placeholder="Brief description of what you want to explore..."
-                  rows={3}
-                  className="w-full px-3 py-2 border border-divider rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={createWorkspace}
-                  disabled={!newWorkspaceName.trim() || creating}
-                  className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover disabled:opacity-50 transition-colors"
-                >
-                  {creating ? 'Creating...' : 'Create Session'}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowCreateForm(false)
-                    setNewWorkspaceName('')
-                    setNewWorkspaceDescription('')
-                  }}
-                  className="px-4 py-2 border border-divider text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Settings and Account */}
+        <div className="border-t px-4 py-4 space-y-2" style={{ borderColor: 'var(--border)' }}>
+          <button
+            onClick={() => router.push('/settings')}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white transition-colors"
+            style={{ color: 'var(--foreground)' }}
+          >
+            <Settings className="w-4 h-4" />
+            <span className="text-sm">Settings</span>
+          </button>
+          <button
+            onClick={() => signOut()}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white transition-colors"
+            style={{ color: 'var(--foreground)' }}
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm">Sign Out</span>
+          </button>
+        </div>
+      </aside>
 
-        {/* Error Display */}
-        {error && (
+      {/* Main Content Area */}
+      <main className="ml-60 flex-1 overflow-y-auto">
+        <div className="max-w-[1400px] mx-auto px-12 py-8">
+          {/* Welcome Header */}
           <div className="mb-8">
-            <ErrorState
-              error={error}
-              onRetry={() => {
-                setRetryCount(prev => prev + 1)
-                setLoading(true)
-                fetchWorkspaces()
-              }}
-              onSignOut={signOut}
-              retryCount={retryCount}
-              maxRetries={3}
-              isRetrying={loading}
-              showSignOut={retryCount > 2}
-            />
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+              Welcome back, {firstName}
+            </h1>
+            <p style={{ color: 'var(--muted)' }}>
+              Continue your strategic thinking journey
+            </p>
           </div>
-        )}
 
-        {/* Existing Workspaces */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Your Strategic Sessions</h2>
-          
-          {workspaces.length === 0 && !error ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-6 mb-12">
+            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-blue-50">
+                  <Sparkles className="w-6 h-6" style={{ color: 'var(--primary)' }} />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                    {stats.totalSessions}
+                  </p>
+                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Sessions</p>
+                </div>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions yet</h3>
-              <p className="text-gray-600 mb-4">Create your first strategic thinking session to get started.</p>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover transition-colors"
+            </Card>
+
+            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-green-50">
+                  <MessageSquare className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                    {stats.totalMessages}
+                  </p>
+                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Messages</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-purple-50">
+                  <Lightbulb className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                    {stats.totalInsights}
+                  </p>
+                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Insights</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Session Grid or Empty State */}
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--primary)' }}></div>
+            </div>
+          ) : sessions.length === 0 ? (
+            /* Empty State */
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-6">
+                <Sparkles className="w-12 h-12" style={{ color: 'var(--primary)' }} />
+              </div>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+                Start your first strategic session
+              </h2>
+              <p className="mb-8 text-center max-w-md" style={{ color: 'var(--muted)' }}>
+                Create a new session to begin your strategic thinking journey with AI-powered insights
+              </p>
+              <Button
+                onClick={handleNewSession}
+                className="px-8 py-6 text-lg text-white"
+                style={{ backgroundColor: 'var(--primary)' }}
               >
-                Create Your First Session
-              </button>
+                <PlusIcon className="w-5 h-5 mr-2" />
+                New Session
+              </Button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {workspaces.map((workspace) => (
-                <div key={workspace.id} className="bg-white rounded-lg border border-divider p-6 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-gray-900 truncate">{workspace.name}</h3>
-                    <button
-                      onClick={() => deleteWorkspace(workspace.id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
-                      title="Delete workspace"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  {workspace.description && (
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{workspace.description}</p>
-                  )}
-                  
-                  <div className="flex justify-between items-center text-xs text-gray-500 mb-4">
-                    <div className="flex gap-4">
-                      <span>{workspace.chat_context.length} messages</span>
-                      <span>{workspace.canvas_elements.length} drawings</span>
-                    </div>
-                    <span>{new Date(workspace.updated_at).toLocaleDateString()}</span>
-                  </div>
-                  
-                  <Link
-                    href={`/workspace/${workspace.id}`}
-                    className="block w-full text-center px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover transition-colors"
+            /* Session Grid */
+            <div>
+              <h2 className="text-xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>
+                All Sessions
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sessions.map((session) => (
+                  <Card
+                    key={session.id}
+                    className="p-6 border bg-white hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer group"
+                    style={{ borderColor: 'var(--border)' }}
+                    onClick={() => handleSessionClick(session.id)}
                   >
-                    Continue Session
-                  </Link>
-                </div>
-              ))}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold mb-2 line-clamp-2" style={{ color: 'var(--foreground)' }}>
+                          {getSessionTitle(session)}
+                        </h3>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        >
+                          <MoreVertical className="w-4 h-4" style={{ color: 'var(--muted)' }} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSessionClick(session.id);
+                            }}
+                          >
+                            Open
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteSession(session.id);
+                            }}
+                            className="text-red-600"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    <p className="text-sm mb-4 line-clamp-3" style={{ color: 'var(--muted)' }}>
+                      {getSessionDescription(session)}
+                    </p>
+
+                    <div className="flex items-center justify-between text-xs" style={{ color: 'var(--muted)' }}>
+                      <span className="capitalize">{session.session_type.replace(/-/g, ' ')}</span>
+                      <span>{formatTimestamp(session.updated_at)}</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </main>
-      </div>
-    </ErrorBoundary>
-  )
-}
-
-export default function DashboardPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-shimmer h-8 w-48 rounded mb-4"></div>
-          <p className="text-secondary">Loading dashboard...</p>
-        </div>
-      </div>
-    }>
-      <DashboardContent />
-    </Suspense>
-  )
+    </div>
+  );
 }
