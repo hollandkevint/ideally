@@ -2,7 +2,7 @@
 
 import { useAuth } from '../lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -11,12 +11,6 @@ export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [checkoutLoading, setCheckoutLoading] = useState(false)
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard')
-    }
-  }, [user, loading, router])
 
   const handleCheckout = async () => {
     if (!user) {
@@ -56,6 +50,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Navigation Header */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <a href="/" className="text-xl font-bold text-gray-900">ThinkHaven</a>
+          <div className="flex items-center gap-4">
+            {loading ? (
+              <div className="h-10 w-24 bg-gray-200 animate-pulse rounded-lg"></div>
+            ) : user ? (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/app')}
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  onClick={() => router.push('/app')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Open App
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/login')}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={() => router.push('/signup')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section - Idea Validation Hook */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto text-center">

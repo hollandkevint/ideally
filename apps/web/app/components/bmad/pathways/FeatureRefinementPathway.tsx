@@ -143,7 +143,7 @@ export default function FeatureRefinementPathway({
 
           <div className="space-y-3">
             <button
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={() => window.location.href = '/app'}
               className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
             >
               Return to Dashboard

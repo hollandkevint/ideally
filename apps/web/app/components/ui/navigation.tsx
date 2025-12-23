@@ -78,7 +78,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+              <DropdownMenuItem onClick={() => router.push('/app')}>
                 <User className="w-4 h-4 mr-2" />
                 Dashboard
               </DropdownMenuItem>

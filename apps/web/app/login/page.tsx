@@ -42,7 +42,7 @@ function LoginPageContent() {
           setError(`Login failed: ${error.message}`)
         }
       } else {
-        router.push('/dashboard')
+        router.push('/app')
       }
     } catch (err) {
       console.error('Login error:', err)

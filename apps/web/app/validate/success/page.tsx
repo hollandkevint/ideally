@@ -83,7 +83,7 @@ function ValidateSuccessContent() {
           <Button
             size="lg"
             className="w-full py-6 text-lg font-bold"
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/app')}
           >
             Start My Validation Session
           </Button>

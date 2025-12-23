@@ -42,7 +42,7 @@ export default async function MonitoringPage() {
             </div>
             <nav className="flex space-x-4">
               <a
-                href="/dashboard"
+                href="/app"
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Dashboard

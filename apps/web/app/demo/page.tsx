@@ -166,7 +166,7 @@ export default function DemoHub() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {user ? (
-                  <Button size="lg" className="px-8 py-4 bg-white text-blue-700 hover:bg-gray-100 font-semibold" onClick={() => router.push('/dashboard')}>
+                  <Button size="lg" className="px-8 py-4 bg-white text-blue-700 hover:bg-gray-100 font-semibold" onClick={() => router.push('/app')}>
                     🚀 Access Your Dashboard
                   </Button>
                 ) : (
