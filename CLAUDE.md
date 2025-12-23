@@ -2,13 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-10-28*
+*Last Updated: 2025-12-22*
 
 ## Project Context
 **ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
 - **Tech Stack**: Next.js 15.5, React 19, TypeScript, Supabase, Stripe, tldraw, Anthropic Claude
 - **Architecture**: Monorepo with Next.js app in `apps/web/`
-- **Deployment**: Vercel (production: https://thinkhaven.co)
+- **Deployment**: Vercel project `thinkhaven` (https://thinkhaven-hollandkevints-projects.vercel.app)
 
 ## Essential Commands
 
@@ -239,24 +239,26 @@ test('user can start new session', async ({ page }) => {
 
 ## Environment Variables
 
-Required for development:
+Required for development (see `.env.example` for template):
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-key
+# Supabase (get from Supabase dashboard)
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
-# Anthropic
-ANTHROPIC_API_KEY=sk-ant-...
+# Anthropic (get from console.anthropic.com)
+ANTHROPIC_API_KEY=
 
-# Stripe
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+# Stripe (get from dashboard.stripe.com)
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
+
+**Note**: Never commit actual keys to version control. Use Vercel dashboard or CLI for production secrets.
 
 ## Common Pitfalls
 
@@ -272,14 +274,21 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ## Production Deployment
 
 - **Platform**: Vercel
-- **Root Directory**: `apps/web` (configured in Vercel dashboard)
-- **Current URL**: https://thinkhaven.co
-- **Environment**: Set via Vercel CLI (`vercel env ls`, `vercel env add`)
+- **Project Name**: `thinkhaven`
+- **Root Directory**: Leave blank (deploy from `apps/web/` locally)
+- **Production URL**: https://thinkhaven-hollandkevints-projects.vercel.app
+- **Environment**: Set via Vercel dashboard (Settings → Environment Variables)
 - **Builds**: Automatic on push to main branch
+- **Deploy manually**: `cd apps/web && vercel --prod`
 
 ## Recent Major Changes
 
-- **Dec 22, 2025**: OAuth E2E test infrastructure fix (TD-001 RESOLVED) - All 66 tests can now run
+- **Dec 22, 2025**:
+  - Vercel project cleanup - Consolidated to 3 active projects (thinkhaven, neurobot, pmarchetype)
+  - E2E test fixes - Updated all test selectors to match dashboard UI redesign
+  - OAuth E2E infrastructure fix (TD-001) - All 66 tests can run
+  - Demo page UX improvements - Fixed contrast issues in CTA section
+  - Created `/bmad` route to fix production 404 error
 - **Oct 28**: Canvas tldraw v4 API fix - Updated snapshot methods to use standalone functions
 - **Oct 14**: Epic 4 Monetization (30% complete) - Credit system, Stripe integration
 - **Oct 13**: Middleware disabled, route fixes, production stabilization
