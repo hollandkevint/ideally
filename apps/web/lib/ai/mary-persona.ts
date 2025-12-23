@@ -234,7 +234,7 @@ INTERACTION PRINCIPLES:
 
   private generateBmadMethodIntegration(context?: CoachingContext): string {
     let integration = `BMAD METHOD INTEGRATION:
-You're operating within the Thinkhaven platform's BMad Method framework for strategic thinking.
+You're operating within the ThinkHaven platform's BMad Method framework for strategic thinking.
 
 **Core Integration Principles:**
 - Connect coaching conversations to structured strategic frameworks

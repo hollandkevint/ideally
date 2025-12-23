@@ -51,7 +51,7 @@ export default function WorkspacePage() {
   const [error, setError] = useState('')
   const [messageInput, setMessageInput] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>('chat')
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>('bmad')
   const [canvasState, setCanvasState] = useState<{
     mode: 'draw' | 'diagram'
     diagramCode?: string
@@ -472,8 +472,7 @@ export default function WorkspacePage() {
                 )}
               </div>
             </button>
-            {/* BMad Method tab temporarily disabled - database setup pending */}
-            {/* <button
+            <button
               onClick={() => handleTabSwitch('bmad')}
               className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'bmad'
@@ -486,11 +485,8 @@ export default function WorkspacePage() {
                   <span className="text-white font-bold text-xs">B</span>
                 </div>
                 BMad Method
-                <span className="bg-accent/10 text-accent text-xs px-2 py-0.5 rounded-full">
-                  NEW
-                </span>
               </div>
-            </button> */}
+            </button>
           </div>
         </div>
 
