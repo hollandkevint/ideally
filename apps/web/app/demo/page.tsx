@@ -95,9 +95,9 @@ export default function DemoHub() {
                     {scenario.chat_context
                       .filter(msg => msg.metadata?.strategic_tags)
                       .slice(0, 1)
-                      .map(msg => 
+                      .map(msg =>
                         msg.metadata!.strategic_tags!.slice(0, 2).map(tag => (
-                          <Badge key={tag} variant="secondary" className="text-xs px-2 py-0">
+                          <Badge key={tag} className="text-xs px-2 py-0 bg-gray-700 text-white">
                             {tag}
                           </Badge>
                         ))
@@ -156,25 +156,25 @@ export default function DemoHub() {
 
           {/* Conversion CTA */}
           <div className="text-center mt-12">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">
+            <div className="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-xl p-8 text-white shadow-lg">
+              <h3 className="text-2xl font-bold mb-4 text-white">
                 Ready to Start Your Strategic Analysis?
               </h3>
-              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                These demos show real strategic thinking sessions. Experience Mary's systematic approach 
+              <p className="text-white mb-6 max-w-2xl mx-auto text-lg">
+                These demos show real strategic thinking sessions. Experience Mary's systematic approach
                 to unlock insights for your own business challenges.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {user ? (
-                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/dashboard')}>
+                  <Button size="lg" className="px-8 py-4 bg-white text-blue-700 hover:bg-gray-100 font-semibold" onClick={() => router.push('/dashboard')}>
                     🚀 Access Your Dashboard
                   </Button>
                 ) : (
-                  <Button size="lg" variant="secondary" className="px-8 py-4" onClick={() => router.push('/signup')}>
+                  <Button size="lg" className="px-8 py-4 bg-white text-blue-700 hover:bg-gray-100 font-semibold" onClick={() => router.push('/signup')}>
                     🚀 Start Free Strategic Session
                   </Button>
                 )}
-                <Button size="lg" variant="outline" className="px-8 py-4 border-blue-300 text-white hover:bg-blue-700" onClick={() => window.open('mailto:kevin@kevintholland.com', '_blank')}>
+                <Button size="lg" variant="outline" className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-blue-700 font-semibold" onClick={() => window.open('mailto:kevin@kevintholland.com', '_blank')}>
                   💬 Talk to Our Team
                 </Button>
               </div>
