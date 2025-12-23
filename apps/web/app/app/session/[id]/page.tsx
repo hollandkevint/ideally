@@ -14,6 +14,7 @@ import { useSharedInput } from '@/app/components/workspace/useSharedInput'
 import CanvasContextSync from '@/components/canvas/CanvasContextSync'
 import { MessageLimitWarning } from '@/app/components/chat/MessageLimitWarning'
 import type { MessageLimitStatus } from '@/lib/bmad/message-limit-manager'
+import ExportPanel from '@/app/components/workspace/ExportPanel'
 import dynamic from 'next/dynamic'
 
 // Dynamically import canvas components (SSR-safe)
@@ -430,6 +431,11 @@ export default function WorkspacePage() {
             <h1 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{workspace.name}</h1>
           </div>
           <div className="flex items-center gap-3 text-xs">
+            <ExportPanel
+              messages={workspace.chat_context}
+              workspaceName={workspace.name}
+              workspaceId={workspace.id}
+            />
             <span style={{ color: 'var(--muted)' }}>{user.email}</span>
             <Link
               href="/app/account"
@@ -726,8 +732,11 @@ export default function WorkspacePage() {
               <MessageLimitWarning
                 limitStatus={limitStatus}
                 onExport={() => {
-                  // TODO: Implement export functionality
-                  alert('Export functionality coming soon!')
+                  // Trigger export panel - user can export via header
+                  const exportButton = document.querySelector('[title="Export chat conversation"]') as HTMLButtonElement;
+                  if (exportButton) {
+                    exportButton.click();
+                  }
                 }}
                 onNewSession={() => {
                   window.location.href = '/app'
