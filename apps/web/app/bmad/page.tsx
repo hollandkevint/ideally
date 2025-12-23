@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export default function BmadPage() {
   const router = useRouter();
@@ -18,8 +18,6 @@ export default function BmadPage() {
     // Create a new BMad session and redirect to workspace
     const createSession = async () => {
       try {
-        const supabase = createClient();
-
         // Create a new session in the database
         const { data: session, error } = await supabase
           .from('bmad_sessions')

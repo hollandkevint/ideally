@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,7 +59,6 @@ export default function DashboardPage() {
 
   const fetchSessions = async () => {
     try {
-      const supabase = createClient();
       const { data, error } = await supabase
         .from('bmad_sessions')
         .select('*')
@@ -77,8 +76,6 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const supabase = createClient();
-
       // Get total sessions
       const { count: sessionCount } = await supabase
         .from('bmad_sessions')
@@ -119,7 +116,6 @@ export default function DashboardPage() {
     if (!confirm('Are you sure you want to delete this session?')) return;
 
     try {
-      const supabase = createClient();
       const { error } = await supabase
         .from('bmad_sessions')
         .delete()
