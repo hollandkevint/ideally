@@ -4,6 +4,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { supabase } from '@/lib/supabase/client';
+import AnimatedLoader from '@/app/components/ui/AnimatedLoader';
+
+const sessionMessages = [
+  'Preparing your workspace...',
+  'Setting up the BMad Method...',
+  'Loading strategic frameworks...',
+  'Initializing your session...',
+];
 
 export default function NewSessionPage() {
   const router = useRouter();
@@ -47,11 +55,8 @@ export default function NewSessionPage() {
   }, [user, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Creating your session...</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <AnimatedLoader messages={sessionMessages} className="min-h-screen" />
     </div>
   );
 }
