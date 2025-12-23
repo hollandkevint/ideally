@@ -194,8 +194,17 @@ const reader = response.body.getReader();
 - Located in `apps/web/tests/e2e/`
 - Config: `apps/web/playwright.config.ts`
 - Projects: Desktop Chrome, Mobile Chrome
-- OAuth testing: 39+ scenarios with custom reporter
+- OAuth testing: 66 tests with custom reporter (infrastructure complete)
 - Run: `npm run test:e2e` or `npm run test:e2e:ui`
+
+**OAuth Test Infrastructure (TD-001 - RESOLVED Dec 2025):**
+- ✅ Base URL aligned to port 3000 across all configs
+- ✅ Mock OAuth provider using regex route patterns (`/\/auth\/v1\//`)
+- ✅ Auto-loads `.env.test` via `global-setup.ts`
+- ✅ Environment validation before tests run
+- ✅ Proper state cleanup between tests
+- Tests require `.env.test` with Supabase credentials
+- See `apps/web/tests/README.md` for OAuth troubleshooting
 
 ### Test Patterns
 ```typescript
@@ -257,6 +266,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 4. **Migration Order**: Run migrations sequentially (001 → 006), never skip
 5. **Stripe Webhooks**: Verify signatures with `stripe-service.ts.constructWebhookEvent()`
 6. **Tldraw v4 API**: Use `getSnapshot(store)` and `loadSnapshot(store, data)` - NOT `store.getSnapshot()` or `store.loadSnapshot()`
+7. **OAuth E2E Tests**: Require `.env.test` file with Supabase credentials - auto-loaded by `global-setup.ts`
+8. **Playwright Route Mocking**: Use regex patterns (`/\/path\//`) not glob (`**/path**`) for reliability
 
 ## Production Deployment
 
@@ -268,6 +279,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Dec 22, 2025**: OAuth E2E test infrastructure fix (TD-001 RESOLVED) - All 66 tests can now run
 - **Oct 28**: Canvas tldraw v4 API fix - Updated snapshot methods to use standalone functions
 - **Oct 14**: Epic 4 Monetization (30% complete) - Credit system, Stripe integration
 - **Oct 13**: Middleware disabled, route fixes, production stabilization
