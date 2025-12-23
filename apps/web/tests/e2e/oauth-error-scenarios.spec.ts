@@ -11,16 +11,28 @@ test.describe('OAuth Error Scenarios', () => {
   let sessionVerifier: SessionVerifier
 
   test.beforeEach(async ({ page }) => {
+    // Initialize helpers
     authHelper = new AuthHelper(page)
     oauthMock = new OAuthMockProvider(page)
     sessionVerifier = new SessionVerifier(page)
 
-    // Ensure clean state
+    // Navigate to a page first (required for localStorage access)
+    await page.goto('/')
+
+    // Clear state BEFORE each test
+    await page.context().clearCookies()
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
     await authHelper.ensureLoggedOut()
   })
 
-  test.afterEach(async () => {
+  test.afterEach(async ({ page }) => {
+    // Clear mocks to prevent leakage
     await oauthMock.clearMocks()
+    await page.unrouteAll()
+    await page.context().clearCookies()
   })
 
   test.describe('Invalid OAuth Code Handling', () => {

@@ -69,3 +69,4 @@ apps/web/test-results/
 
 # Work tracking (local only)
 WORK_SUMMARY.md
+.env.test
