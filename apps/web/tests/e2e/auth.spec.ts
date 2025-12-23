@@ -56,6 +56,9 @@ test.describe('Authentication Flow', () => {
       sessionVerifier = new SessionVerifier(page)
       authHelper = new AuthHelper(page)
 
+      // Navigate to a page first (required for localStorage access)
+      await page.goto('/')
+
       // Clear state BEFORE each test
       await page.context().clearCookies()
       await page.evaluate(() => {

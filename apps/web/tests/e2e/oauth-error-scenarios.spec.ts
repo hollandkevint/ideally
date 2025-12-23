@@ -16,6 +16,9 @@ test.describe('OAuth Error Scenarios', () => {
     oauthMock = new OAuthMockProvider(page)
     sessionVerifier = new SessionVerifier(page)
 
+    // Navigate to a page first (required for localStorage access)
+    await page.goto('/')
+
     // Clear state BEFORE each test
     await page.context().clearCookies()
     await page.evaluate(() => {

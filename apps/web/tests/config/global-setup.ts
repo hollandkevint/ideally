@@ -4,9 +4,32 @@
  */
 
 import { chromium, FullConfig } from '@playwright/test'
+import * as fs from 'fs'
+import * as path from 'path'
+import { fileURLToPath } from 'url'
 
 async function globalSetup(config: FullConfig) {
   console.log('\n🔧 Running global test setup...\n')
+
+  // Load .env.test file if it exists
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = path.dirname(__filename)
+  const envTestPath = path.join(__dirname, '../../.env.test')
+  if (fs.existsSync(envTestPath)) {
+    console.log('📄 Loading .env.test file...')
+    const envContent = fs.readFileSync(envTestPath, 'utf-8')
+    envContent.split('\n').forEach(line => {
+      // Skip comments and empty lines
+      if (line.trim() && !line.trim().startsWith('#')) {
+        const [key, ...valueParts] = line.split('=')
+        const value = valueParts.join('=')
+        if (key && value) {
+          process.env[key.trim()] = value.trim()
+        }
+      }
+    })
+    console.log('✅ .env.test loaded\n')
+  }
 
   // 1. Validate required environment variables
   console.log('📋 Validating environment variables...')
