@@ -19,7 +19,7 @@ test.describe('Authentication Flow', () => {
 
       // Verify redirect to dashboard (using default 30s timeout from authHelper)
       await expect(page).toHaveURL('/dashboard')
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible({ timeout: 30000 })
+      await expect(page.locator('h1:has-text("Welcome back")')).toBeVisible({ timeout: 30000 })
 
       // Verify user email is displayed
       await expect(page.locator(`text=${testUsers.default.email}`)).toBeVisible({ timeout: 10000 })

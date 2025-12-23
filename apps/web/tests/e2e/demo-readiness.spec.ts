@@ -30,7 +30,7 @@ test.describe('Demo Readiness Validation', () => {
 
       // Step 3: Dashboard Navigation
       await expect(page).toHaveURL('/dashboard')
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible()
+      await expect(page.locator('h1:has-text("Welcome back")')).toBeVisible()
 
       // Step 4: Workspace Creation
       const { workspaceId } = await workspaceHelper.createWorkspace(
@@ -514,7 +514,7 @@ test.describe('Demo Readiness Validation', () => {
       validationChecklist.authenticationWorks = true
 
       // 3. Dashboard displays
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible()
+      await expect(page.locator('h1:has-text("Welcome back")')).toBeVisible()
       validationChecklist.dashboardDisplays = true
 
       // 4. Workspace creation

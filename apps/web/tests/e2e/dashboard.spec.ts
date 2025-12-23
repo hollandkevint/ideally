@@ -20,8 +20,8 @@ test.describe('Dashboard & Workspace Management', () => {
       await page.goto('/dashboard')
 
       // Check main dashboard elements
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible()
-      await expect(page.locator('button:has-text("Create New Workspace")')).toBeVisible()
+      await expect(page.locator('h1:has-text("Welcome back")')).toBeVisible()
+      await expect(page.locator('button:has-text("New Session")')).toBeVisible()
 
       // Check user info
       await expect(page.locator(`text=${testUsers.default.email}`)).toBeVisible()
@@ -69,7 +69,7 @@ test.describe('Dashboard & Workspace Management', () => {
       await page.goto('/dashboard')
 
       // Click create button
-      await page.click('button:has-text("Create New Workspace")')
+      await page.click('button:has-text("New Session")')
 
       // Fill workspace details
       const workspaceName = `Test Workspace ${Date.now()}`
@@ -92,7 +92,7 @@ test.describe('Dashboard & Workspace Management', () => {
       await page.goto('/dashboard')
 
       // Click create button
-      await page.click('button:has-text("Create New Workspace")')
+      await page.click('button:has-text("New Session")')
 
       // Try to submit empty form
       await page.click('button:has-text("Create Workspace"), button:has-text("Create")')
@@ -114,7 +114,7 @@ test.describe('Dashboard & Workspace Management', () => {
       await page.goto('/dashboard')
 
       // Click create button
-      await page.click('button:has-text("Create New Workspace")')
+      await page.click('button:has-text("New Session")')
 
       // Fill with extremely long name (to trigger potential error)
       const longName = 'a'.repeat(500)
@@ -193,7 +193,7 @@ test.describe('Dashboard & Workspace Management', () => {
 
       // Should be on dashboard
       await expect(page).toHaveURL('/dashboard')
-      await expect(page.locator('h1:has-text("Your Strategic Workspaces")')).toBeVisible()
+      await expect(page.locator('h1:has-text("Welcome back")')).toBeVisible()
     })
   })
 

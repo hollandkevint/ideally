@@ -49,7 +49,7 @@ test.describe('Performance & Load Tests', () => {
 
       const startTime = Date.now()
       await page.goto('/dashboard')
-      await page.waitForSelector('h1:has-text("Your Strategic Workspaces")')
+      await page.waitForSelector('h1:has-text("Welcome back")')
 
       const loadTime = Date.now() - startTime
       expect(loadTime).toBeLessThan(2000) // Dashboard should load within 2 seconds
@@ -444,7 +444,7 @@ test.describe('Performance & Load Tests', () => {
       // Final navigation should still be responsive
       const startTime = Date.now()
       await page.goto('/dashboard')
-      await page.waitForSelector('h1:has-text("Your Strategic Workspaces")')
+      await page.waitForSelector('h1:has-text("Welcome back")')
 
       const navigationTime = Date.now() - startTime
       expect(navigationTime).toBeLessThan(3000) // Dashboard should load efficiently
