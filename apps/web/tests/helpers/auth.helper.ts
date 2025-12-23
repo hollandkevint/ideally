@@ -68,32 +68,8 @@ export class AuthHelper {
 
   private async mockOAuthLogin(provider: 'google' = 'google') {
     // Mock OAuth flow for testing
+    // Note: OAuth route interception should be set up by OAuthMockProvider before calling this method
     await this.page.goto('/login')
-
-    // Set up OAuth response interception
-    await this.page.route('**/auth/v1/token**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(testConfig.oauth.mockSuccessResponse)
-      })
-    })
-
-    // Mock user info endpoint
-    await this.page.route('**/auth/v1/user**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          user: testConfig.oauth.mockUserInfo,
-          session: {
-            access_token: testConfig.oauth.mockSuccessResponse.access_token,
-            refresh_token: testConfig.oauth.mockSuccessResponse.refresh_token,
-            expires_in: testConfig.oauth.mockSuccessResponse.expires_in
-          }
-        })
-      })
-    })
 
     // Click OAuth login button
     const oauthButton = this.page.locator('button:has-text("Continue with Google"), button:has-text("Sign in with Google")')

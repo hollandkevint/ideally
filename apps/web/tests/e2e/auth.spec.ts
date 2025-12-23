@@ -48,15 +48,28 @@ test.describe('Authentication Flow', () => {
   test.describe('OAuth Authentication Flow', () => {
     let oauthMock: OAuthMockProvider
     let sessionVerifier: SessionVerifier
+    let authHelper: AuthHelper
 
     test.beforeEach(async ({ page }) => {
+      // Initialize helpers
       oauthMock = new OAuthMockProvider(page)
       sessionVerifier = new SessionVerifier(page)
+      authHelper = new AuthHelper(page)
+
+      // Clear state BEFORE each test
+      await page.context().clearCookies()
+      await page.evaluate(() => {
+        localStorage.clear()
+        sessionStorage.clear()
+      })
+      await authHelper.ensureLoggedOut()
     })
 
-    test.afterEach(async () => {
-      // Clean up mocks after each test
+    test.afterEach(async ({ page }) => {
+      // Clear mocks to prevent leakage
       await oauthMock.clearMocks()
+      await page.unrouteAll()
+      await page.context().clearCookies()
     })
 
     test('should display Google OAuth option', async ({ page }) => {

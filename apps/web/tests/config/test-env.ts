@@ -4,7 +4,7 @@
 
 export const testConfig = {
   // Base URLs
-  baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002',
+  baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
 
   // OAuth testing configuration
   oauth: {

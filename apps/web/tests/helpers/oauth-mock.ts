@@ -35,7 +35,7 @@ export class OAuthMockProvider {
     const user = userData || testConfig.oauth.mockUserInfo
 
     // Mock the OAuth authorization endpoint
-    await this.page.route('**/auth/v1/authorize**', async (route) => {
+    await this.page.route(/\/auth\/v1\/authorize/, async (route) => {
       if (latency > 0) {
         await new Promise(resolve => setTimeout(resolve, latency))
       }
@@ -71,7 +71,7 @@ export class OAuthMockProvider {
     })
 
     // Mock the token exchange endpoint
-    await this.page.route('**/auth/v1/token**', async (route) => {
+    await this.page.route(/\/auth\/v1\/token/, async (route) => {
       if (latency > 0) {
         await new Promise(resolve => setTimeout(resolve, latency))
       }
@@ -90,7 +90,7 @@ export class OAuthMockProvider {
     })
 
     // Mock the user info endpoint
-    await this.page.route('**/auth/v1/user**', async (route) => {
+    await this.page.route(/\/auth\/v1\/user/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -115,7 +115,7 @@ export class OAuthMockProvider {
     latency: number = 0
   ) {
     // Mock OAuth authorization endpoint failure
-    await this.page.route('**/auth/v1/authorize**', async (route) => {
+    await this.page.route(/\/auth\/v1\/authorize/, async (route) => {
       if (latency > 0) {
         await new Promise(resolve => setTimeout(resolve, latency))
       }
@@ -153,7 +153,7 @@ export class OAuthMockProvider {
 
     // Mock token endpoint failure (for invalid_grant errors)
     if (error === 'invalid_grant') {
-      await this.page.route('**/auth/v1/token**', async (route) => {
+      await this.page.route(/\/auth\/v1\/token/, async (route) => {
         if (latency > 0) {
           await new Promise(resolve => setTimeout(resolve, latency))
         }
@@ -185,7 +185,7 @@ export class OAuthMockProvider {
     let capturedCodeVerifier = ''
 
     // Capture PKCE parameters during authorization
-    await this.page.route('**/auth/v1/authorize**', async (route) => {
+    await this.page.route(/\/auth\/v1\/authorize/, async (route) => {
       const url = new URL(route.request().url())
       capturedCodeChallenge = url.searchParams.get('code_challenge') || ''
       const challengeMethod = url.searchParams.get('code_challenge_method')
@@ -207,7 +207,7 @@ export class OAuthMockProvider {
     })
 
     // Validate code verifier during token exchange
-    await this.page.route('**/auth/v1/token**', async (route) => {
+    await this.page.route(/\/auth\/v1\/token/, async (route) => {
       const body = route.request().postData()
       const params = new URLSearchParams(body)
       capturedCodeVerifier = params.get('code_verifier') || ''
@@ -237,9 +237,9 @@ export class OAuthMockProvider {
 
   async simulateNetworkFailure(endpoint: 'authorize' | 'token' | 'user' = 'token') {
     const routePattern = {
-      authorize: '**/auth/v1/authorize**',
-      token: '**/auth/v1/token**',
-      user: '**/auth/v1/user**'
+      authorize: /\/auth\/v1\/authorize/,
+      token: /\/auth\/v1\/token/,
+      user: /\/auth\/v1\/user/
     }[endpoint]
 
     await this.page.route(routePattern, async (route) => {
@@ -248,7 +248,7 @@ export class OAuthMockProvider {
   }
 
   async simulateSlowNetwork(delayMs: number = 5000) {
-    await this.page.route('**/auth/v1/**', async (route) => {
+    await this.page.route(/\/auth\/v1\//, async (route) => {
       await new Promise(resolve => setTimeout(resolve, delayMs))
       await route.continue()
     })

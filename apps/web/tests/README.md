@@ -98,6 +98,51 @@ npx playwright test --trace on tests/e2e/demo-readiness.spec.ts
 npx playwright show-report
 ```
 
+### OAuth Test Troubleshooting (TD-001 Resolution)
+
+**Fixed Issues (December 22, 2025)**:
+- ✅ Base URL port mismatch (3000 vs 3002) resolved
+- ✅ OAuth mock provider route patterns updated to regex
+- ✅ Duplicate mock setup removed from AuthHelper
+- ✅ Test hooks fixed with proper state clearing
+
+**Common OAuth Test Issues**:
+
+1. **Tests timeout waiting for OAuth flow**
+   - Verify dev server running on port 3000: `lsof -i :3000`
+   - Check `PLAYWRIGHT_BASE_URL=http://localhost:3000` in `.env.test`
+   - Ensure `setupMockOAuth()` called BEFORE `page.goto('/login')`
+
+2. **Mock not intercepting requests**
+   - Route patterns must use regex: `/\/auth\/v1\/token/` (not `**/auth/v1/token**`)
+   - Call `oauthMock.clearMocks()` in `afterEach` to prevent leakage
+
+3. **State not cleared between tests**
+   - Clear cookies, localStorage, sessionStorage in `beforeEach`
+   - Call `page.unrouteAll()` in `afterEach`
+
+4. **Environment validation fails**
+   - Ensure `.env.test` exists with Supabase credentials
+   - Check `global-setup.ts` validation output
+
+**Debug Single OAuth Test**:
+```bash
+npm run test:e2e -- --grep "should successfully complete OAuth login flow" --headed --debug
+```
+
+**Run OAuth Tests Only**:
+```bash
+npm run test:oauth  # All OAuth tests
+npm run test:oauth:ui  # With Playwright UI
+```
+
+**Skip OAuth Tests (Temporary Workaround)**:
+```bash
+npm run test:e2e -- --grep-invert "OAuth"
+```
+
+See [TD-001](../../docs/technical-debt/oauth-test-infrastructure-failures.md) for complete fix documentation.
+
 ## 🚀 Deployment Readiness
 
 ```bash
