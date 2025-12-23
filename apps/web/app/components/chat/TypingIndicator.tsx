@@ -107,7 +107,7 @@ export function MessageTypingStatus({
 export function StreamingProgress({
   progress = 0,
   isStreaming = false,
-  estimatedTotal?: number,
+  estimatedTotal,
   className = ''
 }: {
   progress?: number

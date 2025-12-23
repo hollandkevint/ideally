@@ -81,6 +81,13 @@ export default function Home() {
                   Sign In
                 </Button>
                 <Button
+                  variant="outline"
+                  onClick={() => router.push('/try')}
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  Try Free
+                </Button>
+                <Button
                   onClick={() => router.push('/signup')}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
