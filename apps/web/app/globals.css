@@ -163,7 +163,11 @@
 }
 
 .pane-divider {
-  @apply w-1 bg-divider hover:bg-primary transition-colors cursor-col-resize;
+  @apply w-1 transition-colors cursor-col-resize;
+  background: var(--divider);
+}
+.pane-divider:hover {
+  background: var(--primary);
 }
 
 /* Chat Interface Components */
@@ -208,11 +212,16 @@
 }
 
 .insight-highlight {
-  @apply bg-accent/10 border-l-4 border-accent pl-4 py-2 my-2;
+  @apply border-l-4 pl-4 py-2 my-2;
+  background: rgba(249, 249, 249, 0.1);
+  border-color: var(--accent);
 }
 
 .action-item {
-  @apply flex items-start gap-2 p-2 hover:bg-primary/5 rounded;
+  @apply flex items-start gap-2 p-2 rounded;
+}
+.action-item:hover {
+  background: rgba(0, 121, 255, 0.05);
 }
 
 /* Loading and State Indicators */
@@ -237,7 +246,10 @@
 }
 
 .error-boundary {
-  @apply border-error bg-error/5 text-error border rounded-lg p-4;
+  @apply border rounded-lg p-4;
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.05);
+  color: var(--error);
 }
 
 /* DISABLED DARK MODE CLASS - Force light mode only */
@@ -249,10 +261,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   /* Force light mode - override system dark mode preference */
