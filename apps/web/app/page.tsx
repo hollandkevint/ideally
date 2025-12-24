@@ -50,55 +50,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation Header */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <a href="/" className="text-xl font-bold text-gray-900">ThinkHaven</a>
-          <div className="flex items-center gap-4">
-            {loading ? (
-              <div className="h-10 w-24 bg-gray-200 animate-pulse rounded-lg"></div>
-            ) : user ? (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push('/app')}
-                >
-                  Dashboard
-                </Button>
-                <Button
-                  onClick={() => router.push('/app')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Open App
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => router.push('/login')}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/try')}
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  Try Free
-                </Button>
-                <Button
-                  onClick={() => router.push('/signup')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Get Started
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section - Idea Validation Hook */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-5xl mx-auto text-center">
@@ -181,61 +132,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Creator Credibility Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Photo placeholder */}
-              <div className="order-2 md:order-1">
-                <div className="bg-gray-200 rounded-2xl h-80 flex items-center justify-center">
-                  <span className="text-gray-400 text-lg">Kevin Holland Photo</span>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div className="order-1 md:order-2">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                  Created by Kevin Holland
-                </h2>
-                <p className="text-lg text-gray-700 mb-4">
-                  <strong>Clinical Informatics Lead</strong> with 15+ years transforming healthcare data chaos into strategic clarity.
-                </p>
-                <ul className="space-y-3 text-gray-700 mb-6">
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Built data products used by millions of patients</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Developed bMAD Method for systematic strategic analysis</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Former Hopkins Medicine & SF Health Network</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    <span>Now helping strategic thinkers escape guesswork</span>
-                  </li>
-                </ul>
-
-                {/* Research Stats */}
-                <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
-                  <p className="text-sm text-gray-600 mb-2">Research Finding</p>
-                  <p className="font-bold text-lg text-gray-900">
-                    73% of strategic decisions lack systematic frameworks
-                  </p>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Based on analysis of 500+ business strategy documents
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Social Proof Section */}
       <div className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
@@ -247,9 +143,6 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-8 mb-12">
               <Card>
                 <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-yellow-400 text-xl">★★★★★</div>
-                  </div>
                   <p className="text-gray-700 mb-4 italic">
                     "The assessment pinpointed exactly where my strategic thinking was weak. Within 2 weeks of using ThinkHaven, my recommendations started getting approved consistently."
                   </p>
@@ -260,9 +153,6 @@ export default function Home() {
 
               <Card>
                 <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="text-yellow-400 text-xl">★★★★★</div>
-                  </div>
                   <p className="text-gray-700 mb-4 italic">
                     "I've tried other strategic frameworks, but bMAD Method is the first that felt systematic enough for someone with a technical background. Game changer."
                   </p>
@@ -273,23 +163,9 @@ export default function Home() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <div className="text-4xl font-bold text-blue-600 mb-2">2,000+</div>
-                <div className="text-sm text-gray-600">Assessments Completed</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-green-600 mb-2">4.8/5</div>
-                <div className="text-sm text-gray-600">Average Rating</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-purple-600 mb-2">5 min</div>
-                <div className="text-sm text-gray-600">Average Completion</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-orange-600 mb-2">92%</div>
-                <div className="text-sm text-gray-600">Find It Valuable</div>
-              </div>
+            <div className="text-center">
+              <div className="text-5xl font-bold text-blue-600 mb-2">50+</div>
+              <div className="text-lg text-gray-600">Sparring Sessions Completed</div>
             </div>
           </div>
         </div>

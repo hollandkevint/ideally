@@ -90,20 +90,25 @@ export default function Navigation({ className = '' }: NavigationProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
               onClick={handleLogin}
-              className="gap-2"
+              className="text-gray-700 hover:text-gray-900"
             >
-              <LogIn className="w-4 h-4" />
               Login
             </Button>
-            <Button 
-              onClick={handleSignup}
-              className="gap-2"
+            <Button
+              variant="outline"
+              onClick={() => router.push('/try')}
+              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium"
             >
-              <UserPlus className="w-4 h-4" />
+              Try Free
+            </Button>
+            <Button
+              onClick={handleSignup}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            >
               Sign Up
             </Button>
           </div>
@@ -126,7 +131,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
             
             {user ? (
               <>
-                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                <DropdownMenuItem onClick={() => router.push('/app')}>
                   <User className="w-4 h-4 mr-2" />
                   Dashboard
                 </DropdownMenuItem>
@@ -140,6 +145,9 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 <DropdownMenuItem onClick={handleLogin}>
                   <LogIn className="w-4 h-4 mr-2" />
                   Login
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/try')}>
+                  Try Free
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignup}>
                   <UserPlus className="w-4 h-4 mr-2" />
