@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-12-22*
+*Last Updated: 2025-12-23*
 
 ## Project Context
 **ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
@@ -83,7 +83,23 @@ npm run test:oauth:report # Generate OAuth test report
 **Export System** (`apps/web/lib/export/`)
 - **pdf-generator.ts**: @react-pdf/renderer integration
 - **pdf-templates/FeatureBriefPDF.tsx**: Professional PDF layouts with branding
+- **chat-export.ts**: Chat conversation export (Markdown, Text, JSON, clipboard)
 - **Markdown**: Enhanced GFM with tables, emojis, copy-to-clipboard
+
+**Guest Session System** (`apps/web/lib/guest/`)
+- **session-store.ts**: LocalStorage-based session persistence (no DB writes)
+- **session-migration.ts**: Migrates guest session to user account on signup
+- **5-message limit**: Triggers signup modal, preserves conversation context
+- **Flow**: `/try` → guest chat → message limit → signup → `/app/session/[id]`
+
+**Structured Output Generators** (`apps/web/lib/bmad/generators/`)
+- **ConceptDocumentGenerator**: Business concept documents from New Idea pathway
+- **LeanCanvasGenerator**: Lean Canvas and Business Model Canvas formats
+- **BrainstormSummaryGenerator**: Extract insights, action items, decisions from chat
+- **ProductBriefGenerator**: Comprehensive product documentation with features, users, timeline
+- **ProjectBriefGenerator**: Formal project documentation with scope, milestones, stakeholders
+- **FeatureBriefGenerator**: Feature specification documents
+- **index.ts**: Unified exports for all generators
 
 ### Database Schema (Supabase)
 
@@ -102,10 +118,32 @@ npm run test:oauth:report # Generate OAuth test report
 - `deduct_credit_transaction()`: Atomic credit deduction with row locking
 - `add_credits_transaction()`: Purchase/grant handling with idempotency
 
+### Route Architecture
+
+**Protected App Routes** (`/app/*` - requires authentication):
+- `/app` - Dashboard (main hub after login)
+- `/app/new` - New session creation with loading animation
+- `/app/session/[id]` - Workspace for active sessions
+- `/app/account` - Account settings and preferences
+
+**Public Routes**:
+- `/` - Landing page (open to all, shows "Open App" for authenticated users)
+- `/try` - Guest session (5 free messages, localStorage-based, migrates on signup)
+- `/demo` - Demo hub with pre-configured scenarios
+- `/assessment` - Free strategic assessment quiz
+
+**Legacy Redirects** (backwards compatibility):
+- `/dashboard` → `/app`
+- `/bmad` → `/app/new`
+- `/workspace/[id]` → `/app/session/[id]`
+- `/account` → `/app/account`
+
 ### API Routes
 
 **AI Endpoints**:
-- `/api/chat/stream` - Streaming Claude responses
+- `/api/chat/stream` - Streaming Claude responses (authenticated)
+- `/api/chat/guest` - Guest streaming (no auth, 5 message limit)
+- `/api/chat/export` - Chat export service (Markdown, Text, JSON)
 - `/api/bmad` - BMad Method session operations
 
 **Monetization**:
@@ -135,6 +173,20 @@ npm run test:oauth:report # Generate OAuth test report
 **Monetization** (`apps/web/app/components/monetization/`)
 - `CreditGuard.tsx`: Credit requirement enforcement
 - `FeedbackForm.tsx`: Trial feedback collection
+
+**Guest Session** (`apps/web/app/components/guest/`)
+- `GuestChatInterface.tsx`: Guest chat UI with message counter
+- `SignupPromptModal.tsx`: 5-message limit modal with signup CTA
+
+**Workspace** (`apps/web/app/components/workspace/`)
+- `ExportPanel.tsx`: Chat export dropdown (Markdown, Text, JSON, clipboard)
+
+**UI Components** (`apps/web/app/components/ui/`)
+- `AnimatedLoader.tsx`: Loading animation with rotating messages and progress bar
+- `navigation.tsx`: Responsive navigation with auth state
+
+**Output Selection** (`apps/web/app/components/bmad/`)
+- `OutputTypeSelector.tsx`: Structured output format selector with message counter hook
 
 ## Development Patterns
 
@@ -283,6 +335,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Dec 23, 2025**:
+  - Route restructuring to `/app/*` path-based architecture with auth protection
+  - Guest session flow (`/try`) - 5 free messages, localStorage-based, migrates on signup
+  - Chat export enhancements - Markdown, Text, JSON formats with clipboard support
+  - Loading animations - AnimatedLoader with rotating messages and progress bar
+  - Structured output generators - BrainstormSummary, ProductBrief, ProjectBrief
+  - OutputTypeSelector component with message counter hook (triggers at ~20 messages)
 - **Dec 22, 2025**:
   - Vercel project cleanup - Consolidated to 3 active projects (thinkhaven, neurobot, pmarchetype)
   - E2E test fixes - Updated all test selectors to match dashboard UI redesign
