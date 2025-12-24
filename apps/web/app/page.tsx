@@ -341,8 +341,8 @@ export default function Home() {
                 Transform strategic analysis from art into science with the bMAD Method
               </p>
               <div className="space-y-2">
-                <p className="text-sm text-gray-400">📧 kevin@thinkhaven.co</p>
-                <p className="text-sm text-gray-400">📍 San Francisco, CA</p>
+                <p className="text-sm text-gray-400">📧 kevin@kevintholland.com</p>
+                <p className="text-sm text-gray-400">📍 Charleston, SC</p>
               </div>
             </div>
             <div>

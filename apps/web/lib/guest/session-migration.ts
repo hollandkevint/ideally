@@ -4,7 +4,7 @@
  * Handles migrating guest session data to authenticated user workspace
  */
 
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { GuestSessionStore, GuestMessage } from './session-store'
 
 export interface MigrationResult {
@@ -29,8 +29,6 @@ export class SessionMigration {
           migratedMessages: 0
         }
       }
-
-      const supabase = createClient()
 
       // Get or create user workspace
       const { data: workspace, error: workspaceError } = await supabase
