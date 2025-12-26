@@ -1,0 +1,90 @@
+name: Claude Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly security scan - Sundays at 3 AM UTC
+    - cron: '0 3 * * 0'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'apps/web/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd apps/web
+          npm ci
+
+      - name: Run npm audit
+        id: npm-audit
+        continue-on-error: true
+        run: |
+          cd apps/web
+          npm audit --json > audit-report.json 2>&1 || true
+          echo "audit_output<<EOF" >> $GITHUB_OUTPUT
+          cat audit-report.json | head -100 >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Claude Security Analysis
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Perform a security audit of this codebase focusing on:
+
+            1. **Authentication/Authorization**
+               - Supabase auth implementation
+               - Session handling
+               - Protected route enforcement
+
+            2. **Input Validation**
+               - User inputs in forms
+               - API route parameters
+               - File uploads
+
+            3. **API Security**
+               - Rate limiting
+               - CORS configuration
+               - API key exposure
+
+            4. **Data Protection**
+               - PII handling
+               - Environment variable usage
+               - Client-side data exposure
+
+            5. **Dependencies**
+               npm audit output: ${{ steps.npm-audit.outputs.audit_output }}
+
+            Output format:
+            - CRITICAL: Must fix before launch
+            - HIGH: Fix soon
+            - MEDIUM: Track for later
+            - OK: Areas that look good
+
+            Be specific with file paths and line numbers.
+          claude_args: "--max-turns 5"
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-${{ github.sha }}
+          path: apps/web/audit-report.json
+          retention-days: 30
