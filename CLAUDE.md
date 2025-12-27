@@ -30,9 +30,13 @@ npm run test:run         # Run unit tests once
 # E2E tests (Playwright)
 npm run test:e2e         # Run all E2E tests
 npm run test:e2e:ui      # Run E2E tests with UI
+npm run test:smoke       # Run smoke tests (fast health check)
+npm run test:core        # Run core flow tests
 npm run test:oauth       # Run OAuth tests only
 npm run test:oauth:ui    # Run OAuth tests with UI
-npm run test:oauth:report # Generate OAuth test report
+
+# Test maintenance
+npm run test:drift       # Detect selector/route drift in tests
 ```
 
 ### Database Migrations
@@ -246,8 +250,32 @@ const reader = response.body.getReader();
 - Located in `apps/web/tests/e2e/`
 - Config: `apps/web/playwright.config.ts`
 - Projects: Desktop Chrome, Mobile Chrome
-- OAuth testing: 66 tests with custom reporter (infrastructure complete)
 - Run: `npm run test:e2e` or `npm run test:e2e:ui`
+
+**E2E Test Architecture (Dec 2025):**
+```
+tests/e2e/
+├── smoke/           # Fast health checks (~2 min)
+│   └── health.spec.ts
+├── core/            # Critical user flows
+│   ├── guest-flow.spec.ts
+│   └── auth-flow.spec.ts (TODO)
+├── helpers/
+│   ├── selectors.ts # Centralized selectors (single source of truth)
+│   └── routes.ts    # Route constants
+└── [existing tests] # Legacy tests (some need updates)
+```
+
+**Key Test Infrastructure Files:**
+- `tests/helpers/selectors.ts`: ALL UI selectors in one place - update here when UI changes
+- `tests/helpers/routes.ts`: ALL route paths - update here when routes change
+- `scripts/analyze-test-drift.ts`: Detects deprecated routes/selectors in tests
+
+**Test Maintenance Protocol:**
+1. When UI changes → update `selectors.ts`
+2. When routes change → update `routes.ts`
+3. Run `npm run test:drift` to check for stale selectors
+4. Run `npm run test:smoke` for quick health check
 
 **OAuth Test Infrastructure (TD-001 - RESOLVED Dec 2025):**
 - ✅ Base URL aligned to port 3000 across all configs
@@ -256,30 +284,23 @@ const reader = response.body.getReader();
 - ✅ Environment validation before tests run
 - ✅ Proper state cleanup between tests
 - Tests require `.env.test` with Supabase credentials
-- See `apps/web/tests/README.md` for OAuth troubleshooting
 
 ### Test Patterns
 ```typescript
-// Unit test example
-import { describe, it, expect } from 'vitest';
-import { parseVisualSuggestion } from '@/lib/canvas/visual-suggestion-parser';
-
-describe('parseVisualSuggestion', () => {
-  it('should extract Mermaid diagrams', () => {
-    const result = parseVisualSuggestion('<diagram type="flowchart">...</diagram>');
-    expect(result.type).toBe('flowchart');
-  });
-});
-
-// E2E test example
+// E2E test example - using centralized helpers
 import { test, expect } from '@playwright/test';
+import { ROUTES } from '../helpers/routes';
+import { SELECTORS } from '../helpers/selectors';
 
 test('user can start new session', async ({ page }) => {
-  await page.goto('/dashboard');
-  await page.click('text=New Session');
-  await expect(page).toHaveURL(/\/workspace\/[a-z0-9-]+/);
+  await page.goto(ROUTES.app);
+  await page.click(SELECTORS.dashboard.newSessionButton);
+  await expect(page).toHaveURL(/\/app\/session\/[a-z0-9-]+/);
 });
 ```
+
+### Full Testing Strategy Documentation
+See `docs/testing/E2E-TESTING-STRATEGY.md` for comprehensive test architecture and maintenance guidelines.
 
 ## Configuration Files
 
@@ -322,6 +343,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 6. **Tldraw v4 API**: Use `getSnapshot(store)` and `loadSnapshot(store, data)` - NOT `store.getSnapshot()` or `store.loadSnapshot()`
 7. **OAuth E2E Tests**: Require `.env.test` file with Supabase credentials - auto-loaded by `global-setup.ts`
 8. **Playwright Route Mocking**: Use regex patterns (`/\/path\//`) not glob (`**/path**`) for reliability
+9. **E2E Test Selectors**: ALWAYS use `selectors.ts` for UI selectors, `routes.ts` for paths - never hardcode
+10. **Test Drift**: Run `npm run test:drift` after UI changes to find broken selectors
 
 ## Production Deployment
 
@@ -336,9 +359,19 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ## Recent Major Changes
 
 - **Dec 27, 2025**:
-  - GitHub Actions workflow fixes - Added OIDC permissions (`id-token: write`) for Claude Code Action
-  - Fixed 5 workflow files: claude-code-review, claude-daily-digest, claude-security-scan, e2e-tests, oauth-e2e-tests
-  - All workflows now have proper permissions blocks for GitHub API access
+  - **E2E Testing Strategy Overhaul**:
+    - Deleted 3 broken test files (landing-page, feature-refinement-pathway, demo-showcase) that tested non-existent features
+    - Created centralized `selectors.ts` and `routes.ts` for maintainable tests
+    - Added smoke tests (`tests/e2e/smoke/health.spec.ts`) for all routes
+    - Added guest flow tests (`tests/e2e/core/guest-flow.spec.ts`)
+    - Created drift detection script (`scripts/analyze-test-drift.ts`)
+    - Added npm scripts: `test:smoke`, `test:core`, `test:drift`
+    - Full strategy documented in `docs/testing/E2E-TESTING-STRATEGY.md`
+  - **GitHub Actions Workflow Fixes**:
+    - Added OIDC permissions (`id-token: write`) for Claude Code Action
+    - Fixed 5 workflow files: claude-code-review, claude-daily-digest, claude-security-scan, e2e-tests, oauth-e2e-tests
+    - Fixed claude-security-scan trigger (removed unsupported `push:` event)
+    - Added Vercel monorepo config (`vercel.json`)
 - **Dec 23, 2025**:
   - Route restructuring to `/app/*` path-based architecture with auth protection
   - Guest session flow (`/try`) - 5 free messages, localStorage-based, migrates on signup
