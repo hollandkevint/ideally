@@ -11,6 +11,11 @@ on:
         required: false
         default: '1'
 
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
 jobs:
   daily-digest:
     runs-on: ubuntu-latest

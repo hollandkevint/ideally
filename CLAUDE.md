@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-12-23*
+*Last Updated: 2025-12-27*
 
 ## Project Context
 **ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
@@ -335,6 +335,10 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Dec 27, 2025**:
+  - GitHub Actions workflow fixes - Added OIDC permissions (`id-token: write`) for Claude Code Action
+  - Fixed 5 workflow files: claude-code-review, claude-daily-digest, claude-security-scan, e2e-tests, oauth-e2e-tests
+  - All workflows now have proper permissions blocks for GitHub API access
 - **Dec 23, 2025**:
   - Route restructuring to `/app/*` path-based architecture with auth protection
   - Guest session flow (`/try`) - 5 free messages, localStorage-based, migrates on signup

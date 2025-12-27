@@ -34,6 +34,12 @@ env:
   NODE_VERSION: '18'
   WORKING_DIRECTORY: apps/web
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
 jobs:
   oauth-e2e-tests:
     runs-on: ubuntu-latest
