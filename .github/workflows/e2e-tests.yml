@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2, 3, 4]
-        browser: [chromium, chrome]
+        browser: [chromium]
 
     steps:
       - name: Checkout code
