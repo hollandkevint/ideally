@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-12-27*
+*Last Updated: 2025-12-28*
 
 ## Project Context
 **ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
@@ -28,15 +28,8 @@ npm test                 # Run unit tests in watch mode
 npm run test:run         # Run unit tests once
 
 # E2E tests (Playwright)
-npm run test:e2e         # Run all E2E tests
+npm run test:e2e         # Run all E2E tests (7 smoke tests)
 npm run test:e2e:ui      # Run E2E tests with UI
-npm run test:smoke       # Run smoke tests (fast health check)
-npm run test:core        # Run core flow tests
-npm run test:oauth       # Run OAuth tests only
-npm run test:oauth:ui    # Run OAuth tests with UI
-
-# Test maintenance
-npm run test:drift       # Detect selector/route drift in tests
 ```
 
 ### Database Migrations
@@ -249,58 +242,28 @@ const reader = response.body.getReader();
 ### E2E Tests (Playwright)
 - Located in `apps/web/tests/e2e/`
 - Config: `apps/web/playwright.config.ts`
-- Projects: Desktop Chrome, Mobile Chrome
 - Run: `npm run test:e2e` or `npm run test:e2e:ui`
 
-**E2E Test Architecture (Dec 2025):**
+**Current Test Suite (Dec 28, 2025):**
 ```
 tests/e2e/
-├── smoke/           # Fast health checks (~2 min)
-│   └── health.spec.ts
-├── core/            # Critical user flows
-│   ├── guest-flow.spec.ts
-│   └── auth-flow.spec.ts (TODO)
-├── helpers/
-│   ├── selectors.ts # Centralized selectors (single source of truth)
-│   └── routes.ts    # Route constants
-└── [existing tests] # Legacy tests (some need updates)
+├── smoke/
+│   └── health.spec.ts    # 7 public route tests (ALL PASSING)
+└── helpers/
+    ├── selectors.ts      # Centralized UI selectors
+    └── routes.ts         # Route constants
 ```
 
-**Key Test Infrastructure Files:**
-- `tests/helpers/selectors.ts`: ALL UI selectors in one place - update here when UI changes
-- `tests/helpers/routes.ts`: ALL route paths - update here when routes change
-- `scripts/analyze-test-drift.ts`: Detects deprecated routes/selectors in tests
+**Tests verify these public routes load:**
+- `/` (Landing)
+- `/login`
+- `/signup`
+- `/try` (Guest)
+- `/assessment`
+- `/demo`
+- `/resend-confirmation`
 
-**Test Maintenance Protocol:**
-1. When UI changes → update `selectors.ts`
-2. When routes change → update `routes.ts`
-3. Run `npm run test:drift` to check for stale selectors
-4. Run `npm run test:smoke` for quick health check
-
-**OAuth Test Infrastructure (TD-001 - RESOLVED Dec 2025):**
-- ✅ Base URL aligned to port 3000 across all configs
-- ✅ Mock OAuth provider using regex route patterns (`/\/auth\/v1\//`)
-- ✅ Auto-loads `.env.test` via `global-setup.ts`
-- ✅ Environment validation before tests run
-- ✅ Proper state cleanup between tests
-- Tests require `.env.test` with Supabase credentials
-
-### Test Patterns
-```typescript
-// E2E test example - using centralized helpers
-import { test, expect } from '@playwright/test';
-import { ROUTES } from '../helpers/routes';
-import { SELECTORS } from '../helpers/selectors';
-
-test('user can start new session', async ({ page }) => {
-  await page.goto(ROUTES.app);
-  await page.click(SELECTORS.dashboard.newSessionButton);
-  await expect(page).toHaveURL(/\/app\/session\/[a-z0-9-]+/);
-});
-```
-
-### Full Testing Strategy Documentation
-See `docs/testing/E2E-TESTING-STRATEGY.md` for comprehensive test architecture and maintenance guidelines.
+**CI Status:** ✅ All 7 tests passing in GitHub Actions
 
 ## Configuration Files
 
@@ -341,10 +304,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 4. **Migration Order**: Run migrations sequentially (001 → 006), never skip
 5. **Stripe Webhooks**: Verify signatures with `stripe-service.ts.constructWebhookEvent()`
 6. **Tldraw v4 API**: Use `getSnapshot(store)` and `loadSnapshot(store, data)` - NOT `store.getSnapshot()` or `store.loadSnapshot()`
-7. **OAuth E2E Tests**: Require `.env.test` file with Supabase credentials - auto-loaded by `global-setup.ts`
-8. **Playwright Route Mocking**: Use regex patterns (`/\/path\//`) not glob (`**/path**`) for reliability
-9. **E2E Test Selectors**: ALWAYS use `selectors.ts` for UI selectors, `routes.ts` for paths - never hardcode
-10. **Test Drift**: Run `npm run test:drift` after UI changes to find broken selectors
+7. **E2E Tests**: Currently only smoke tests exist (7 route checks). Add more tests as features stabilize.
 
 ## Production Deployment
 
@@ -358,18 +318,16 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Dec 28, 2025**:
+  - **E2E Testing Simplification**:
+    - Deleted 19 broken test files that tested non-existent UI
+    - Reduced from 437-line workflow to 92-line workflow
+    - Removed OAuth E2E workflow (no OAuth tests exist)
+    - Final state: 7 smoke tests, all passing in CI
+    - Workflow: Single `e2e-tests.yml` job runs on push to main
 - **Dec 27, 2025**:
-  - **E2E Testing Strategy Overhaul**:
-    - Deleted 3 broken test files (landing-page, feature-refinement-pathway, demo-showcase) that tested non-existent features
-    - Created centralized `selectors.ts` and `routes.ts` for maintainable tests
-    - Added smoke tests (`tests/e2e/smoke/health.spec.ts`) for all routes
-    - Added guest flow tests (`tests/e2e/core/guest-flow.spec.ts`)
-    - Created drift detection script (`scripts/analyze-test-drift.ts`)
-    - Added npm scripts: `test:smoke`, `test:core`, `test:drift`
-    - Full strategy documented in `docs/testing/E2E-TESTING-STRATEGY.md`
   - **GitHub Actions Workflow Fixes**:
     - Added OIDC permissions (`id-token: write`) for Claude Code Action
-    - Fixed 5 workflow files: claude-code-review, claude-daily-digest, claude-security-scan, e2e-tests, oauth-e2e-tests
     - Fixed claude-security-scan trigger (removed unsupported `push:` event)
     - Added Vercel monorepo config (`vercel.json`)
 - **Dec 23, 2025**:

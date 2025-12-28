@@ -101,8 +101,7 @@ npm run build            # Test production build
 ### Testing
 ```bash
 npm test                 # Unit tests (Vitest)
-npm run test:e2e         # E2E tests (Playwright)
-npm run test:oauth       # OAuth flow tests
+npm run test:e2e         # E2E tests (7 smoke tests)
 ```
 
 ### Deployment
@@ -161,4 +160,4 @@ vercel --prod            # Deploy to production
 
 ---
 
-*Last Updated: December 22, 2025*
+*Last Updated: December 28, 2025*
