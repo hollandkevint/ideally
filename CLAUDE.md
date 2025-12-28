@@ -322,9 +322,12 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
   - **E2E Testing Simplification**:
     - Deleted 19 broken test files that tested non-existent UI
     - Reduced from 437-line workflow to 92-line workflow
-    - Removed OAuth E2E workflow (no OAuth tests exist)
     - Final state: 7 smoke tests, all passing in CI
-    - Workflow: Single `e2e-tests.yml` job runs on push to main
+  - **GitHub Actions Cleanup**:
+    - Removed OAuth E2E workflow (no OAuth tests exist)
+    - Removed claude-daily-digest.yml (Claude Code Action failing)
+    - Removed claude-security-scan.yml (Claude Code Action failing)
+    - Final workflows: `e2e-tests.yml` (push), `claude-code-review.yml` (PRs)
 - **Dec 27, 2025**:
   - **GitHub Actions Workflow Fixes**:
     - Added OIDC permissions (`id-token: write`) for Claude Code Action

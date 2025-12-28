@@ -161,3 +161,9 @@ vercel --prod            # Deploy to production
 ---
 
 *Last Updated: December 28, 2025*
+
+## CI/CD Status
+
+**Active Workflows:**
+- `e2e-tests.yml` - 7 smoke tests on push to main (✅ passing)
+- `claude-code-review.yml` - Claude reviews on PRs
