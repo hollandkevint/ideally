@@ -8,78 +8,39 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   globalSetup: './tests/config/global-setup.ts',
 
-  // Enhanced reporting for OAuth testing
   reporter: [
-    ['html', {
-      outputFolder: 'playwright-report',
-      open: process.env.CI ? 'never' : 'on-failure'
-    }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['list'],
     process.env.CI ? ['github'] : ['line'],
-    ['./tests/reporters/oauth-reporter.ts'],
-    ['json', {
-      outputFile: 'playwright-report/test-results.json'
-    }],
-    ['junit', {
-      outputFile: 'playwright-report/junit-results.xml'
-    }]
   ],
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    // Increased timeout for OAuth flows
+    video: 'off',
     actionTimeout: 10000,
     navigationTimeout: 30000,
   },
 
-  // Test file patterns
-  // Note: Legacy tests with deprecated routes are excluded until migrated
-  // Run `npm run test:drift` to see which tests need updating
-  testIgnore: [
-    '**/tests/setup.ts',
-    '**/*.test.ts',
-    '**/vitest.config.ts',
-    // Legacy tests with deprecated /dashboard and /workspace routes - need migration
-    '**/auth.spec.ts',
-    '**/dashboard.spec.ts',
-    '**/mary-chat.spec.ts',
-    '**/bmad-session.spec.ts',
-    '**/demo-readiness.spec.ts',
-    '**/performance.spec.ts',
-    '**/visual-outputs.spec.ts',
-    '**/analyst-scenarios.spec.ts',
-    '**/oauth-error-scenarios.spec.ts',
-  ],
+  // Only run .spec.ts files (exclude .test.ts which are Vitest unit tests)
+  testMatch: '**/*.spec.ts',
 
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        // OAuth testing requires specific permissions
-        contextOptions: {
-          permissions: ['notifications'],
-        }
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'Mobile Chrome',
-      use: {
-        ...devices['Pixel 5'],
-        contextOptions: {
-          permissions: ['notifications'],
-        }
-      },
+      use: { ...devices['Pixel 5'] },
     },
   ],
 
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: true, // Always reuse if server is already running (CI starts server separately)
-    timeout: 120000, // 2 minutes for server startup
+    reuseExistingServer: true,
+    timeout: 120000,
   },
 });
