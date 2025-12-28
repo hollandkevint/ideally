@@ -1,26 +1,27 @@
 import { Page, expect } from '@playwright/test'
 import { testUsers } from '../fixtures/users'
 import { testConfig } from '../config/test-env'
+import { ROUTES, ROUTE_PATTERNS } from './routes'
 
 export class AuthHelper {
   constructor(private page: Page) {}
 
   async login(email: string, password: string) {
-    await this.page.goto('/login')
+    await this.page.goto(ROUTES.login)
     await this.page.fill('input[type="email"]', email)
     await this.page.fill('input[type="password"]', password)
     await this.page.click('button[type="submit"]')
 
-    // Wait for redirect to dashboard (increased to 30s for auth processing)
-    await this.page.waitForURL('/dashboard', { timeout: 30000 })
+    // Wait for redirect to app dashboard (increased to 30s for auth processing)
+    await this.page.waitForURL(ROUTES.app, { timeout: 30000 })
 
     // Wait for dashboard to load
-    await this.page.waitForSelector('h1:has-text("Your Strategic Workspaces")', { timeout: 30000 })
+    await this.page.waitForSelector('h1:has-text("Welcome")', { timeout: 30000 })
   }
 
   async logout() {
     await this.page.click('button:has-text("Sign Out")')
-    await this.page.waitForURL('/login', { timeout: 5000 })
+    await this.page.waitForURL(ROUTES.login, { timeout: 5000 })
   }
 
   async loginAsTestUser(userType: 'default' | 'premium' | 'demo' = 'default') {
@@ -52,7 +53,7 @@ export class AuthHelper {
   async waitForAuthRedirect() {
     await this.page.waitForURL((url) => {
       const path = url.pathname
-      return path === '/dashboard' || path === '/login'
+      return path === ROUTES.app || path === ROUTES.login || path.startsWith('/app')
     }, { timeout: 30000 })
   }
 
@@ -69,15 +70,15 @@ export class AuthHelper {
   private async mockOAuthLogin(provider: 'google' = 'google') {
     // Mock OAuth flow for testing
     // Note: OAuth route interception should be set up by OAuthMockProvider before calling this method
-    await this.page.goto('/login')
+    await this.page.goto(ROUTES.login)
 
     // Click OAuth login button
     const oauthButton = this.page.locator('button:has-text("Continue with Google"), button:has-text("Sign in with Google")')
     await expect(oauthButton).toBeVisible()
     await oauthButton.click()
 
-    // Wait for redirect to dashboard
-    await this.page.waitForURL('/dashboard', { timeout: testConfig.timeouts.oauth })
+    // Wait for redirect to app dashboard
+    await this.page.waitForURL(ROUTES.app, { timeout: testConfig.timeouts.oauth })
 
     return {
       user: testConfig.oauth.mockUserInfo,
@@ -89,7 +90,7 @@ export class AuthHelper {
 
   private async realOAuthLogin(provider: 'google' = 'google') {
     // Real OAuth flow (for CI/CD environments)
-    await this.page.goto('/login')
+    await this.page.goto(ROUTES.login)
 
     // Click OAuth login button
     const oauthButton = this.page.locator('button:has-text("Continue with Google"), button:has-text("Sign in with Google")')
@@ -136,9 +137,9 @@ export class AuthHelper {
     const afterRefresh = await this.checkAuthState()
     expect(afterRefresh.isAuthenticated).toBe(true)
 
-    // Verify we're still on dashboard or redirected appropriately
+    // Verify we're still on app dashboard or redirected appropriately
     const currentUrl = this.page.url()
-    expect(currentUrl).toMatch(/(dashboard|\/)/);
+    expect(currentUrl).toMatch(/(\/app|\/)/);
 
     return {
       beforeRefresh: beforeRefresh.isAuthenticated,
@@ -149,7 +150,7 @@ export class AuthHelper {
 
   async simulateOAuthError(errorType: 'access_denied' | 'invalid_request' | 'server_error' = 'access_denied') {
     // Simulate OAuth error responses
-    await this.page.goto('/login')
+    await this.page.goto(ROUTES.login)
 
     await this.page.route('**/auth/callback**', async (route) => {
       const url = new URL(route.request().url())

@@ -47,21 +47,23 @@ test.describe('Smoke Tests - Protected Routes Redirect', () => {
 });
 
 test.describe('Smoke Tests - Legacy Route Redirects', () => {
-  test('/dashboard redirects to /app', async ({ page }) => {
+  test('/dashboard redirects away', async ({ page }) => {
     // This test works whether authenticated or not
     // If authenticated: should redirect /dashboard → /app
     // If not authenticated: should redirect /dashboard → /login
     await page.goto(ROUTES.legacy.dashboard);
 
-    // Should not stay on /dashboard
-    expect(page.url()).not.toContain('/dashboard');
+    // Should not stay on /dashboard - should be on /app or /login
+    const url = page.url();
+    expect(url.includes('/app') || url.includes('/login')).toBe(true);
   });
 
-  test('/bmad redirects to /app/new', async ({ page }) => {
+  test('/bmad redirects away', async ({ page }) => {
     await page.goto(ROUTES.legacy.bmad);
 
     // Should redirect somewhere (either /app/new or /login)
-    expect(page.url()).not.toContain('/bmad');
+    const url = page.url();
+    expect(url.includes('/app') || url.includes('/login')).toBe(true);
   });
 });
 
