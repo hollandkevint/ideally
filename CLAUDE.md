@@ -91,11 +91,13 @@ npm run test:e2e:ui      # Run E2E tests with UI
 - **10-message limit**: (Target - currently 5) Triggers signup modal, preserves context
 - **Flow**: `/try` → guest chat → message limit → signup → `/app/session/[id]`
 
-**Sub-Persona System** (MVP - To Be Built)
+**Sub-Persona System** (`apps/web/lib/ai/mary-persona.ts`)
 - **Four Modes**: Inquisitive, Devil's Advocate, Encouraging, Realistic
-- **Pathway Weights**: Different mode distributions per pathway
-- **Dynamic Shifting**: AI detects user state and adjusts mode
+- **Pathway Weights**: Different mode distributions per pathway (New Idea: 40% Inquisitive, etc.)
+- **Dynamic Shifting**: AI detects user state (defensive, overconfident, spinning) and adjusts mode
 - **Kill Framework**: Escalation sequence for anti-sycophancy recommendations
+- **67 tests**: Full coverage in `tests/lib/ai/mary-persona.test.ts`
+- **Status**: Types/logic implemented, needs wiring to Claude API (Epic 6)
 
 **Structured Output Generators** (`apps/web/lib/bmad/generators/`)
 - **ConceptDocumentGenerator**: Business concept documents from New Idea pathway
@@ -276,7 +278,7 @@ tests/e2e/
 ## Configuration Files
 
 - `next.config.ts`: Next.js configuration (root directory: apps/web)
-- `tailwind.config.js`: Tailwind CSS setup
+- `tailwind.config.cjs`: Tailwind CSS setup (CommonJS format)
 - `playwright.config.ts`: E2E test configuration
 - `vitest.config.ts`: Unit test configuration
 - `eslint.config.mjs`: Linting rules
@@ -324,9 +326,64 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - **Builds**: Automatic on push to main branch
 - **Deploy manually**: `cd apps/web && vercel --prod`
 
+## Next Session: Epic 6 - Sub-Persona MVP
+
+**Priority:** P0 - Critical for MVP
+**Stories:** `/docs/stories/epic-6-sub-persona-mvp/`
+
+### Implementation Order
+
+| Story | Title | Estimate | Status |
+|-------|-------|----------|--------|
+| 6.1 | Wire Sub-Persona to Claude API | 4-6h | Ready |
+| 6.2 | Dynamic Mode Shifting | 4-6h | Ready |
+| 6.3 | Kill Recommendation System | 6-8h | Ready |
+| 6.4 | Output Polish (Lean Canvas + PRD) | 4-6h | Ready |
+| 6.5 | 10-Message Trial Gate | 2-3h | Ready |
+| 6.6 | Mode Indicator UI | 2-3h | Ready |
+
+### Key Files to Modify
+
+**Story 6.1 (Wire to API):**
+- `lib/ai/claude-client.ts` - Add mode system prompt injection
+- `lib/ai/mary-persona.ts` - Export `getSystemPromptForMode()`, `selectModeForMessage()`
+- `app/api/chat/stream/route.ts` - Pass pathway, include mode in response
+- `app/api/chat/guest/route.ts` - Same for guest flow
+
+**Story 6.2 (Dynamic Shifting):**
+- `lib/ai/mary-persona.ts` - Add `detectUserState()`, `shouldShiftMode()`
+- `lib/ai/context-manager.ts` - Track mode history
+
+**Story 6.3 (Kill Recommendations):**
+- `lib/ai/mary-persona.ts` - Implement `assessViability()`, `generateKillRecommendation()`
+- `lib/bmad/generators/` - Add viability score to outputs
+
+### Already Implemented (This Session)
+- Sub-persona types, pathway weights, state detection logic in `mary-persona.ts`
+- 67 tests passing
+- Design system with mode colors (Wes Anderson palette)
+- Strategic direction document (`docs/prd/8-strategic-direction.md`)
+
+### Quick Start Next Session
+```bash
+cd apps/web
+npm run dev
+# Start with Story 6.1: Wire sub-persona to Claude API
+# Key file: lib/ai/claude-client.ts
+```
+
 ## Recent Major Changes
 
 - **Jan 4, 2026**:
+  - **Sub-Persona Implementation**:
+    - Implemented sub-persona types, weights, and state detection in `mary-persona.ts`
+    - Added 67 tests for persona logic
+    - Created Epic 6 stories for remaining MVP work
+  - **Design System**:
+    - Wes Anderson-inspired palette (cream, parchment, terracotta, forest, ink)
+    - Typography: Jost (display), Libre Baskerville (body), JetBrains Mono (mono)
+    - Fonts loaded via `next/font` in layout.tsx
+    - Renamed `tailwind.config.js` to `.cjs` for module format fix
   - **Strategic Direction Refinement**:
     - Repositioned as "Decision Accelerator" (not coaching platform)
     - Sub-persona system defined: Inquisitive, Devil's Advocate, Encouraging, Realistic

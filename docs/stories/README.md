@@ -2,11 +2,12 @@
 
 This directory contains user stories organized by epic and completion status.
 
-## Current Project Status (December 2025)
+## Current Project Status (January 2026)
 
 | Epic | Status | Description |
 |------|--------|-------------|
-| **Strategic Pivot** | **P0** | Enable BMad, define use case, test pricing |
+| **Epic 6** | **P0 - Active** | Sub-Persona MVP - Core differentiator |
+| Strategic Pivot | **Done** | Repositioned as "Decision Accelerator" |
 | Epic 0 | **Done** | Authentication fixes |
 | Epic 1 | **Done** | Core platform improvements |
 | Epic 2 | **Done** | BMad Method pathways |
@@ -16,8 +17,17 @@ This directory contains user stories organized by epic and completion status.
 
 ## Directory Structure
 
-### Priority: Strategic Pivot (P0)
-- **`strategic-pivot/`** - Critical positioning and PMF stories (SP.x) - **Active**
+### Priority: Epic 6 - Sub-Persona MVP (P0)
+- **`epic-6-sub-persona-mvp/`** - Core differentiator implementation - **Active**
+  - 6.1: Wire Sub-Persona to Claude API
+  - 6.2: Dynamic Mode Shifting
+  - 6.3: Kill Recommendation System
+  - 6.4: Output Polish (Lean Canvas + PRD)
+  - 6.5: 10-Message Trial Gate
+  - 6.6: Mode Indicator UI
+
+### Completed: Strategic Pivot
+- **`strategic-pivot/`** - Positioning and PMF stories (SP.x) - **Done**
   - SP.1: Enable BMad Pathways as Default Experience
   - SP.2: Define Single Urgent Use Case (Idea Validation)
   - SP.3: Test Premium Pricing ($99 One-Time)
@@ -70,22 +80,32 @@ Stories use the following status labels:
 
 ## Next Steps Priority
 
-### P0: Strategic Pivot (This Week)
-Critical for product-market fit validation:
+### P0: Epic 6 - Sub-Persona MVP (January 2026)
+Core differentiator that makes ThinkHaven work:
 
-1. **SP.1: Enable BMad Pathways** - Make structured pathways the default experience
-2. **SP.2: Idea Validation Use Case** - "Validate your startup idea in 30 minutes"
-3. **SP.3: Premium Pricing Test** - $99 one-time vs. credit-based
+1. **6.1: Wire Sub-Persona to Claude API** - Connect mode logic to actual responses
+2. **6.2: Dynamic Mode Shifting** - Detect user state, adjust in real-time
+3. **6.3: Kill Recommendation System** - Honest judgment with escalation
+4. **6.4: Output Polish** - Lean Canvas + PRD/Spec generators
+5. **6.5: 10-Message Trial Gate** - Bump from 5, partial output at gate
+6. **6.6: Mode Indicator UI** - Visual feedback on current mode
 
-### P1: After Pricing Validated
-4. **Epic 4: Monetization** - Implement winning pricing model
-   - Story 4.1: Adapt based on SP.3 results
+### P1: After Sub-Persona Complete
+7. **Epic 4: Monetization** - Implement LTD pricing ($199-499)
+   - Story 4.1: Adapt based on sub-persona feedback
 
-### P2: After PMF Signals
-5. **Epic 5: Analytics** - Track assumption validation
-6. **Epic 3.2: Advanced Integrations** - Based on user feedback
+### P2: After MVP Launch
+8. **Epic 5: Analytics** - Track assumption validation
+9. **Epic 3.2: Advanced Integrations** - Based on user feedback
 
 ## Cleanup History
+
+**January 4, 2026 - Epic 6 Created**
+- Created `epic-6-sub-persona-mvp/` folder with 6 stories
+- Added epic overview and implementation order
+- Sub-persona types/logic already implemented in `mary-persona.ts` (67 tests)
+- Strategic direction refined via interview process
+- Design system updated with Wes Anderson palette
 
 **December 16, 2025 - Strategic Pivot Stories**
 - Created `strategic-pivot/` folder for PMF validation

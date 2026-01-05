@@ -63,3 +63,4 @@ tmp/
 next-env.d.ts
 ../../.specstory/
 .bmad-core/
+.env*.local
