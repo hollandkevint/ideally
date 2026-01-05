@@ -13,18 +13,43 @@
 - **FR-AC5:** System shall support session pause/resume with full context preservation
 
 ### AI Coaching Intelligence
-- **FR-AC6:** System shall analyze user input to recommend appropriate coaching pathway with confidence scoring
-- **FR-AC7:** System shall adapt questioning strategy based on user responses and session progress
-- **FR-AC8:** System shall provide strategic challenges and contrarian perspectives during sessions
-- **FR-AC9:** System shall synthesize session insights into structured, actionable business briefs
-- **FR-AC10:** System shall maintain coaching quality across diverse industries and user sophistication levels
+
+#### Sub-Persona System (Core Differentiator)
+- **FR-AC6:** System shall implement four coaching modes in every session: Inquisitive, Devil's Advocate, Encouraging, Realistic
+- **FR-AC7:** System shall weight modes by pathway type:
+  - New Idea: Inquisitive 40%, Devil's Advocate 20%, Encouraging 25%, Realistic 15%
+  - Business Model: Inquisitive 20%, Devil's Advocate 35%, Encouraging 15%, Realistic 30%
+  - Feature Refinement: Inquisitive 25%, Devil's Advocate 30%, Encouraging 15%, Realistic 30%
+- **FR-AC8:** System shall dynamically shift between modes based on user responses:
+  - User defensive → shift to Encouraging before returning to challenge
+  - User overconfident → lean into Devil's Advocate
+  - User spinning → bring in Realistic to ground
+- **FR-AC9:** System shall surface explicit mode control options after ~10 exchanges ("Challenge me" / "Be realistic" / "Help me explore")
+
+#### Kill Decision Framework
+- **FR-AC10:** System shall implement escalating honesty about weak ideas:
+  1. Diplomatic flags: "I see some significant risks here..."
+  2. Deeper probe: "Let me challenge this assumption..." (chance to defend/pivot)
+  3. Explicit recommendation: "I don't think you should pursue this because..."
+  4. Kill score: Viability rating with clear reasoning
+- **FR-AC11:** System shall earn the right to kill by exploring and challenging first, never dismissing early
+
+#### Output Generation
+- **FR-AC12:** System shall synthesize session insights into Lean Canvas format
+- **FR-AC13:** System shall generate PRD/Spec documents suitable for dev handoff
+- **FR-AC14:** System shall maintain coaching quality across diverse industries and user sophistication levels
 
 ### Export & Integration Capabilities
-- **FR-AC11:** System shall export final reports as PDF with professional formatting
-- **FR-AC12:** System shall integrate with Notion API for direct workspace export
-- **FR-AC13:** System shall provide Airtable integration for structured data export
-- **FR-AC14:** System shall support email delivery of session summaries and frameworks
-- **FR-AC15:** System shall enable sharing of completed frameworks via unique URLs
+- **FR-AC15:** System shall export final reports as PDF with professional formatting
+- **FR-AC16:** System shall integrate with Notion API for direct workspace export (post-MVP)
+- **FR-AC17:** System shall provide Airtable integration for structured data export (post-MVP)
+- **FR-AC18:** System shall support email delivery of session summaries and frameworks (post-MVP)
+- **FR-AC19:** System shall enable sharing of completed frameworks via unique URLs
+
+### Trial Experience
+- **FR-AC20:** Guest trial shall allow 10 messages before conversion gate (up from 5)
+- **FR-AC21:** Trial shall provide partial output at gate (value first, then ask for signup)
+- **FR-AC22:** Trial session shall be preserved and migrate to user account on signup
 
 ## Strategic Workspace Foundation Requirements (Existing)
 

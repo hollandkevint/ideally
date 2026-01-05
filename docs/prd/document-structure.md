@@ -1,17 +1,23 @@
 # Document Structure
 
-This PRD is organized into sharded components for better maintainability and agent access:
+This PRD is organized into sharded components for better maintainability and agent access.
+
+**Start Here:** [Strategic Direction](./8-strategic-direction.md) - The source of truth for product positioning and MVP priorities.
 
 ## Core PRD Shards
-- [Goals & Background Context](./prd/1-goals-context.md) - Product vision, goals, and foundational context
-- [Requirements](./prd/2-requirements.md) - Functional, non-functional, and compatibility requirements
-- [User Interface Design Goals](./prd/3-ui-goals.md) - UI/UX vision and interaction paradigms
-- [Technical Architecture](./prd/4-technical-architecture.md) - Current tech stack and integration approach
-- [Epic Structure](./prd/5-epic-structure.md) - Epic breakdown and story organization
+- [Executive Summary](./executive-summary.md) - Core positioning and 90-day targets
+- [Strategic Direction](./8-strategic-direction.md) - **PRIMARY REFERENCE** - Decision accelerator positioning, sub-persona system, output strategy
+- [Goals & Background Context](./1-goals-context.md) - Product vision, goals, and foundational context
+- [Requirements](./2-requirements.md) - Functional, non-functional requirements including sub-persona specs
+- [User Interface Design Goals](./3-ui-goals.md) - Conversation-first design, output focus
+- [Epic Structure](./5-epic-structure.md) - Epic breakdown with strategic priority alignment
 
 ## Status & Implementation Shards
-- [Current Implementation Status](./prd/6-implementation-status.md) - Brownfield analysis and current state
-- [Integration Requirements](./prd/7-integration-requirements.md) - Claude Sonnet 4 integration specifics
-- [Risk Assessment](./prd/8-risk-assessment.md) - Technical risks and mitigation strategies
+- [Current Implementation Status](./6-implementation-status.md) - Build status and MVP work remaining
+- [Integration Requirements](./7-integration-requirements.md) - Claude integration with sub-persona system
+
+## Reference
+- [Index](./index.md) - Table of contents
+- [Change Log](./change-log.md) - Document history
 
 ---

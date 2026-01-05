@@ -3,22 +3,22 @@
 ## Goals
 
 ### Product Goals
-- Launch **ThinkHaven as AI Product Coaching Platform** positioned as "Your 30-minute product coach"
-- Democratize high-quality strategic thinking by making expert-level business coaching accessible and affordable
-- Transform raw business ideas into structured, validated concepts through guided AI coaching sessions
-- Achieve product-market fit in AI-powered business coaching market with defensible competitive advantages
+- Launch **ThinkHaven as a Decision Accelerator** positioned as "More structured than Claude, faster than consultants, more strategic than Miro"
+- Validate or kill business ideas before users waste time building through enforced methodology with genuine pushback
+- Deliver polished, portable outputs (Lean Canvas, PRD/Spec) that travel to prototyping tools
+- Achieve product-market fit with defensible moat: enforced methodology + sub-persona balancing + anti-sycophancy
 
-### Business Goals  
-- Establish sustainable revenue model through pay-per-session credits ($20-30/session) and subscription tiers ($50-200/month)
-- Target $50K ARR in Year 1, $500K ARR in Year 2, with 80%+ gross margins
-- Build customer base of 500+ users across solo entrepreneurs, product managers, and business coaches
-- Achieve 40%+ trial-to-paid conversion rate and <25% monthly churn rate
+### Business Goals
+- **90-Day MVP Targets:** 100 signups, 50% activation, $2,000 revenue, 75% retention
+- **Phase 1 Revenue:** Lifetime deals ($199-499) for early adopters + feedback
+- **Phase 2 Revenue:** Subscription + credits for sustainable MRR
+- Primary users: Builders/strategists validating before committing, consultants needing structured deliverables fast
 
 ### Technical Goals
-- Leverage existing Next.js + Claude Sonnet 4 integration as foundation for coaching platform
-- Implement choose-your-adventure session flow with three core coaching pathways
-- Build exportable business framework generation (Lean Canvas, Business Model Canvas)
-- Achieve <2s AI response times with 95%+ uptime and comprehensive error handling
+- Implement sub-persona system: Inquisitive → Devil's Advocate → Encouraging → Realistic (all modes in every session, weighted by pathway)
+- Build kill recommendation logic with viability scoring
+- Achieve 10-message trial gate with partial output at conversion point
+- Polish Lean Canvas + PRD/Spec output generation
 
 ## Background Context
 
@@ -41,14 +41,18 @@ The platform currently exists as a sophisticated **Next.js 15 application with f
 - **Open-Source Extensibility:** Community-driven coaching patterns and techniques beyond bMAD foundation
 
 ### Target Users
-**Primary Users** (validated through strategy consultant insights):
-- **Independent Consultants** seeking to scale from 2 to 10+ clients monthly through structured workflows
-- **Entrepreneurs** validating ideas before significant investment, reducing pivot time from months to weeks
-- **Product Managers** facilitating strategic planning sessions with visual documentation capabilities
 
-**Secondary Users**:
-- **Professional Coaches** delivering structured client sessions with exportable outcomes
-- **Corporate Innovation Teams** conducting rapid ideation with integrated visualization tools
+**Primary: Builders & Strategists**
+- **Who:** Solo founders, product managers, strategy team members
+- **Job-to-be-done:** Vet problems, get feedback, red-team ideas before committing time
+- **Pain when skipped:** Months wasted building the wrong thing
+- **Success feeling:** "I pressure-tested this, I'm confident, I'm ready to build"
+
+**Secondary: Consultants**
+- **Who:** Independent consultants who need to look structured for clients
+- **Job-to-be-done:** Produce strategic deliverables fast, apply frameworks without setup overhead
+- **Pain when skipped:** Manual framework application, inconsistent outputs, time pressure
+- **Success feeling:** "I have a partner that makes me sharper"
 
 ### Market Position
 This represents a new category: **"Strategic Thinking Workspace"** - combining probabilistic exploration (AI) with deterministic structure (workflows) and visual iteration capabilities, enabling users to move from raw ideas to validated business concepts in structured 30-minute sessions.

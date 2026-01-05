@@ -1,77 +1,95 @@
 # Integration Requirements
 
-## Claude Sonnet 4 API Integration Specifications1
+*Updated January 2026 - Aligned with Strategic Direction*
+
+## Claude API Integration
 
 ### API Configuration
-- **Model**: claude-3-sonnet-20240229 (latest stable)
-- **Max Tokens**: 4096 for strategic coaching responses
+- **Model**: claude-3-sonnet or claude-3-opus (depending on complexity)
+- **Max Tokens**: 4096 for strategic responses
 - **Temperature**: 0.7 for balanced creativity and consistency
-- **System Prompts**: BMad Method coaching persona with strategic thinking expertise
+- **System Prompts**: Sub-persona weighted prompts with pathway-specific behavior
+
+### Sub-Persona System Integration
+
+**System Prompt Structure:**
+```
+[Base Mary Persona]
+[Current Pathway Context]
+[Sub-Persona Weights: {inquisitive: X%, devilsAdvocate: Y%, encouraging: Z%, realistic: W%}]
+[Current Mode: {active mode based on weights and dynamic shifting}]
+[Kill Recommendation Framework: escalation sequence]
+```
+
+**Dynamic Mode Shifting Triggers:**
+- User defensive → shift to Encouraging before returning to challenge
+- User overconfident → lean into Devil's Advocate
+- User spinning → bring in Realistic to ground
 
 ### Conversation Management
-- **Context Window**: Intelligent sliding window maintaining last 10-15 conversation turns
-- **Message Format**: Structured JSON with user/assistant roles and BMad Method context
-- **Session Continuity**: Persistent conversation threads across browser sessions
-- **Context Injection**: BMad Method framework and user progress injected into system context
+- **Context Window**: Last 10-15 conversation turns
+- **Message Format**: Structured JSON with sub-persona mode tracking
+- **Session Continuity**: Persistent threads with mode state
+- **Pathway Context**: Weights injected at session start based on pathway selection
 
 ### Streaming Implementation
-- **Response Streaming**: Real-time token streaming for natural conversation feel
-- **WebSocket Connection**: Maintain persistent connection for session duration
-- **Partial Response Handling**: Progressive UI updates as AI response generates
-- **Connection Recovery**: Automatic reconnection handling with message replay
+- **Response Streaming**: Server-Sent Events for real-time responses
+- **Partial Response Handling**: Progressive UI updates
+- **Mode Indicators**: (Post-MVP) Show which mode is currently active
 
-## BMad Method Integration
+## Output Generation Integration
 
-### Template System
-- **Strategic Templates**: Project brief, market research, competitive analysis templates
-- **Interactive Flow**: Template-guided conversation with structured progression
-- **Progress Tracking**: Phase-based progression through BMad Method stages
-- **Outcome Generation**: Structured outputs based on completed strategic thinking sessions
+### Lean Canvas Generator
+- **Data Source**: Extract from conversation history
+- **Sections**: Problem, Solution, Key Metrics, Unique Value Proposition, etc.
+- **Format**: Structured markdown/PDF with professional formatting
 
-### Session State Management
-- **Progress Persistence**: Save session state every 30 seconds automatically
-- **Resume Capability**: Users can pause and resume strategic thinking sessions
-- **History Access**: Previous session review and continuation options
-- **Export Functionality**: Strategic outcomes exportable as PDF/markdown
+### PRD/Spec Generator
+- **Data Source**: Extract from conversation history
+- **Sections**: Overview, Goals, Requirements, User Stories, etc.
+- **Format**: Detailed working document suitable for dev handoff
 
-## Real-time Features
+### Viability Score Integration
+- **Kill Recommendation**: Include in output when applicable
+- **Score Components**: Market fit, feasibility, risk factors
+- **Display**: Clear viability rating with reasoning
 
-### WebSocket Architecture
-- **Connection Management**: Establish WebSocket on session start
-- **Message Protocol**: JSON-based messaging for AI conversation and session updates
-- **Heartbeat Monitoring**: Connection health monitoring with automatic recovery
-- **Multi-tab Sync**: Session state synchronized across multiple browser tabs
+## Session Management Integration
 
-### UI State Synchronization
-- **Conversation Updates**: Real-time conversation history updates
-- **Progress Indicators**: Live updates of BMad Method phase progression  
-- **Session Status**: Active session indicators and idle timeout management
-- **Collaborative Features**: Foundation for future multi-user strategic thinking sessions
+### Session Duration
+- **Target Duration**: 10-30 minutes per session
+- **Progress Tracking**: Phase indicators showing session progression
+- **Auto-Save**: Session state saved every 30 seconds
+- **Resume Capability**: Users can pause and resume sessions
+
+### Trial Flow Integration
+- **Message Limit**: 10 messages for guest users (up from 5)
+- **Partial Output**: Provide partial Lean Canvas at gate
+- **Value First**: Show real value before requiring signup
+- **Smooth Conversion**: Preserve context through signup flow
 
 ## Error Handling & Resilience
 
 ### Claude API Error Management
-- **Rate Limit Handling**: Graceful queuing and retry logic for API rate limits
-- **Timeout Management**: 30-second timeout with user notification and retry option
+- **Rate Limit Handling**: Graceful queuing and retry logic
+- **Timeout Management**: 30-second timeout with retry option
 - **Service Degradation**: Fallback modes when Claude API is unavailable
-- **Error Logging**: Comprehensive error tracking for debugging and monitoring
+- **Error Logging**: Comprehensive error tracking for debugging
 
 ### User Experience Continuity
-- **Offline Detection**: Detect network issues and provide appropriate user feedback
-- **Session Recovery**: Automatic session restoration after connection issues
-- **Data Validation**: Client-side and server-side validation for conversation integrity
-- **Graceful Degradation**: Core functionality available even during AI service issues
+- **Session Recovery**: Automatic restoration after connection issues
+- **Data Validation**: Client and server-side validation
+- **Graceful Degradation**: Core functionality available during AI issues
 
 ## Performance Optimization
 
 ### Response Optimization
-- **Caching Strategy**: Cache common BMad Method responses and templates
-- **Compression**: Gzip compression for AI response streaming
-- **CDN Integration**: Static assets served through CDN for global performance
-- **Database Optimization**: Efficient queries for conversation history and session data
+- **Streaming**: Server-Sent Events for real-time responses
+- **Compression**: Gzip compression for streaming
+- **CDN Integration**: Static assets served through CDN
+- **Database Optimization**: Efficient queries for conversation history
 
 ### Scaling Considerations
 - **Connection Pooling**: Efficient database connection management
-- **API Rate Management**: Intelligent batching and queuing for Claude API calls
-- **Memory Management**: Efficient conversation history management in browser
-- **Load Balancing**: Architecture ready for horizontal scaling when needed
+- **API Rate Management**: Intelligent batching for Claude API calls
+- **Memory Management**: Efficient conversation history in browser

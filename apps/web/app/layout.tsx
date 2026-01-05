@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Mono } from "next/font/google";
+import { Jost, Libre_Baskerville, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '../lib/auth/AuthContext';
 import { WorkspaceProvider } from '../lib/workspace/WorkspaceContext';
 import Navigation from './components/ui/navigation';
 
-const dmSans = DM_Sans({
-  variable: "--font-sans",
+// Wes Anderson-inspired typography
+const jost = Jost({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const dmMono = DM_Mono({
+const libreBaskerville = Libre_Baskerville({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -32,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light" suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${dmMono.variable} font-sans antialiased bg-white text-gray-900`}
+        className={`${jost.variable} ${libreBaskerville.variable} ${jetbrainsMono.variable} font-body antialiased bg-cream text-ink`}
       >
         <AuthProvider>
           <Navigation />

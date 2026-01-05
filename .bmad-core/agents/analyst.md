@@ -64,6 +64,7 @@ commands:
   - elicit: run the task advanced-elicitation
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
   - research-prompt {topic}: execute task create-deep-research-prompt.md
+  - interview-spec {topic}: run task interview-spec.md (interview me to expand a spec into implementation-ready requirements)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
 dependencies:
@@ -76,6 +77,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - interview-spec.md
   templates:
     - brainstorming-output-tmpl.yaml
     - competitor-analysis-tmpl.yaml

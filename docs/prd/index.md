@@ -1,18 +1,24 @@
-# bMAD Method Analyst Web Platform - Product Requirements Document (PRD)
+# ThinkHaven - Product Requirements Document (PRD)
+
+**ThinkHaven** is a decision accelerator that validates or kills business ideas before users waste time building.
 
 ## Table of Contents
 
-- [bMAD Method Analyst Web Platform - Product Requirements Document (PRD)](#table-of-contents)
-  - [Document Information](./document-information.md)
-  - [Document Structure](./document-structure.md)
-    - [Core PRD Shards](./document-structure.md#core-prd-shards)
-    - [Status & Implementation Shards](./document-structure.md#status-implementation-shards)
-  - [Executive Summary](./executive-summary.md)
-    - [Foundation Vision (Historical PRD)](./executive-summary.md#foundation-vision-historical-prd)
-    - [Current Implementation Status (Brownfield Analysis)](./executive-summary.md#current-implementation-status-brownfield-analysis)
-    - [Hybrid Approach Benefits](./executive-summary.md#hybrid-approach-benefits)
-  - [Quick Navigation](./quick-navigation.md)
-    - [For Product Management](./quick-navigation.md#for-product-management)
-    - [For Development Teams](./quick-navigation.md#for-development-teams)
-    - [For UX/Design Teams](./quick-navigation.md#for-uxdesign-teams)
-  - [Change Log](./change-log.md)
+- [Executive Summary](./executive-summary.md) - Core positioning and 90-day targets
+- [Strategic Direction](./8-strategic-direction.md) - **START HERE** - Interview-refined specs (Jan 2026)
+- [Document Structure](./document-structure.md) - Full shard index
+
+### Core Shards
+- [Goals & Background Context](./1-goals-context.md)
+- [Requirements](./2-requirements.md) - Including sub-persona system specs
+- [User Interface Design Goals](./3-ui-goals.md) - Conversation-first design
+- [Technical Architecture](./4-technical-architecture.md) - Tech stack and integration
+- [Epic Structure](./5-epic-structure.md) - Strategic priority alignment
+
+### Implementation Shards
+- [Current Implementation Status](./6-implementation-status.md) - Build status and MVP work
+- [Integration Requirements](./7-integration-requirements.md) - Sub-persona and Claude integration
+
+### Reference
+- [Quick Navigation](./quick-navigation.md)
+- [Change Log](./change-log.md)

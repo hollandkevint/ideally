@@ -2,55 +2,67 @@
 
 ## Chat Interface Component
 
-**Responsibility:** Real-time AI conversation interface with streaming responses and message management
+**Responsibility:** Real-time AI conversation interface with streaming responses, sub-persona mode display, and session progression
 
 **Key Interfaces:**
 - ChatMessage props with SSE streaming
 - ConversationHistory management with pagination
 - MessageInput with validation and submission
-- BookmarkSystem for message references
+- ModeIndicator for sub-persona state (post-MVP)
 
-**Dependencies:** Claude client, Conversation persistence, State management
-**Technology Stack:** React 19 with Server-Sent Events, Zustand for state, TypeScript for type safety
+**Dependencies:** Claude client, Conversation persistence, Sub-persona state
+**Technology Stack:** React 19 with Server-Sent Events, TypeScript for type safety
 
-## Canvas Workspace Component
+## Output Generation Component
 
-**Responsibility:** Visual workspace for strategic thinking with drawing tools and element persistence
-
-**Key Interfaces:**
-- CanvasElement creation and manipulation
-- Drawing tool palette and controls
-- Element persistence to Supabase
-- Real-time collaboration support
-
-**Dependencies:** Canvas rendering library, Workspace state, Database persistence
-**Technology Stack:** HTML5 Canvas or SVG, custom drawing tools, real-time state sync
-
-## BMad Strategic Framework Component
-
-**Responsibility:** Structured strategic thinking templates integrated with AI coaching conversations
+**Responsibility:** Generate polished Lean Canvas and PRD/Spec documents from session insights
 
 **Key Interfaces:**
-- Template selection and customization
-- Strategic analysis engine integration
-- Context bridge with coaching conversation
-- Document generation and export
+- LeanCanvasGenerator: Extract and format Lean Canvas sections
+- PRDSpecGenerator: Generate detailed working documents
+- ViabilityScorer: Calculate and display kill score when applicable
+- ExportPanel: PDF/Markdown export controls
 
-**Dependencies:** BMad analysis engines, Template system, Chat context bridge
-**Technology Stack:** React components with strategic analysis TypeScript modules
+**Dependencies:** Conversation history, Template system, PDF generator
+**Technology Stack:** React components, @react-pdf/renderer for PDF
 
-## AI Coaching Service
+## Sub-Persona System
 
-**Responsibility:** Claude Sonnet 4.0 integration with Mary coaching persona and context management
+**Responsibility:** Manage four sub-persona modes with pathway-specific weights and dynamic shifting
+
+**Key Interfaces:**
+- ModeWeights: {inquisitive, devilsAdvocate, encouraging, realistic}
+- PathwayConfig: Default weights per pathway type
+- DynamicShift: Detect user state and adjust mode
+- KillFramework: Escalation sequence for kill recommendations
+
+**Dependencies:** Claude system prompts, Session state, Pathway configuration
+**Technology Stack:** TypeScript modules integrated with AI service
+
+## AI Decision Accelerator Service
+
+**Responsibility:** Claude integration with Mary persona, sub-persona balancing, and anti-sycophancy features
 
 **Key Interfaces:**
 - Streaming conversation API with SSE
-- Persona context management
-- Token usage tracking and optimization
-- Error handling and retry logic
+- Sub-persona weight management
+- Kill recommendation logic
+- Context injection for pathway behavior
 
-**Dependencies:** Anthropic SDK, Conversation persistence, Context management
+**Dependencies:** Anthropic SDK, Sub-persona system, Kill framework
 **Technology Stack:** Next.js API routes, Anthropic Claude SDK, Server-Sent Events
+
+## Canvas Workspace Component (Post-MVP)
+
+**Responsibility:** Visual workspace for low-fi diagrams and sketches (nice-to-have, not critical)
+
+**Key Interfaces:**
+- Drawing tools for sketches
+- Mermaid diagram rendering
+- Export to PNG/SVG
+
+**Dependencies:** Canvas rendering library, Database persistence
+**Technology Stack:** HTML5 Canvas or Excalidraw-style rendering
 
 ## Database Service Layer
 
@@ -70,35 +82,39 @@
 ```mermaid
 graph TB
     subgraph "Frontend Components"
-        WorkspacePage[Workspace Page]
+        SessionPage[Session Page]
         ChatInterface[Chat Interface]
-        CanvasWorkspace[Canvas Workspace]
-        BMadInterface[BMad Interface]
+        OutputPreview[Output Preview]
+        ExportPanel[Export Panel]
     end
-    
+
     subgraph "Service Layer"
-        AIService[AI Coaching Service]
+        AIService[AI Decision Accelerator Service]
+        SubPersona[Sub-Persona System]
+        OutputGen[Output Generation]
         DatabaseService[Database Service]
-        BMadEngine[BMad Analysis Engine]
     end
-    
+
     subgraph "External Services"
         Claude[Claude API]
         Supabase[(Supabase)]
     end
-    
-    WorkspacePage --> ChatInterface
-    WorkspacePage --> CanvasWorkspace
-    WorkspacePage --> BMadInterface
-    
+
+    SessionPage --> ChatInterface
+    SessionPage --> OutputPreview
+    SessionPage --> ExportPanel
+
     ChatInterface --> AIService
-    CanvasWorkspace --> DatabaseService
-    BMadInterface --> BMadEngine
-    
+    AIService --> SubPersona
     AIService --> Claude
+
+    OutputPreview --> OutputGen
+    ExportPanel --> OutputGen
+
+    AIService --> DatabaseService
+    OutputGen --> DatabaseService
     DatabaseService --> Supabase
-    BMadEngine --> DatabaseService
-    
-    AIService -.->|Context Bridge| BMadEngine
-    ChatInterface -.->|Real-time Events| CanvasWorkspace
+
+    SubPersona -.->|Mode Weights| AIService
+    OutputGen -.->|Viability Score| ExportPanel
 ```

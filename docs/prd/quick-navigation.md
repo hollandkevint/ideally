@@ -1,16 +1,19 @@
 # Quick Navigation
 
+**Start Here:** [Strategic Direction](./8-strategic-direction.md) - Source of truth for product positioning
+
 ## For Product Management
-- Start with [Goals & Context](./prd/1-goals-context.md) for vision alignment
-- Review [Epic Structure](./prd/5-epic-structure.md) for delivery planning
+- [Strategic Direction](./8-strategic-direction.md) - Decision accelerator positioning, sub-persona system
+- [Goals & Context](./1-goals-context.md) for vision alignment
+- [Epic Structure](./5-epic-structure.md) for delivery planning with strategic priorities
 
 ## For Development Teams
-- Check [Current Status](./prd/6-implementation-status.md) for existing codebase context
-- Review [Technical Architecture](./prd/4-technical-architecture.md) for implementation guidance
-- Follow [Integration Requirements](./prd/7-integration-requirements.md) for Claude API work
+- [Current Status](./6-implementation-status.md) for build status and MVP work remaining
+- [Technical Architecture](./4-technical-architecture.md) for implementation guidance
+- [Integration Requirements](./7-integration-requirements.md) for sub-persona system and Claude API
 
 ## For UX/Design Teams
-- Start with [UI Design Goals](./prd/3-ui-goals.md) for design vision
-- Reference [Requirements](./prd/2-requirements.md) for functional specifications
+- [UI Design Goals](./3-ui-goals.md) for conversation-first design vision
+- [Requirements](./2-requirements.md) for functional specifications including sub-persona specs
 
 ---

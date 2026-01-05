@@ -2,7 +2,7 @@
 
 ## Technical Summary
 
-The thinkhaven platform implements a **modern serverless-first architecture** with a dual-pane user interface for AI-powered strategic coaching. The architecture leverages Next.js 15's App Router for both frontend and API layers, integrating with Supabase for data persistence and real-time features, and Anthropic Claude Sonnet 4.0 for AI coaching capabilities. The system follows a **component-based frontend architecture** with **API-first backend design**, enabling seamless AI conversation streaming while maintaining strategic business analysis capabilities through the integrated BMad Method framework.
+ThinkHaven implements a **modern serverless-first architecture** with a conversation-first user interface for AI-powered decision acceleration. The architecture leverages Next.js 15's App Router for both frontend and API layers, integrating with Supabase for data persistence, and Anthropic Claude for AI capabilities with sub-persona balancing. The system follows a **component-based frontend architecture** with **API-first backend design**, enabling seamless AI conversation streaming with enforced methodology, anti-sycophancy features, and polished output generation (Lean Canvas, PRD/Spec).
 
 ## Platform and Infrastructure Choice
 
@@ -25,30 +25,35 @@ graph TB
     User[👤 User] --> Web[Next.js Web App]
     Web --> Auth[Supabase Auth]
     Web --> API[Next.js API Routes]
-    
+
     API --> Claude[Anthropic Claude API]
     API --> DB[(Supabase Database)]
-    API --> Storage[(Supabase Storage)]
-    
+
     subgraph "Frontend Components"
         Web --> Chat[Chat Interface]
-        Web --> Canvas[Canvas Workspace]
-        Web --> BMad[BMad Interface]
+        Web --> Output[Output Preview]
+        Web --> Export[Export Panel]
     end
-    
+
     subgraph "AI Integration Layer"
-        Claude --> Persona[Mary Coaching Persona]
+        Claude --> Persona[Mary Persona + Sub-Personas]
         Claude --> Stream[Server-Sent Events]
+        Persona --> Modes[Inquisitive / Devil's Advocate / Encouraging / Realistic]
     end
-    
+
+    subgraph "Output Generation"
+        API --> LeanCanvas[Lean Canvas Generator]
+        API --> PRDSpec[PRD/Spec Generator]
+        API --> ViabilityScore[Viability Scoring]
+    end
+
     subgraph "Data Layer"
+        DB --> Sessions[Sessions]
         DB --> Conversations[Conversations]
-        DB --> Workspaces[Workspaces]  
-        DB --> BMadData[BMad Analysis Data]
+        DB --> Credits[Credit System]
     end
-    
+
     Web --> CDN[Vercel CDN/Edge]
-    API --> Functions[Vercel Edge Functions]
 ```
 
 ## Architectural Patterns

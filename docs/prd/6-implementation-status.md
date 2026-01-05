@@ -1,133 +1,126 @@
 # Current Implementation Status
 
-## Existing System Strengths
+*Updated January 2026 - Aligned with Strategic Direction*
 
-### Technical Foundation - ✅ Complete
+## Build Status Summary
+
+### Already Built
 | Component | Status | Details |
 |-----------|--------|---------|
 | **Next.js 15 Foundation** | ✅ Working | App Router, Turbopack, TypeScript integration |
 | **Authentication System** | ✅ Production Ready | Supabase Auth with user management and RLS |
-| **Database Schema** | ✅ Comprehensive | AI-ready schema with conversation/context tables |
-| **Dual-Pane Interface** | ✅ CSS Framework | Responsive design system supporting chat and canvas |
-| **Project Structure** | ✅ Professional | Monorepo with proper module organization |
+| **Claude Integration** | ✅ Complete | Streaming responses with Mary persona |
+| **Session Persistence** | ✅ Working | Conversation and session state management |
+| **Guest Flow** | ✅ Working | 5 messages (needs bump to 10) |
+| **Credit System Infrastructure** | ✅ Complete | Database schema, Stripe integration ready |
+| **Lean Canvas Output** | ⚠️ Partial | Generator exists, needs polish |
+| **PRD/Spec Generation** | ⚠️ Partial | Generator exists, needs polish |
 
-### Feature Implementation Status
+### Must Build for MVP
+| Component | Status | Priority |
+|-----------|--------|----------|
+| **Sub-Persona System** | ❌ Not Started | Highest |
+| **Dynamic Mode Shifting** | ❌ Not Started | Highest |
+| **Anti-Sycophancy Logic** | ❌ Not Started | Highest |
+| **Kill Recommendation** | ❌ Not Started | High |
+| **Viability Score** | ❌ Not Started | High |
+| **10-Message Trial Gate** | ❌ Not Started | High |
+| **Output Polish** | ⚠️ In Progress | High |
 
-#### ✅ **Implemented and Working**
-- **User Authentication:** Complete Supabase integration with secure user sessions
-- **Workspace Management:** Users can create and manage strategic thinking workspaces
-- **Database Architecture:** Comprehensive schema designed for AI conversation storage
-- **Responsive Design:** Mobile-friendly dual-pane layout with CSS framework
-- **Development Environment:** Next.js 15 with Turbopack for fast development iteration
+### Post-MVP (Nice-to-Have)
+| Component | Status | Notes |
+|-----------|--------|-------|
+| **User Mode Control** | ❌ Not Started | Explicit sub-persona selection |
+| **HTML Presentation** | ❌ Not Started | Single-file shareable output |
+| **Low-Fi Visuals** | ❌ Not Started | Excalidraw-style sketches |
+| **Canvas Workspace** | ⚠️ Partial | Not critical path - de-prioritized |
 
-#### ⚠️ **Partially Implemented** 
-- **BMad Method Framework:** Database schema exists but limited frontend integration
-- **Session Management:** Basic workspace creation but no advanced session state management
-- **UI Components:** Foundation components exist but lack AI integration hooks
-- **Canvas Functionality:** CSS framework prepared but no actual drawing/diagramming features
-
-#### ✅ **Recently Completed (Story 1.4 - September 2025)**
-- **Claude Sonnet 4 Integration:** ✅ Fully implemented with Mary coaching persona and streaming responses
-- **Real-time Conversation:** ✅ Complete with Server-Sent Events, context management, and session persistence
-- **Advanced Chat Features:** ✅ Message history, search, bookmarking, conversation branching, export
-- **Production Quality:** ✅ Comprehensive testing, error handling, and 92/100 quality score
-
-#### ⚠️ **Remaining Implementation Gaps**
-- **BMad Method Templates:** Strategic thinking templates need frontend integration with chat interface
-- **Canvas Implementation:** Visual workspace exists as placeholder without functional drawing tools
-- **Advanced BMad Integration:** Deep integration between chat coaching and BMad Method workflows
-
-## Brownfield Analysis
+## Technical Foundation
 
 ### Current Codebase Structure
 ```
 apps/web/
 ├── app/
-│   ├── workspace/[id]/page.tsx     ✅ Updated with Claude integration
+│   ├── app/session/[id]/page.tsx   ✅ Workspace with Claude integration
 │   ├── components/
 │   │   ├── ui/                     ✅ Foundation components ready
 │   │   ├── chat/                   ✅ Complete chat interface with streaming
-│   │   └── workspace/              ⚠️ Basic workspace components, need BMad integration
+│   │   ├── bmad/                   ✅ BMad interface and generators
+│   │   └── guest/                  ✅ Guest session components
 │   └── api/
-│       ├── chat/stream/route.ts    ✅ Full Claude Sonnet 4 streaming integration
-│       └── bookmarks/route.ts      ✅ Message bookmarking and reference system
+│       ├── chat/stream/route.ts    ✅ Claude streaming integration
+│       └── chat/guest/route.ts     ✅ Guest streaming (no auth)
 ├── lib/
-│   ├── ai/                         ✅ Complete Claude client and Mary persona
-│   ├── supabase/                   ✅ Enhanced with conversation persistence
-│   └── utils/                      ✅ AI integration helpers implemented
-├── tests/                          ✅ Comprehensive test suite (8 test files)
-└── types/                          ✅ Complete TypeScript coverage for AI features
+│   ├── ai/                         ✅ Claude client, Mary persona
+│   │   └── mary-persona.ts         ⚠️ Needs sub-persona system
+│   ├── bmad/generators/            ✅ Lean Canvas, PRD generators
+│   └── monetization/               ✅ Credit system infrastructure
+├── tests/                          ✅ Unit + E2E tests passing
+└── types/                          ✅ Complete TypeScript coverage
 ```
 
-### Database Schema Analysis
+### Database Schema Status
 - **Users & Authentication:** ✅ Complete with Supabase Auth
-- **Workspaces:** ✅ Working with proper user isolation
-- **Conversations:** ✅ Fully integrated with Claude chat system and persistence
-- **Messages & Context:** ✅ Active storage of chat history, context, and conversation state
-- **Bookmarks & References:** ✅ Advanced knowledge management integrated with conversations
-- **BMad Method Data:** ⚠️ Schema prepared but templates need frontend integration
+- **Sessions:** ✅ Working with session state management
+- **Conversations:** ✅ Fully integrated with persistence
+- **Credits:** ✅ Credit system tables ready
+- **Sub-Persona State:** ❌ Needs schema for mode tracking
 
-### Integration Points Ready for Enhancement
-1. **Supabase Client Configuration:** Already configured for secure API calls
-2. **TypeScript Environment:** Strong typing foundation for AI integration
-3. **Component Architecture:** React components structured for AI feature injection  
-4. **API Route Structure:** Next.js API routes ready for Claude integration
-5. **State Management:** Basic patterns established, ready for complex AI state
+### Key Files for MVP Work
+1. **mary-persona.ts:** Add sub-persona weights and mode selection
+2. **session-orchestrator.ts:** Add pathway weight configuration
+3. **Guest components:** Bump from 5 to 10 message limit
+4. **Output generators:** Polish Lean Canvas and PRD/Spec templates
 
 ## Technical Debt Assessment
 
-### High Priority Issues
-- **Hardcoded AI Responses:** Critical blocker preventing real user value
-- **Missing Error Handling:** No proper error boundaries for AI failures
-- **Performance Optimization:** No caching or optimization for AI response streaming
-- **Session State Management:** Incomplete implementation of complex session persistence
+### High Priority (Block MVP)
+- **Sub-Persona System:** Core differentiator - must implement before launch
+- **Anti-Sycophancy Logic:** Kill recommendation flow not implemented
+- **Trial Gate:** Still at 5 messages, needs bump to 10
+- **Output Polish:** Lean Canvas and PRD generators need professional formatting
 
-### Medium Priority Issues  
-- **Component Organization:** Some components need refactoring for AI feature integration
-- **API Documentation:** Internal API contracts need documentation for AI endpoints
-- **Testing Coverage:** Limited test coverage for existing components
-- **Accessibility Implementation:** Basic accessibility needs enhancement for AI features
+### Medium Priority (Pre-Launch)
+- **Mode Indicators:** No UI for showing current sub-persona mode
+- **Pathway Weights:** Need to configure weights per pathway
+- **Session Duration:** No enforcement of 10-30 minute sessions
 
-### Low Priority Issues
-- **Code Organization:** Minor refactoring opportunities for better maintainability
-- **Bundle Optimization:** Some optimization opportunities for production builds
-- **Development Tooling:** Additional dev tools could improve AI debugging experience
+### Low Priority (Post-MVP)
+- **Canvas Functionality:** De-prioritized, not critical path
+- **User Mode Control:** Let users select mode explicitly
+- **HTML Presentation:** Export format for consultants
 
 ## Known Technical Constraints
 
-### Supabase Integration Limitations
-- **Real-time Subscriptions:** Current implementation may need optimization for AI streaming
-- **Row Level Security:** Existing RLS policies may need updates for AI conversation data
-- **Database Performance:** Query optimization may be needed for complex conversation history
+### AI Integration
+- **System Prompt Size:** Sub-persona weights add complexity to prompts
+- **Mode Shifting:** Dynamic detection of user state requires prompt engineering
+- **Kill Recommendations:** Need careful escalation sequence to earn trust
 
-### Next.js Architecture Considerations
-- **API Route Limitations:** May need to implement streaming responses for Claude API
-- **Client-Side State:** Complex AI conversation state management needs architecture planning
-- **Build Performance:** Turbopack configuration may need optimization for AI features
-
-### External Dependencies
-- **Claude API Rate Limits:** Need to implement proper rate limiting and queuing
-- **WebSocket Requirements:** May need WebSocket implementation for real-time AI collaboration
-- **Canvas Rendering:** Need to choose and integrate appropriate drawing library
+### Output Generation
+- **PDF Formatting:** @react-pdf/renderer works but needs template polish
+- **Viability Scoring:** No algorithm for kill score calculation yet
+- **Export Branding:** Need professional styling for exported documents
 
 ## Current Platform Status
 
-### Overall Assessment: **MVP Production Ready (September 2025)**
+### Overall Assessment: **Foundation Complete, MVP Work Remaining (January 2026)**
 
-**✅ Completed Strengths:**
+**What's Working:**
 - Solid technical foundation with modern tech stack
-- Complete Claude Sonnet 4 integration with Mary coaching persona
-- Real-time streaming conversation interface with context management
-- Production-quality error handling and testing (92/100 quality score)
-- Advanced features: bookmarking, search, conversation branching, export
+- Claude integration with streaming responses
+- Session persistence and conversation management
+- Credit system infrastructure ready
+- Guest flow working (needs 10-message bump)
 
-**✅ Phase Completion Status:**
-1. **Phase 1:** ✅ COMPLETE - Claude API integration with streaming responses
-2. **Phase 2:** ✅ COMPLETE - Conversation and session management with persistence  
-3. **Phase 3:** ⚠️ PARTIAL - Canvas functionality and BMad template integration pending
-4. **Phase 4:** ✅ COMPLETE - Production optimization and quality hardening achieved
+**What's Needed for MVP:**
+1. **Sub-Persona System** - Four modes with pathway-specific weights
+2. **Anti-Sycophancy** - Kill recommendations with escalation sequence
+3. **Output Polish** - Professional Lean Canvas and PRD/Spec templates
+4. **10-Message Trial** - Bump guest limit, partial output at gate
 
-**Next Development Priorities:**
-1. **Canvas Implementation:** Add functional drawing tools to visual workspace
-2. **BMad Method Frontend:** Integrate strategic templates with chat coaching interface
-3. **Advanced Integration:** Deep workflow integration between coaching and structured methodology
+**What's Post-MVP:**
+- Canvas/visual workspace (nice-to-have, not critical)
+- User-triggered mode control
+- HTML presentation export
+- Low-fi visual generation

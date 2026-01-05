@@ -3,46 +3,46 @@
 ## Overall UX Vision
 
 ### Primary UX Principles
-The ThinkHaven interface embodies **"Intelligent Simplicity"** - providing sophisticated strategic thinking capabilities through an intuitive, uncluttered dual-pane experience that feels like collaborating with an expert strategic advisor.
+The ThinkHaven interface embodies **"Decision Acceleration"** - providing sophisticated strategic thinking capabilities through a conversation-first experience that delivers polished, portable outputs.
 
 **Core Experience Goals:**
-- **Conversational Fluidity:** AI interactions feel natural and responsive, like talking with a knowledgeable business advisor
-- **Visual Integration:** Seamless flow between conversation and visual ideation without cognitive overhead
-- **Progressive Disclosure:** Complex strategic frameworks revealed gradually based on user engagement and session progression
-- **Confident Guidance:** Interface provides clear direction and next steps while maintaining user agency in strategic decisions
+- **Conversational Depth:** AI interactions feel like pressure-testing with an expert who provides genuine pushback
+- **Structured Progression:** Enforced methodology that can't be skipped, with clear pathway guidance
+- **Output Excellence:** Professional documents (Lean Canvas, PRD/Spec) that travel to next tools
+- **Confident Guidance:** Interface provides clear direction while challenging assumptions when warranted
 
 ### User Mental Model
-Users should experience the platform as a **"Strategic Thinking Partner"** rather than a tool:
-- Left pane feels like talking to Mary, a strategic business analyst
-- Right pane feels like collaborative whiteboarding with intelligent assistance
-- Transitions between modes feel natural and contextually appropriate
-- Session progression feels structured but not rigid
+Users should experience the platform as a **"Decision Accelerator"** rather than a tool:
+- Conversation feels like a strategic partner that challenges AND encourages
+- Sub-persona modes (Inquisitive, Devil's Advocate, Encouraging, Realistic) provide balanced feedback
+- Session progression feels structured with enforced methodology
+- Output focus: users leave with polished documents, not just conversation history
 
 ## Key Interaction Paradigms
 
-### Dual-Pane Coordination
-- **Contextual Bridging:** Ideas mentioned in conversation automatically suggest visual representations
-- **Bi-directional Flow:** Canvas changes inform conversation context and vice versa
-- **Synchronized State:** Pane focus and content stay logically connected throughout session
-- **Intelligent Handoffs:** System suggests when to switch between conversational and visual modes
+### Conversation-First Design
+- **Text Output Primary:** Structured documents (Lean Canvas, PRD/Spec) are the core deliverables
+- **Visual Workspace Secondary:** Canvas/diagrams are nice-to-have, not critical path
+- **Sub-Persona Balancing:** AI dynamically shifts between modes based on user state
+- **Anti-Sycophancy:** System provides genuine pushback, not just validation
 
 ### Conversational Interface Patterns
-- **Numbered Response Options:** Clear 1-9 choice format for structured decision making
 - **Streaming Responses:** Real-time AI text generation with smooth typing animation
 - **Context Awareness:** Previous conversation history influences current response suggestions
-- **Progressive Questioning:** Mary's questions become more sophisticated as session develops
-
-### Canvas Interaction Model
-- **Gesture-Based Creation:** Simple click/drag operations for shapes, connections, and annotations
-- **Template Integration:** BMad Method templates provide starting points for visual thinking
-- **Mermaid Code Generation:** Complex diagrams created through conversation, rendered as interactive visuals
-- **Export Simplicity:** One-click exports to common formats (PNG, SVG, PDF)
+- **Progressive Questioning:** Questions become more sophisticated as session develops
+- **Mode Transparency:** Users can see/influence which sub-persona mode is active (post-MVP)
 
 ### Session Flow Management
-- **Pathway Selection:** Clear "Choose-Your-Adventure" entry points with preview of journey ahead
-- **Progress Indicators:** Visual representation of BMad Method phase progression
-- **Session Controls:** Intuitive pause/resume/save functionality without interrupting flow
-- **Outcome Preparation:** Clear transition to summary and export mode at session completion
+- **Pathway Selection:** Clear entry points for "New Idea," "Business Model," "Feature Refinement"
+- **Progress Indicators:** Visual representation of session phase progression
+- **Session Duration:** 10-30 minutes target (not 3 minutes, not hour-long)
+- **Output Generation:** Clear transition to polished document export at session completion
+
+### Visual Workspace (Post-MVP)
+- **Low-Fi Visuals:** Excalidraw-style sketches for workflow diagrams and concept maps
+- **Mermaid Diagrams:** Complex diagrams created through conversation when needed
+- **Export Options:** PNG, SVG for visual artifacts
+- **Note:** Canvas is a downstream enhancement, not core value proposition
 
 ## Core Screens and Views
 
@@ -52,28 +52,26 @@ Users should experience the platform as a **"Strategic Thinking Partner"** rathe
 - **Onboarding Flow:** First-time user guidance without overwhelming experienced users
 - **Settings Access:** Profile and preferences accessible but not prominent
 
-### Main Dual-Pane Workspace
-- **Left Pane (60% width):** Conversational interface with Mary
+### Main Conversation Workspace
+- **Chat Interface (Primary):** Conversational interface with Mary
   - Message history with clear threading
-  - Response options in numbered format
   - Typing indicators and response streaming
   - Session timer and phase indicators
-- **Right Pane (40% width):** Visual canvas workspace
-  - Drawing tools and shape libraries
-  - Mermaid diagram rendering area
-  - Template selection and application
-  - Export and sharing controls
+  - Sub-persona mode indicator (which mode is currently active)
+- **Output Preview (Secondary):** Document generation preview
+  - Real-time Lean Canvas population
+  - PRD/Spec section building
+  - Export controls and format selection
 
 ### Session Summary & Export View
 - **Outcome Overview:** Key insights and decisions from strategic thinking session
-- **Action Items:** Clear next steps with priority and timeline recommendations
-- **Visual Artifacts:** Generated diagrams, frameworks, and decision trees
-- **Export Options:** Multiple format choices with collaboration sharing capabilities
+- **Viability Assessment:** Kill score / viability rating when warranted
+- **Generated Documents:** Lean Canvas, PRD/Spec ready for export
+- **Export Options:** PDF, Markdown formats with professional formatting
 
 ### Settings & Profile Management
-- **Coaching Preferences:** Customize Mary's interaction style and depth
-- **Canvas Preferences:** Default templates, color schemes, and export settings
-- **Integration Settings:** Third-party tool connections and data sharing preferences
+- **Session Preferences:** Default pathway, session duration preferences
+- **Output Preferences:** Default export format, branding options
 - **Account Management:** Subscription, usage analytics, and privacy controls
 
 ## Accessibility Requirements

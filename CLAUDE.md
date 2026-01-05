@@ -2,11 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2025-12-28*
+*Last Updated: 2026-01-04*
 
 ## Project Context
-**ThinkHaven** - AI-powered strategic thinking workspace with the BMad Method
-- **Tech Stack**: Next.js 15.5, React 19, TypeScript, Supabase, Stripe, tldraw, Anthropic Claude
+**ThinkHaven** - Decision accelerator that validates or kills business ideas before users waste time building
+- **Positioning**: More structured than Claude, faster/cheaper than consultants, more strategic than Miro
+- **Core Value**: Enforced methodology + sub-persona balancing + anti-sycophancy + polished outputs
+- **Tech Stack**: Next.js 15.5, React 19, TypeScript, Supabase, Stripe, Anthropic Claude
 - **Architecture**: Monorepo with Next.js app in `apps/web/`
 - **Deployment**: Vercel project `thinkhaven` (https://thinkhaven-hollandkevints-projects.vercel.app)
 
@@ -62,7 +64,7 @@ npm run test:e2e:ui      # Run E2E tests with UI
 - **credit-manager.ts**: Credit operations (balance, deduction, purchase)
 - **stripe-service.ts**: Stripe integration for payments
 - **Migration 005**: user_credits, credit_transactions, credit_packages, payment_history tables
-- **Trial**: 2 free credits on signup (grant_free_credit trigger)
+- **Pricing**: Phase 1 LTD ($199-499), then Subscription + Credits
 - **Atomic deductions**: Row-level locking prevents race conditions
 
 **Canvas Workspace** (`apps/web/lib/canvas/`)
@@ -86,8 +88,14 @@ npm run test:e2e:ui      # Run E2E tests with UI
 **Guest Session System** (`apps/web/lib/guest/`)
 - **session-store.ts**: LocalStorage-based session persistence (no DB writes)
 - **session-migration.ts**: Migrates guest session to user account on signup
-- **5-message limit**: Triggers signup modal, preserves conversation context
+- **10-message limit**: (Target - currently 5) Triggers signup modal, preserves context
 - **Flow**: `/try` → guest chat → message limit → signup → `/app/session/[id]`
+
+**Sub-Persona System** (MVP - To Be Built)
+- **Four Modes**: Inquisitive, Devil's Advocate, Encouraging, Realistic
+- **Pathway Weights**: Different mode distributions per pathway
+- **Dynamic Shifting**: AI detects user state and adjusts mode
+- **Kill Framework**: Escalation sequence for anti-sycophancy recommendations
 
 **Structured Output Generators** (`apps/web/lib/bmad/generators/`)
 - **ConceptDocumentGenerator**: Business concept documents from New Idea pathway
@@ -125,7 +133,7 @@ npm run test:e2e:ui      # Run E2E tests with UI
 
 **Public Routes**:
 - `/` - Landing page (open to all, shows "Open App" for authenticated users)
-- `/try` - Guest session (5 free messages, localStorage-based, migrates on signup)
+- `/try` - Guest session (10 free messages target, localStorage-based, migrates on signup)
 - `/demo` - Demo hub with pre-configured scenarios
 - `/assessment` - Free strategic assessment quiz
 
@@ -173,7 +181,7 @@ npm run test:e2e:ui      # Run E2E tests with UI
 
 **Guest Session** (`apps/web/app/components/guest/`)
 - `GuestChatInterface.tsx`: Guest chat UI with message counter
-- `SignupPromptModal.tsx`: 5-message limit modal with signup CTA
+- `SignupPromptModal.tsx`: Message limit modal with signup CTA (bump to 10 messages)
 
 **Workspace** (`apps/web/app/components/workspace/`)
 - `ExportPanel.tsx`: Chat export dropdown (Markdown, Text, JSON, clipboard)
@@ -318,6 +326,16 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Recent Major Changes
 
+- **Jan 4, 2026**:
+  - **Strategic Direction Refinement**:
+    - Repositioned as "Decision Accelerator" (not coaching platform)
+    - Sub-persona system defined: Inquisitive, Devil's Advocate, Encouraging, Realistic
+    - Anti-sycophancy features: Kill recommendations with escalation sequence
+    - Output focus: Lean Canvas + PRD/Spec as primary deliverables
+    - Canvas/visual workspace de-prioritized to post-MVP (nice-to-have)
+    - Trial bumped from 5 to 10 messages
+    - Pricing: Phase 1 LTD ($199-499), then Subscription + Credits
+  - **PRD Cleanup**: All shards aligned with 8-strategic-direction.md as source of truth
 - **Dec 28, 2025**:
   - **E2E Testing Simplification**:
     - Deleted 19 broken test files that tested non-existent UI
