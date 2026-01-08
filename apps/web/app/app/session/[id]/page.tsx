@@ -17,7 +17,7 @@ import type { MessageLimitStatus } from '@/lib/bmad/message-limit-manager'
 import ExportPanel from '@/app/components/workspace/ExportPanel'
 import dynamic from 'next/dynamic'
 import { ArtifactProvider } from '@/lib/artifact'
-import { ArtifactPanel, ArtifactList } from '@/app/components/artifact'
+import { ArtifactPanel, ArtifactList, ArtifactKeyboardHandler } from '@/app/components/artifact'
 
 // Dynamically import canvas components (SSR-safe)
 const EnhancedCanvasWorkspace = dynamic(
@@ -416,6 +416,8 @@ export default function WorkspacePage() {
     <ArtifactProvider initialSessionId={params.id as string}>
     {/* Artifact Panel Overlay */}
     <ArtifactPanel />
+    {/* Keyboard Shortcuts Handler */}
+    <ArtifactKeyboardHandler />
     <div className="dual-pane-container">
       {/* State Bridge Component for Sync */}
       <StateBridge workspaceId={workspace.id} className="hidden" />

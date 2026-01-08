@@ -31,5 +31,6 @@ export {
 // Store
 export { ArtifactProvider, useArtifacts, useSafeArtifacts } from './artifact-store';
 
-// Hook
+// Hooks
 export { useArtifact } from './useArtifact';
+export { useArtifactKeyboard } from './useArtifactKeyboard';
