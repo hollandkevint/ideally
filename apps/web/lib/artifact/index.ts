@@ -31,5 +31,13 @@ export {
 // Store
 export { ArtifactProvider, useArtifacts, useSafeArtifacts } from './artifact-store';
 
-// Hook
+// Hooks
 export { useArtifact } from './useArtifact';
+
+// Persistence
+export {
+  saveArtifact,
+  loadArtifacts,
+  deleteArtifact,
+  saveArtifacts,
+} from './artifact-persistence';
