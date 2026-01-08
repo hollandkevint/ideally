@@ -7,3 +7,4 @@ export { ArtifactHeader } from './ArtifactHeader';
 export { ArtifactViewToggle } from './ArtifactViewToggle';
 export { ArtifactPanel } from './ArtifactPanel';
 export { ArtifactList } from './ArtifactList';
+export { ArtifactKeyboardHandler } from './ArtifactKeyboardHandler';
