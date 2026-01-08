@@ -8,3 +8,4 @@ export { ArtifactViewToggle } from './ArtifactViewToggle';
 export { ArtifactPanel } from './ArtifactPanel';
 export { ArtifactList } from './ArtifactList';
 export { ArtifactKeyboardHandler } from './ArtifactKeyboardHandler';
+export { ArtifactEditor } from './ArtifactEditor';
