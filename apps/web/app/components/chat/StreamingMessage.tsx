@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { CoachingContext } from '@/lib/ai/mary-persona'
 import MarkdownRenderer from './MarkdownRenderer'
 import MessageActionMenu from './MessageActionMenu'
 import { MessageBookmarkRow } from '@/lib/supabase/conversation-schema'
+import { hasArtifacts, parseArtifactsFromResponse, useSafeArtifacts } from '@/lib/artifact'
+import { Artifact } from '@/app/components/artifact'
 
 export interface StreamingMessageProps {
   id: string
@@ -23,6 +25,7 @@ export interface StreamingMessageProps {
   bookmarks?: MessageBookmarkRow[]
   conversationId?: string
   conversationTitle?: string
+  sessionId?: string
   onComplete?: () => void
   onBookmark?: (data: { title: string; description?: string; tags: string[]; color: string }) => void
   onCreateReference?: (toMessageId: string, type: string) => void
@@ -33,20 +36,35 @@ export interface StreamingMessageProps {
 interface StreamingTextProps {
   content: string
   isStreaming: boolean
+  sessionId?: string
   onComplete?: () => void
   typingSpeed?: number
+  onPopOutArtifact?: (id: string) => void
 }
 
-function StreamingText({ content, isStreaming, onComplete, typingSpeed = 30 }: StreamingTextProps) {
+function StreamingText({ content, isStreaming, sessionId, onComplete, typingSpeed = 30, onPopOutArtifact }: StreamingTextProps) {
   const [displayedContent, setDisplayedContent] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout>()
   const indexRef = useRef(0)
 
+  // Parse artifacts from content
+  const { artifacts, cleanedContent } = useMemo(() => {
+    if (!content || isStreaming) {
+      return { artifacts: [], cleanedContent: content }
+    }
+
+    if (hasArtifacts(content)) {
+      return parseArtifactsFromResponse(content, sessionId || 'default')
+    }
+
+    return { artifacts: [], cleanedContent: content }
+  }, [content, isStreaming, sessionId])
+
   useEffect(() => {
     // Reset when content changes
     if (!isStreaming) {
-      setDisplayedContent(content)
+      setDisplayedContent(cleanedContent)
       setIsTyping(false)
       indexRef.current = 0
       if (intervalRef.current) {
@@ -55,10 +73,10 @@ function StreamingText({ content, isStreaming, onComplete, typingSpeed = 30 }: S
       return
     }
 
-    // Start streaming animation
+    // Start streaming animation (use original content during streaming)
     if (content && isStreaming && indexRef.current < content.length) {
       setIsTyping(true)
-      
+
       intervalRef.current = setInterval(() => {
         if (indexRef.current < content.length) {
           setDisplayedContent(content.substring(0, indexRef.current + 1))
@@ -76,12 +94,25 @@ function StreamingText({ content, isStreaming, onComplete, typingSpeed = 30 }: S
         clearInterval(intervalRef.current)
       }
     }
-  }, [content, isStreaming, typingSpeed, onComplete])
+  }, [content, cleanedContent, isStreaming, typingSpeed, onComplete])
 
   return (
-    <div className="relative">
+    <div className="relative space-y-4">
       <MarkdownRenderer content={displayedContent} />
-      
+
+      {/* Render artifacts inline (only when not streaming) */}
+      {!isStreaming && artifacts.length > 0 && (
+        <div className="space-y-3 mt-4">
+          {artifacts.map((artifact) => (
+            <Artifact
+              key={artifact.id}
+              artifact={artifact}
+              onPopOut={onPopOutArtifact}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Typing indicator */}
       {isTyping && (
         <span className="inline-flex items-center ml-1">
@@ -104,6 +135,7 @@ export default function StreamingMessage({
   bookmarks = [],
   conversationId,
   conversationTitle,
+  sessionId,
   onComplete,
   onBookmark,
   onCreateReference,
@@ -112,6 +144,11 @@ export default function StreamingMessage({
 }: StreamingMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const messageRef = useRef<HTMLDivElement>(null)
+
+  // Get artifact context for pop-out functionality
+  // This hook is safe - it returns null if outside ArtifactProvider
+  const artifactContext = useSafeArtifacts()
+  const handlePopOutArtifact = artifactContext?.selectArtifact
 
   // Auto-scroll to message when it's streaming
   useEffect(() => {
@@ -226,11 +263,13 @@ export default function StreamingMessage({
           {isUser ? (
             <p className="text-white leading-relaxed">{content}</p>
           ) : (
-            <StreamingText 
+            <StreamingText
               content={content}
               isStreaming={isStreaming}
+              sessionId={sessionId}
               onComplete={onComplete}
               typingSpeed={20}
+              onPopOutArtifact={handlePopOutArtifact}
             />
           )}
         </div>

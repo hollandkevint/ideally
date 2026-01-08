@@ -16,6 +16,8 @@ import { MessageLimitWarning } from '@/app/components/chat/MessageLimitWarning'
 import type { MessageLimitStatus } from '@/lib/bmad/message-limit-manager'
 import ExportPanel from '@/app/components/workspace/ExportPanel'
 import dynamic from 'next/dynamic'
+import { ArtifactProvider } from '@/lib/artifact'
+import { ArtifactPanel, ArtifactList } from '@/app/components/artifact'
 
 // Dynamically import canvas components (SSR-safe)
 const EnhancedCanvasWorkspace = dynamic(
@@ -411,6 +413,9 @@ export default function WorkspacePage() {
   }
 
   return (
+    <ArtifactProvider initialSessionId={params.id as string}>
+    {/* Artifact Panel Overlay */}
+    <ArtifactPanel />
     <div className="dual-pane-container">
       {/* State Bridge Component for Sync */}
       <StateBridge workspaceId={workspace.id} className="hidden" />
@@ -431,6 +436,7 @@ export default function WorkspacePage() {
             <h1 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{workspace.name}</h1>
           </div>
           <div className="flex items-center gap-3 text-xs">
+            <ArtifactList mode="badge" />
             <ExportPanel
               messages={workspace.chat_context}
               workspaceName={workspace.name}
@@ -831,5 +837,6 @@ export default function WorkspacePage() {
         </div>
       </PaneErrorBoundary>
     </div>
+    </ArtifactProvider>
   )
 }
