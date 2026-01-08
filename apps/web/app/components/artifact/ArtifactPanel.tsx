@@ -9,8 +9,9 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import { useArtifacts } from '@/lib/artifact';
-import { ARTIFACT_CONFIGS, getExportFormats } from '@/lib/artifact/artifact-types';
+import { ARTIFACT_CONFIGS, getExportFormats, isArtifactEditable } from '@/lib/artifact/artifact-types';
 import MarkdownRenderer from '@/app/components/chat/MarkdownRenderer';
+import { ArtifactEditor } from './ArtifactEditor';
 
 export function ArtifactPanel() {
   const {
@@ -23,6 +24,10 @@ export function ArtifactPanel() {
 
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [isRawView, setIsRawView] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Check if current artifact is editable
+  const canEdit = selectedArtifact ? isArtifactEditable(selectedArtifact.type) : false;
 
   // Handle escape key to close panel
   useEffect(() => {
@@ -111,11 +116,29 @@ export function ArtifactPanel() {
           </div>
 
           <div className="flex items-center gap-1">
+            {/* Edit toggle (only for editable types) */}
+            {canEdit && (
+              <button
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`p-2 rounded-lg transition-colors ${
+                  isEditMode
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                }`}
+                title={isEditMode ? 'Exit edit mode' : 'Edit'}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+            )}
+
             {/* Raw/Rendered toggle */}
             <button
               onClick={() => setIsRawView(!isRawView)}
               className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               title={isRawView ? 'Show rendered' : 'Show raw'}
+              disabled={isEditMode}
             >
               {isRawView ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,7 +196,13 @@ export function ArtifactPanel() {
         {/* Content */}
         <div className="flex-1 overflow-auto p-4">
           {selectedArtifact ? (
-            isRawView ? (
+            isEditMode && canEdit ? (
+              <ArtifactEditor
+                artifactId={selectedArtifact.id}
+                initialContent={selectedArtifact.content}
+                className="h-full"
+              />
+            ) : isRawView ? (
               <pre className="font-mono text-sm text-gray-800 whitespace-pre-wrap break-words bg-gray-50 p-4 rounded-lg border border-gray-100">
                 {selectedArtifact.content}
               </pre>
