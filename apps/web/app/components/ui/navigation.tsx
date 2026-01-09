@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '../../../lib/auth/AuthContext'
 import { Button } from '../../../components/ui/button'
 import {
@@ -21,7 +21,13 @@ interface NavigationProps {
 export default function Navigation({ className = '' }: NavigationProps) {
   const { user, loading, signOut } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  // Hide global nav on /app/* routes (dashboard has its own sidebar nav)
+  if (pathname?.startsWith('/app')) {
+    return null
+  }
 
   const handleSignOut = async () => {
     await signOut()

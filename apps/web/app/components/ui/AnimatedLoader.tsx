@@ -9,8 +9,8 @@ interface AnimatedLoaderProps {
 
 const defaultMessages = [
   'Preparing your workspace...',
-  'Setting up the BMad Method...',
   'Loading strategic frameworks...',
+  'Configuring your session...',
   'Almost ready...',
 ]
 

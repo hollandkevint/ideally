@@ -8,8 +8,8 @@ import AnimatedLoader from '@/app/components/ui/AnimatedLoader';
 
 const sessionMessages = [
   'Preparing your workspace...',
-  'Setting up the BMad Method...',
   'Loading strategic frameworks...',
+  'Configuring your analysis tools...',
   'Initializing your session...',
 ];
 

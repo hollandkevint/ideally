@@ -124,28 +124,28 @@ export default function AccountPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Email Address
               </label>
-              <p className="text-secondary">{user.email}</p>
+              <p className="text-foreground">{user.email}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Account Created
               </label>
-              <p className="text-secondary">
+              <p className="text-foreground">
                 {new Date(user.created_at || '').toLocaleDateString()}
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Workspace Status
               </label>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-success rounded-full"></div>
-                <span className="text-secondary">
+                <span className="text-foreground">
                   {(workspaceState as { chat_context?: unknown[] })?.chat_context?.length || 0} messages,
                   {(workspaceState as { canvas_elements?: unknown[] })?.canvas_elements?.length || 0} elements
                 </span>

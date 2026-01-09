@@ -17,6 +17,7 @@ interface QuizQuestion {
   category: 'evidence' | 'framework' | 'execution';
 }
 
+// 10 questions covering 3 categories: Evidence (4), Framework (3), Execution (3)
 const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
     id: 1,
@@ -56,18 +57,6 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
   },
   {
     id: 4,
-    question: "How confident are you in explaining 'why' behind your strategic recommendations?",
-    options: [
-      { value: 1, label: "Not confident - Often questioned" },
-      { value: 2, label: "Somewhat - Basic rationale" },
-      { value: 3, label: "Moderately - Good reasoning" },
-      { value: 4, label: "Very - Clear evidence trail" },
-      { value: 5, label: "Extremely - Bulletproof logic" }
-    ],
-    category: 'evidence'
-  },
-  {
-    id: 5,
     question: "Do you use structured frameworks (SWOT, Porter's Five Forces, etc.)?",
     options: [
       { value: 1, label: "Never heard of them" },
@@ -79,7 +68,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'framework'
   },
   {
-    id: 6,
+    id: 5,
     question: "How do you validate strategic assumptions before committing?",
     options: [
       { value: 1, label: "I don't - Just move forward" },
@@ -91,31 +80,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'evidence'
   },
   {
-    id: 7,
-    question: "When brainstorming, how structured is your process?",
-    options: [
-      { value: 1, label: "Completely freeform" },
-      { value: 2, label: "Loose agenda only" },
-      { value: 3, label: "Some structure, flexible" },
-      { value: 4, label: "Clear methodology" },
-      { value: 5, label: "Rigorous technique (6 Thinking Hats, etc.)" }
-    ],
-    category: 'framework'
-  },
-  {
-    id: 8,
-    question: "How often do strategic initiatives you propose get approved?",
-    options: [
-      { value: 1, label: "Rarely - Often rejected" },
-      { value: 2, label: "Sometimes - 30-40%" },
-      { value: 3, label: "About half - 50%" },
-      { value: 4, label: "Usually - 70-80%" },
-      { value: 5, label: "Almost always - 90%+" }
-    ],
-    category: 'execution'
-  },
-  {
-    id: 9,
+    id: 6,
     question: "Do you quantify the potential impact of strategic decisions?",
     options: [
       { value: 1, label: "No - Qualitative only" },
@@ -127,7 +92,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'evidence'
   },
   {
-    id: 10,
+    id: 7,
     question: "How do you prioritize multiple strategic options?",
     options: [
       { value: 1, label: "Pick what feels right" },
@@ -139,7 +104,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'framework'
   },
   {
-    id: 11,
+    id: 8,
     question: "How well do you communicate strategic rationale to stakeholders?",
     options: [
       { value: 1, label: "Struggle to explain" },
@@ -151,19 +116,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'execution'
   },
   {
-    id: 12,
-    question: "Do you track outcomes vs. predictions for strategic decisions?",
-    options: [
-      { value: 1, label: "Never - Move to next thing" },
-      { value: 2, label: "Rarely - If it fails" },
-      { value: 3, label: "Sometimes - Major projects" },
-      { value: 4, label: "Usually - Track KPIs" },
-      { value: 5, label: "Always - Systematic post-mortems" }
-    ],
-    category: 'execution'
-  },
-  {
-    id: 13,
+    id: 9,
     question: "How often do you incorporate customer insights into strategy?",
     options: [
       { value: 1, label: "Never - Internal only" },
@@ -175,19 +128,7 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     category: 'evidence'
   },
   {
-    id: 14,
-    question: "When exploring new markets, how thorough is your analysis?",
-    options: [
-      { value: 1, label: "Minimal - Just try it" },
-      { value: 2, label: "Basic Google research" },
-      { value: 3, label: "Review industry reports" },
-      { value: 4, label: "Detailed market sizing" },
-      { value: 5, label: "Comprehensive TAM/SAM/SOM analysis" }
-    ],
-    category: 'framework'
-  },
-  {
-    id: 15,
+    id: 10,
     question: "How actionable are your strategic recommendations?",
     options: [
       { value: 1, label: "Vague direction only" },

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { getScenarioByIndex } from '../../../lib/demo/demoData'
 import { DemoScenario, DemoMessage } from '../../../types/demo'
 import { MessageCircle, ArrowLeft, Clock, Target, Play, Pause } from 'lucide-react'
+import { MarkdownRenderer } from '@/app/components/chat/MarkdownRenderer'
 
 export default function DemoScenarioViewer() {
   const params = useParams()
@@ -147,10 +148,8 @@ export default function DemoScenarioViewer() {
                               }`}>
                                 {message.role === 'user' ? 'You' : 'Mary (Strategic AI)'}
                               </div>
-                              <div className="prose prose-sm max-w-none">
-                                <div className="whitespace-pre-wrap text-gray-700">
-                                  {message.content}
-                                </div>
+                              <div className="text-gray-700">
+                                <MarkdownRenderer content={message.content} />
                               </div>
                               
                               {/* Strategic Tags */}
@@ -197,12 +196,12 @@ export default function DemoScenarioViewer() {
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
                 
-                {/* BMad Method Tracker */}
+                {/* Strategic Analysis Tracker */}
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-blue-600" />
-                      <h4 className="font-semibold text-sm">BMad Method</h4>
+                      <h4 className="font-semibold text-sm">Strategic Analysis</h4>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -252,7 +251,7 @@ export default function DemoScenarioViewer() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Framework Used</span>
-                        <span className="font-medium">BMad Method</span>
+                        <span className="font-medium">Strategic Analysis</span>
                       </div>
                     </div>
                   </CardContent>

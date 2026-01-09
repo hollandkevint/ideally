@@ -154,7 +154,7 @@ export default function Home() {
               <Card>
                 <CardContent className="p-6">
                   <p className="text-gray-700 mb-4 italic">
-                    "I've tried other strategic frameworks, but bMAD Method is the first that felt systematic enough for someone with a technical background. Game changer."
+                    "I've tried other strategic frameworks, but ThinkHaven is the first that felt systematic enough for someone with a technical background. Game changer."
                   </p>
                   <p className="text-gray-900 font-semibold">Marcus Rodriguez</p>
                   <p className="text-gray-600 text-sm">Engineering Director, Biotech</p>
@@ -214,7 +214,7 @@ export default function Home() {
             <div className="md:col-span-2">
               <h3 className="text-xl font-bold mb-4">ThinkHaven</h3>
               <p className="text-gray-400 mb-4">
-                Transform strategic analysis from art into science with the bMAD Method
+                Transform strategic analysis from art into science
               </p>
               <div className="space-y-2">
                 <p className="text-sm text-gray-400">📧 kevin@kevintholland.com</p>

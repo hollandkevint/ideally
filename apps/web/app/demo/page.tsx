@@ -23,7 +23,7 @@ export default function DemoHub() {
                 Strategic Analysis Demo
               </h1>
               <p className="text-gray-600">
-                Experience Mary's BMad Method in action{user ? ' - Welcome back!' : ' - No signup required'}
+                Experience Mary's strategic framework in action{user ? ' - Welcome back!' : ' - No signup required'}
               </p>
             </div>
             <Button 
@@ -49,7 +49,7 @@ export default function DemoHub() {
               Choose Your Strategic Challenge
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Each demo shows a complete strategic thinking session using the BMad Method. 
+              Each demo shows a complete strategic thinking session.
               Select a scenario that matches your interests and see Mary's systematic approach in action.
             </p>
           </div>
@@ -116,10 +116,10 @@ export default function DemoHub() {
           <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                The BMad Method in Action
+                Strategic Framework in Action
               </h3>
               <p className="text-gray-600">
-                Each demo demonstrates core BMad Method principles for systematic strategic thinking
+                Each demo demonstrates core principles for systematic strategic thinking
               </p>
             </div>
             

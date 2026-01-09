@@ -242,12 +242,24 @@ export default function AppDashboardPage() {
         <div className="max-w-[1400px] mx-auto px-12 py-8">
           {/* Welcome Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
-              Welcome back, {firstName}
-            </h1>
-            <p style={{ color: 'var(--muted)' }}>
-              Continue your strategic thinking journey
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+                  Welcome back, {firstName}
+                </h1>
+                <p style={{ color: 'var(--muted)' }}>
+                  Continue your strategic thinking journey
+                </p>
+              </div>
+              <Button
+                onClick={handleNewSession}
+                className="px-6 py-3 text-white"
+                style={{ backgroundColor: 'var(--primary)' }}
+              >
+                <PlusIcon className="w-5 h-5 mr-2" />
+                New Session
+              </Button>
+            </div>
           </div>
 
           {/* Quick Stats */}

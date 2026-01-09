@@ -105,7 +105,7 @@ export function CreditGuard({ userId, onCreditsUpdated }: CreditGuardProps) {
               <ul className="text-sm space-y-1">
                 <li className="flex items-center gap-2">
                   <span className="text-green-600">✓</span>
-                  <span>BMad Method frameworks</span>
+                  <span>Strategic frameworks</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-green-600">✓</span>

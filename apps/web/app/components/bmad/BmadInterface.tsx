@@ -493,13 +493,13 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
               <div className="bg-white rounded-xl max-w-md w-full p-6">
                 <h2 className="text-xl font-bold text-primary mb-4">Unable to Load Onboarding</h2>
                 <p className="text-secondary mb-4">
-                  There was an issue loading the onboarding content. You can still continue to use BMad Method.
+                  There was an issue loading the onboarding content. You can still continue to your session.
                 </p>
                 <button
                   onClick={() => setShowOnboarding(false)}
                   className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
                 >
-                  Continue to BMad Method
+                  Continue to Session
                 </button>
               </div>
             </div>
@@ -514,7 +514,7 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
                   <span className="text-white font-bold text-lg">B</span>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-primary">Welcome to BMad Method</h2>
+                  <h2 className="text-2xl font-bold text-primary">Welcome to ThinkHaven</h2>
                   <p className="text-secondary">Strategic frameworks for breakthrough thinking</p>
                 </div>
               </div>
@@ -524,10 +524,10 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
             <div className="p-6 space-y-6">
               {/* Introduction */}
               <div>
-                <h3 className="text-lg font-semibold text-primary mb-3">What is BMad Method?</h3>
+                <h3 className="text-lg font-semibold text-primary mb-3">How It Works</h3>
                 <p className="text-secondary leading-relaxed">
-                  BMad Method is a structured approach to strategic thinking that guides you through proven frameworks 
-                  to develop ideas, analyze business models, and optimize strategies. Each session is designed to take 
+                  ThinkHaven provides a structured approach to strategic thinking that guides you through proven frameworks
+                  to develop ideas, analyze business models, and optimize strategies. Each session is designed to take
                   25-45 minutes and produces actionable insights.
                 </p>
               </div>
@@ -740,7 +740,7 @@ export default function BmadInterface({ workspaceId, className = '', preservedIn
                   <span className="text-white font-semibold">!</span>
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-red-900 mb-2">BMad Method Unavailable</h2>
+                  <h2 className="text-xl font-bold text-red-900 mb-2">Session Unavailable</h2>
                   <p className="text-red-800 mb-4">
                     There was an error loading the strategic thinking interface. This might be a temporary issue.
                   </p>
