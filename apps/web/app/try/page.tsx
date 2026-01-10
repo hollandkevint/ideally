@@ -62,18 +62,40 @@ export default function TryPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--cream)' }}>
+      {/* Header */}
+      <header className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--divider)', backgroundColor: 'white' }}>
+        <a href="/" className="text-2xl font-bold font-display" style={{ color: 'var(--ink)' }}>
+          ThinkHaven
+        </a>
+        <nav className="flex items-center gap-4">
+          <a href="/demo" className="text-sm font-medium" style={{ color: 'var(--slate-blue)' }}>
+            Learn more
+          </a>
+          <a href="/login" className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+            Sign in
+          </a>
+          <a
+            href="/signup"
+            className="px-4 py-2 text-sm font-medium rounded-lg"
+            style={{ backgroundColor: 'var(--terracotta)', color: 'var(--cream)' }}
+          >
+            Sign up
+          </a>
+        </nav>
+      </header>
+
       {/* Info banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3">
+      <div className="flex-shrink-0 px-6 py-3" style={{ backgroundColor: 'var(--terracotta)', color: 'var(--cream)' }}>
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-sm">
-            <strong>Try before you sign up!</strong> Get 5 free messages to experience ThinkHaven's AI-powered strategic thinking.
+            <strong>Try before you sign up!</strong> Get 10 free messages to experience ThinkHaven's AI-powered strategic thinking.
           </p>
         </div>
       </div>
 
       {/* Chat interface */}
-      <div className="flex-1 max-w-5xl mx-auto w-full">
+      <div className="flex-1 max-w-5xl mx-auto w-full overflow-hidden">
         <GuestChatInterface />
       </div>
     </div>

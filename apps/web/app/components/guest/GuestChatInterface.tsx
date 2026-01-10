@@ -58,7 +58,7 @@ export default function GuestChatInterface() {
         role: 'assistant',
         content: `Hey there! I'm Mary, your AI business strategist. I'm here to help you think through business challenges, validate ideas, and develop strategic insights.
 
-**Try me out with 5 free messages** - no signup required. After that, you can sign up to continue our conversation and unlock unlimited access.
+**Try me out with 10 free messages** - no signup required. After that, you can sign up to continue our conversation and unlock unlimited access.
 
 **What would you like to explore today?**`,
         timestamp: new Date()
@@ -241,15 +241,15 @@ export default function GuestChatInterface() {
       <div className="flex-shrink-0 px-6 py-4 bg-white border-b border-divider">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">M</span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--terracotta)' }}>
+              <span className="font-bold text-lg" style={{ color: 'var(--cream)' }}>M</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-primary">Mary</h1>
-              <p className="text-sm text-secondary">AI Business Strategist</p>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--ink)' }}>Mary</h1>
+              <p className="text-sm" style={{ color: 'var(--slate-blue)' }}>AI Business Strategist</p>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 rounded-full">
-              <span className="text-xs text-purple-700 font-medium">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ backgroundColor: 'rgba(212, 168, 75, 0.15)' }}>
+              <span className="text-xs font-medium" style={{ color: 'var(--mustard)' }}>
                 Guest Mode
               </span>
             </div>
@@ -257,28 +257,40 @@ export default function GuestChatInterface() {
 
           <div className="flex items-center gap-3">
             {/* Message Counter */}
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-              remainingMessages <= 1
-                ? 'bg-red-100'
-                : remainingMessages <= 2
-                  ? 'bg-orange-100'
-                  : 'bg-green-100'
-            }`}>
-              <span className={`text-sm font-medium ${
-                remainingMessages <= 1
-                  ? 'text-red-700'
-                  : remainingMessages <= 2
-                    ? 'text-orange-700'
-                    : 'text-green-700'
-              }`}>
-                {remainingMessages}/5 messages
+            <div
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{
+                backgroundColor: remainingMessages <= 2
+                  ? 'rgba(139, 77, 59, 0.1)'
+                  : remainingMessages <= 4
+                    ? 'rgba(212, 168, 75, 0.15)'
+                    : 'rgba(74, 103, 65, 0.1)'
+              }}
+            >
+              <span
+                className="text-sm font-medium"
+                style={{
+                  color: remainingMessages <= 2
+                    ? 'var(--rust)'
+                    : remainingMessages <= 4
+                      ? 'var(--mustard)'
+                      : 'var(--forest)'
+                }}
+              >
+                {remainingMessages}/10 messages
               </span>
             </div>
 
             {/* Sign Up Button */}
             <button
               onClick={handleSignupClick}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              style={{
+                backgroundColor: 'var(--terracotta)',
+                color: 'var(--cream)'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--terracotta-hover)'}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--terracotta)'}
             >
               Sign up
             </button>
@@ -288,26 +300,28 @@ export default function GuestChatInterface() {
 
       {/* Save Progress Banner */}
       {showSavePrompt && (
-        <div className="flex-shrink-0 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-200 px-6 py-3">
+        <div className="flex-shrink-0 px-6 py-3" style={{ backgroundColor: 'var(--parchment)', borderBottom: '1px solid var(--divider)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--forest)' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <p className="text-sm text-blue-900">
+              <p className="text-sm" style={{ color: 'var(--ink)' }}>
                 <strong>Great conversation!</strong> Sign up to save your progress and continue later.
               </p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleSignupClick}
-                className="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors"
+                className="px-3 py-1 text-sm font-medium rounded transition-colors"
+                style={{ backgroundColor: 'var(--terracotta)', color: 'var(--cream)' }}
               >
                 Save now
               </button>
               <button
                 onClick={() => setShowSavePrompt(false)}
-                className="text-blue-600 hover:text-blue-800 text-sm"
+                className="text-sm"
+                style={{ color: 'var(--slate-blue)' }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

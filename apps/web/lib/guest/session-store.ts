@@ -21,7 +21,7 @@ export interface GuestSession {
 }
 
 const STORAGE_KEY = 'thinkhaven_guest_session'
-const MAX_MESSAGES = 5
+const MAX_MESSAGES = 10
 
 export class GuestSessionStore {
   /**

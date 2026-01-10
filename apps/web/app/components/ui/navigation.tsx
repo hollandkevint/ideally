@@ -24,8 +24,9 @@ export default function Navigation({ className = '' }: NavigationProps) {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Hide global nav on /app/* routes (dashboard has its own sidebar nav)
-  if (pathname?.startsWith('/app')) {
+  // Hide global nav on routes that have their own navigation/header
+  const hiddenRoutes = ['/app', '/login', '/signup', '/try']
+  if (hiddenRoutes.some(route => pathname?.startsWith(route))) {
     return null
   }
 
