@@ -24,7 +24,7 @@ export const ROUTES = {
   /** Signup page */
   signup: '/signup',
 
-  /** Guest chat experience - 5 free messages */
+  /** Guest chat experience - 10 free messages */
   try: '/try',
 
   /** Strategic thinking assessment quiz */

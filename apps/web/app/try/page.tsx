@@ -45,10 +45,10 @@ export default function TryPage() {
   // Show loading state while checking auth or migrating
   if (loading || migrating) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-screen" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">
+          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--terracotta)', borderTopColor: 'transparent' }}></div>
+          <p style={{ color: 'var(--slate-blue)' }}>
             {migrating ? 'Saving your conversation...' : 'Loading...'}
           </p>
         </div>

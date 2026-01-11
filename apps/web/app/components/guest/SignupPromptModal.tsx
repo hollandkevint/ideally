@@ -50,16 +50,16 @@ export default function SignupPromptModal({
           <>
             {/* Main Content */}
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--terracotta)' }}>
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--cream)' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--ink)' }}>
                 Ready for more?
               </h2>
-              <p className="text-gray-600">
-                You've reached your 5 free messages. Sign up to continue your conversation with Mary and unlock unlimited strategic insights.
+              <p style={{ color: 'var(--slate-blue)' }}>
+                You've reached your 10 free messages. Sign up to continue your conversation with Mary and unlock unlimited strategic insights.
               </p>
             </div>
 
@@ -100,7 +100,8 @@ export default function SignupPromptModal({
             <div className="space-y-3">
               <button
                 onClick={handleSignup}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                style={{ backgroundColor: 'var(--terracotta)', color: 'var(--cream)' }}
               >
                 Sign up to continue
               </button>
@@ -139,7 +140,8 @@ export default function SignupPromptModal({
             <div className="space-y-3">
               <button
                 onClick={handleSignup}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                style={{ backgroundColor: 'var(--terracotta)', color: 'var(--cream)' }}
               >
                 Sign up to save
               </button>

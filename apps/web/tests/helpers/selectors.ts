@@ -140,7 +140,7 @@ export const SELECTORS = {
   // ===================
   guest: {
     // Welcome banner
-    welcomeBanner: 'text=/5 free messages/i, [data-testid="guest-welcome"]',
+    welcomeBanner: 'text=/10 free messages/i, [data-testid="guest-welcome"]',
 
     // Message counter
     messageCounter: '[data-testid="message-counter"], .message-counter',
