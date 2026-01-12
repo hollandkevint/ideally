@@ -70,3 +70,7 @@ apps/web/test-results/
 # Work tracking (local only)
 WORK_SUMMARY.md
 .env.test
+.env*.local
+
+# Separate artifact repos
+thinkhaven-artifacts/
