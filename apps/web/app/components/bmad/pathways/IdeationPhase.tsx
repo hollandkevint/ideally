@@ -9,6 +9,14 @@ interface IdeationPhaseProps {
   isLoading: boolean;
 }
 
+interface AIAnalysisResult {
+  insights: string[];
+  followUpQuestions: string[];
+  suggestedFocus: string;
+  strengths?: string[];
+  concerns?: string[];
+}
+
 export default function IdeationPhase({
   sessionData,
   onPhaseComplete,
@@ -17,24 +25,73 @@ export default function IdeationPhase({
   const [rawIdea, setRawIdea] = useState(sessionData.rawIdea || '');
   const [insights, setInsights] = useState<string[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!rawIdea.trim()) return;
 
-    // Generate insights from the raw idea
-    const generatedInsights = [
-      `Core problem: ${rawIdea.split(' ').slice(0, 10).join(' ')}...`,
-      'Market opportunity identified through user needs analysis',
-      'Potential for scalable solution architecture',
-      'Initial validation through problem-solution fit assessment'
-    ];
+    setIsAnalyzing(true);
+    setAnalysisError(null);
 
-    const phaseData = {
-      rawIdea: rawIdea.trim(),
-      ideationInsights: generatedInsights
-    };
+    try {
+      // Call AI analysis API
+      const response = await fetch('/api/bmad', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'analyze_idea',
+          rawIdea: rawIdea.trim(),
+          pathway: 'new-idea',
+          phase: 'ideation'
+        })
+      });
 
-    onPhaseComplete(phaseData);
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setAnalysisResult(result.data);
+
+        // Pass AI-generated insights to parent
+        const phaseData = {
+          rawIdea: rawIdea.trim(),
+          ideationInsights: result.data.insights,
+          followUpQuestions: result.data.followUpQuestions,
+          suggestedFocus: result.data.suggestedFocus
+        };
+
+        onPhaseComplete(phaseData);
+      } else {
+        throw new Error(result.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Ideation analysis error:', error);
+      setAnalysisError(error instanceof Error ? error.message : 'Failed to analyze idea');
+
+      // Fallback to basic analysis if AI fails
+      const fallbackInsights = [
+        `Core concept: ${rawIdea.slice(0, 100)}...`,
+        'Consider validating this idea with potential customers',
+        'Identify your unique value proposition',
+        'Map out the competitive landscape'
+      ];
+
+      const phaseData = {
+        rawIdea: rawIdea.trim(),
+        ideationInsights: fallbackInsights
+      };
+
+      onPhaseComplete(phaseData);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const addCustomInsight = (insight: string) => {
@@ -138,6 +195,15 @@ export default function IdeationPhase({
         </div>
       </div>
 
+      {/* Analysis Error Display */}
+      {analysisError && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="text-sm text-amber-800">
+            <strong>Note:</strong> AI analysis encountered an issue. Using basic analysis instead.
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex justify-between items-center pt-4 border-t">
         <div className="text-sm text-gray-500">
@@ -147,13 +213,13 @@ export default function IdeationPhase({
         <button
           data-testid="submit-response"
           onClick={handleSubmit}
-          disabled={isLoading || rawIdea.trim().length < 10}
+          disabled={isLoading || isAnalyzing || rawIdea.trim().length < 10}
           className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? (
+          {isLoading || isAnalyzing ? (
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Analyzing...</span>
+              <span>{isAnalyzing ? 'Analyzing with AI...' : 'Processing...'}</span>
             </div>
           ) : (
             'Continue to Market Analysis'

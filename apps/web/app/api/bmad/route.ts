@@ -25,6 +25,8 @@ import {
 } from '@/lib/bmad/pathways/priority-scoring';
 import { FeatureBriefGenerator } from '@/lib/bmad/generators/feature-brief-generator';
 import { BusinessModelPathwayOrchestrator } from '@/lib/bmad/pathways/business-model-pathway-orchestrator';
+import { claudeClient } from '@/lib/ai/claude-client';
+import { maryPersona } from '@/lib/ai/mary-persona';
 
 /**
  * BMad Method API Endpoints
@@ -167,6 +169,10 @@ export async function POST(request: NextRequest) {
 
       case 'export_canvas':
         return await handleExportCanvas(params);
+
+      // AI-powered pathway analysis endpoints
+      case 'analyze_idea':
+        return await handleAnalyzeIdea(userId, params);
 
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -1466,6 +1472,124 @@ async function handleExportCanvas(params: { sessionId: string, format: 'png' | '
     console.error('Export canvas error:', error);
     return NextResponse.json(
       { error: 'Failed to export canvas', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Analyze business idea using Claude AI
+ * Returns contextual insights and follow-up questions
+ */
+async function handleAnalyzeIdea(
+  userId: string,
+  params: {
+    rawIdea: string;
+    pathway: string;
+    phase: string;
+  }
+): Promise<NextResponse> {
+  const { rawIdea, pathway, phase } = params;
+
+  if (!rawIdea) {
+    return NextResponse.json({ error: 'rawIdea is required' }, { status: 400 });
+  }
+
+  try {
+    console.log(`[BMad API] Analyzing idea for user ${userId}, pathway: ${pathway}, phase: ${phase}`);
+
+    // Build the analysis prompt
+    const systemPrompt = `You are Mary, a strategic business advisor helping users analyze their business ideas.
+Your role is to provide insightful, actionable feedback that helps users think more clearly about their ideas.
+
+Be direct and constructive. Identify both strengths and potential concerns.
+Focus on practical insights that will help the user make progress.`;
+
+    const userPrompt = `Analyze this business idea for the "${pathway}" pathway in the "${phase}" phase:
+
+"${rawIdea}"
+
+Provide your analysis as a JSON object with exactly this structure:
+{
+  "insights": [
+    "First key insight about this idea - be specific to their actual concept",
+    "Second insight about market or customer perspective",
+    "Third insight about potential challenges or opportunities"
+  ],
+  "followUpQuestions": [
+    "A probing question to help them think deeper about their idea",
+    "A question about their target customer or market"
+  ],
+  "suggestedFocus": "One sentence describing the most important area to explore next",
+  "strengths": ["One notable strength of this idea"],
+  "concerns": ["One potential concern or risk to consider"]
+}
+
+Respond ONLY with the JSON object, no other text.`;
+
+    // Get Mary persona context
+    const coachingContext = {
+      currentBmadSession: {
+        pathway,
+        phase,
+        progress: 0
+      }
+    };
+
+    // Call Claude
+    const response = await claudeClient.sendMessage(userPrompt, [], coachingContext);
+
+    // Collect the streaming response
+    let fullResponse = '';
+    for await (const chunk of response.content) {
+      fullResponse += chunk;
+    }
+
+    console.log(`[BMad API] Claude response length: ${fullResponse.length}`);
+
+    // Parse the JSON response
+    let analysisData;
+    try {
+      // Try to extract JSON from the response (handle potential markdown wrapping)
+      const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        analysisData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No JSON found in response');
+      }
+    } catch (parseError) {
+      console.error('[BMad API] Failed to parse Claude response:', parseError);
+      console.error('[BMad API] Raw response:', fullResponse);
+
+      // Return fallback data if parsing fails
+      analysisData = {
+        insights: [
+          `Your idea about "${rawIdea.slice(0, 50)}..." shows potential for addressing a real market need.`,
+          'Consider who your primary customer would be and what problem you solve for them.',
+          'Think about what makes your approach different from existing solutions.'
+        ],
+        followUpQuestions: [
+          'Who experiences this problem most acutely, and how do they currently solve it?',
+          'What would make someone choose your solution over alternatives?'
+        ],
+        suggestedFocus: 'Start by validating the core problem with potential customers.',
+        strengths: ['You have a clear starting concept to build from'],
+        concerns: ['Further market validation would strengthen the foundation']
+      };
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: analysisData
+    });
+
+  } catch (error) {
+    console.error('[BMad API] Error analyzing idea:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to analyze idea',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
