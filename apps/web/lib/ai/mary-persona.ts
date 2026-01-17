@@ -1277,3 +1277,50 @@ export function applyUserControlAction(
 
 // Export singleton instance
 export const maryPersona = MaryPersona.getInstance();
+
+// =============================================================================
+// Story 6.1: Wire Sub-Persona to Claude API - Helper Functions
+// =============================================================================
+
+/**
+ * Get the system prompt section for a specific mode
+ * Story 6.1: Returns mode-specific instructions for Claude
+ */
+export function getSystemPromptForMode(mode: SubPersonaMode): string {
+  const behavior = MODE_BEHAVIORS[mode];
+
+  return `You are currently operating in **${behavior.name}** mode.
+
+**Your Role**: ${behavior.role}
+**Your Tone**: ${behavior.tone}
+
+**Active Behaviors:**
+${behavior.behaviors.map(b => `- ${b}`).join('\n')}
+
+**Question Types to Emphasize:**
+${behavior.questionTypes.map(q => `- ${q}`).join('\n')}`;
+}
+
+/**
+ * Select a mode for a message based on pathway and message index
+ * Story 6.1: Implements weighted random selection per pathway
+ *
+ * @param pathway - The current pathway (e.g., 'new-idea', 'business-model')
+ * @param messageIndex - The current message index (used for potential patterns)
+ * @returns The selected SubPersonaMode
+ */
+export function selectModeForMessage(
+  pathway: string,
+  messageIndex: number = 0
+): SubPersonaMode {
+  const weights = PATHWAY_WEIGHTS[pathway] || PATHWAY_WEIGHTS['new-idea'];
+  return maryPersona.selectModeByWeight(weights);
+}
+
+/**
+ * Get pathway weights for a given pathway type
+ * Story 6.1: Exposes pathway weights for external use
+ */
+export function getPathwayWeights(pathway: string): PathwayWeights {
+  return PATHWAY_WEIGHTS[pathway] || PATHWAY_WEIGHTS['new-idea'];
+}

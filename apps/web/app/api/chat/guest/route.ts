@@ -1,6 +1,13 @@
 import { NextRequest } from 'next/server';
 import { claudeClient } from '@/lib/ai/claude-client';
 import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
+import {
+  createSubPersonaState,
+  updateSubPersonaState,
+  type SubPersonaMode,
+  type SubPersonaSessionState,
+  type CoachingContext,
+} from '@/lib/ai/mary-persona';
 
 /**
  * Guest Chat Stream API
@@ -27,10 +34,36 @@ export async function POST(request: NextRequest) {
     // Limit conversation history to prevent abuse
     const limitedHistory = (conversationHistory || []).slice(-10);
 
+    // Story 6.1: Initialize sub-persona state for guest (default: new-idea pathway)
+    const guestPathway = 'new-idea';
+    let subPersonaState: SubPersonaSessionState;
+    let currentMode: SubPersonaMode;
+
+    // Check if we have existing state in the request (optional enhancement)
+    const messageIndex = limitedHistory.length;
+
+    // Initialize or update sub-persona state
+    if (messageIndex === 0) {
+      subPersonaState = createSubPersonaState(guestPathway);
+    } else {
+      // Create fresh state and update based on conversation
+      subPersonaState = createSubPersonaState(guestPathway);
+      subPersonaState = updateSubPersonaState(
+        subPersonaState,
+        message,
+        limitedHistory
+      );
+      // Manually set exchange count based on history
+      subPersonaState.exchangeCount = Math.floor(messageIndex / 2);
+    }
+
+    currentMode = subPersonaState.currentMode;
+
     console.log('[Guest Chat] Request:', {
       messageLength: message.length,
       historyLength: limitedHistory.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      subPersonaMode: currentMode,
     });
 
     const encoder = new StreamEncoder();
@@ -41,25 +74,30 @@ export async function POST(request: NextRequest) {
         try {
           console.log('[Guest Chat] Stream started');
 
-          // Send initial metadata
+          // Send initial metadata (Story 6.1: include mode in response)
           controller.enqueue(encoder.encodeMetadata({
             messageId: `guest-msg-${Date.now()}`,
             timestamp: new Date().toISOString(),
-            isGuest: true
+            isGuest: true,
+            // Story 6.1: Include sub-persona mode in metadata
+            subPersona: {
+              mode: currentMode,
+              exchangeCount: subPersonaState.exchangeCount,
+              userControlEnabled: subPersonaState.userControlEnabled,
+            },
           }));
 
           console.log('[Guest Chat] Calling Claude API...');
 
-          // Guest-specific coaching context - basic Mary persona
-          const guestCoachingContext = {
-            mode: 'strategic-advisor',
-            focusAreas: ['business strategy', 'idea validation', 'problem solving'],
-            communicationStyle: 'conversational and encouraging',
-            constraints: [
-              'This is a guest session with limited features',
-              'Encourage signup for full access',
-              'Keep responses focused and actionable'
-            ]
+          // Story 6.1: Build full coaching context with sub-persona state
+          const guestCoachingContext: CoachingContext = {
+            currentBmadSession: {
+              pathway: guestPathway,
+              phase: 'discovery',
+              progress: 0,
+            },
+            subPersonaState,
+            recentMessages: limitedHistory.slice(-5),
           };
 
           // Get Claude streaming response

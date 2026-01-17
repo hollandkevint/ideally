@@ -2,7 +2,14 @@ import { NextRequest } from 'next/server';
 import { claudeClient } from '@/lib/ai/claude-client';
 import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
 import { createClient } from '@/lib/supabase/server';
-import { CoachingContext } from '@/lib/ai/mary-persona';
+import {
+  CoachingContext,
+  createSubPersonaState,
+  updateSubPersonaState,
+  selectModeForMessage,
+  type SubPersonaMode,
+  type SubPersonaSessionState,
+} from '@/lib/ai/mary-persona';
 import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
 import {
   incrementMessageCount,
@@ -144,7 +151,9 @@ export async function POST(request: NextRequest) {
 
     // Build or use provided coaching context
     let finalCoachingContext: CoachingContext | undefined = coachingContext;
-    
+    let currentMode: SubPersonaMode = 'inquisitive'; // Default mode
+    let subPersonaState: SubPersonaSessionState | undefined;
+
     if (!finalCoachingContext) {
       try {
         // Try to get current BMad session data
@@ -162,10 +171,48 @@ export async function POST(request: NextRequest) {
           user.id,
           bmadSession
         );
+
+        // Story 6.1: Initialize sub-persona state based on pathway
+        if (bmadSession?.pathway) {
+          const pathway = bmadSession.pathway;
+          const messageIndex = conversationHistory?.length || 0;
+
+          // Initialize or update sub-persona state
+          if (!finalCoachingContext.subPersonaState) {
+            subPersonaState = createSubPersonaState(pathway);
+          } else {
+            // Update existing state with the latest user message
+            subPersonaState = updateSubPersonaState(
+              finalCoachingContext.subPersonaState,
+              message,
+              conversationHistory || []
+            );
+          }
+
+          // Set current mode from state
+          currentMode = subPersonaState.currentMode;
+
+          // Inject sub-persona state into coaching context
+          finalCoachingContext = {
+            ...finalCoachingContext,
+            subPersonaState,
+            recentMessages: conversationHistory?.slice(-5) || [],
+          };
+
+          console.log('[Chat Stream] Sub-persona state initialized:', {
+            pathway,
+            mode: currentMode,
+            exchangeCount: subPersonaState.exchangeCount,
+            userState: subPersonaState.detectedUserState,
+          });
+        }
       } catch (error) {
         console.warn('Could not build coaching context:', error);
         // Continue without context
       }
+    } else if (finalCoachingContext.subPersonaState) {
+      // Update mode from provided context
+      currentMode = finalCoachingContext.subPersonaState.currentMode;
     }
 
     // Prepare conversation context management
@@ -189,11 +236,17 @@ export async function POST(request: NextRequest) {
         try {
           console.log('[Chat Stream] Stream started, sending metadata');
 
-          // Send initial metadata
+          // Send initial metadata (Story 6.1: include mode in response)
           controller.enqueue(encoder.encodeMetadata({
             coachingContext: finalCoachingContext,
             messageId: `msg-${Date.now()}`,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            // Story 6.1: Include sub-persona mode in metadata
+            subPersona: {
+              mode: currentMode,
+              exchangeCount: subPersonaState?.exchangeCount || 0,
+              userControlEnabled: subPersonaState?.userControlEnabled || false,
+            },
           }));
 
           console.log('[Chat Stream] Calling Claude API...');
