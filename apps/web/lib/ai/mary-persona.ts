@@ -125,6 +125,60 @@ export interface ModeBehavior {
   tone: string;
 }
 
+// =============================================================================
+// Story 6.2: Transition Phrases for Natural Mode Shifting
+// =============================================================================
+
+/**
+ * Transition phrases for smooth mode shifts
+ * FR-AC8: Mode shifts should feel conversational, not jarring
+ */
+export const TRANSITION_PHRASES: Record<string, string[]> = {
+  // Shifting TO encouraging mode
+  'any_to_encouraging': [
+    "I hear you. Let me acknowledge what's working here...",
+    "You raise a fair point. Let's build on that...",
+    "I appreciate you pushing back - that's actually a strength...",
+    "That's a valid perspective. Let me step back...",
+    "I want to make sure I'm being fair to your thinking here...",
+  ],
+  // Shifting TO devil's advocate mode
+  'any_to_devil_advocate': [
+    "I want to pressure-test this a bit...",
+    "Let me play devil's advocate for a moment...",
+    "Before we move on, I need to challenge one thing...",
+    "I'm going to push back here because I think it's important...",
+    "Let me stress-test this assumption...",
+  ],
+  // Shifting TO realistic mode
+  'any_to_realistic': [
+    "Let me ground us for a second...",
+    "I want to make sure we're being practical here...",
+    "Let's step back and look at constraints...",
+    "Time for a reality check...",
+    "Let me bring this back to what's actually achievable...",
+  ],
+  // Shifting TO inquisitive mode
+  'any_to_inquisitive': [
+    "I want to understand this better...",
+    "Tell me more about your thinking here...",
+    "Let me dig into this a bit deeper...",
+    "I'm curious about something...",
+    "Before I respond, I want to make sure I understand...",
+  ],
+};
+
+/**
+ * Shift decision result for external consumers
+ */
+export interface ShiftDecision {
+  shouldShift: boolean;
+  fromMode: SubPersonaMode;
+  toMode: SubPersonaMode;
+  reason: string;
+  transitionPhrase: string;
+}
+
 export const MODE_BEHAVIORS: Record<SubPersonaMode, ModeBehavior> = {
   inquisitive: {
     name: 'Inquisitive',
@@ -1323,4 +1377,117 @@ export function selectModeForMessage(
  */
 export function getPathwayWeights(pathway: string): PathwayWeights {
   return PATHWAY_WEIGHTS[pathway] || PATHWAY_WEIGHTS['new-idea'];
+}
+
+// =============================================================================
+// Story 6.2: Dynamic Mode Shifting - Helper Functions
+// =============================================================================
+
+/**
+ * Get a random transition phrase for a mode shift
+ * Story 6.2: Returns conversational phrase for natural mode transitions
+ *
+ * @param toMode - The mode being shifted to
+ * @returns A random transition phrase
+ */
+export function getTransitionPhrase(toMode: SubPersonaMode): string {
+  const key = `any_to_${toMode}`;
+  const phrases = TRANSITION_PHRASES[key];
+
+  if (!phrases || phrases.length === 0) {
+    return ''; // No transition needed
+  }
+
+  return phrases[Math.floor(Math.random() * phrases.length)];
+}
+
+/**
+ * Determine if a mode shift should occur based on user state
+ * Story 6.2: Implements mode shift decision logic
+ *
+ * @param state - Current sub-persona session state
+ * @param recentMessages - Recent conversation messages for state detection
+ * @returns ShiftDecision with shouldShift, modes, reason, and transition phrase
+ */
+export function shouldShiftMode(
+  state: SubPersonaSessionState,
+  recentMessages: Array<{ role: 'user' | 'assistant'; content: string }>
+): ShiftDecision {
+  const currentMode = state.currentMode;
+
+  // Detect user emotional state
+  const userState = maryPersona.detectUserState(recentMessages);
+
+  // Get next mode decision
+  const { nextMode, trigger } = maryPersona.determineNextMode(state, userState);
+
+  // Check if shift should occur
+  const shouldShift = nextMode !== currentMode;
+
+  // Get transition phrase if shifting
+  const transitionPhrase = shouldShift ? getTransitionPhrase(nextMode) : '';
+
+  // Build reason based on trigger and user state
+  let reason = '';
+  if (shouldShift) {
+    switch (userState) {
+      case 'defensive':
+        reason = 'User appears defensive - shifting to build rapport before continuing challenge';
+        break;
+      case 'overconfident':
+        reason = 'User appears overconfident - shifting to provide more rigorous challenge';
+        break;
+      case 'spinning':
+        reason = 'User appears to be spinning - shifting to ground the conversation';
+        break;
+      case 'uncertain':
+        reason = 'User appears uncertain - shifting to provide more support and clarity';
+        break;
+      case 'engaged':
+        reason = 'User is engaged - following pathway weights for natural flow';
+        break;
+      default:
+        reason = `Following pathway weights (trigger: ${trigger})`;
+    }
+  }
+
+  return {
+    shouldShift,
+    fromMode: currentMode,
+    toMode: nextMode,
+    reason,
+    transitionPhrase,
+  };
+}
+
+/**
+ * Generate mode shift context for system prompt
+ * Story 6.2: Creates prompt section for mode transitions
+ *
+ * @param decision - The shift decision
+ * @returns System prompt section for mode transition
+ */
+export function generateModeShiftPrompt(decision: ShiftDecision): string {
+  if (!decision.shouldShift) {
+    return '';
+  }
+
+  const fromBehavior = MODE_BEHAVIORS[decision.fromMode];
+  const toBehavior = MODE_BEHAVIORS[decision.toMode];
+
+  return `
+MODE TRANSITION CONTEXT:
+You are shifting from ${fromBehavior.name} mode to ${toBehavior.name} mode.
+
+**Reason for shift:** ${decision.reason}
+
+**Transition approach:**
+- Start your response with a natural transition: "${decision.transitionPhrase}"
+- Gradually shift your tone from ${fromBehavior.tone} to ${toBehavior.tone}
+- This should feel conversational, not jarring
+
+**New mode emphasis:**
+- Role: ${toBehavior.role}
+- Behaviors: ${toBehavior.behaviors.slice(0, 2).join('; ')}
+`;
 }

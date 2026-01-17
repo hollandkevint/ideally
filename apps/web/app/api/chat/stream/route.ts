@@ -7,8 +7,10 @@ import {
   createSubPersonaState,
   updateSubPersonaState,
   selectModeForMessage,
+  shouldShiftMode,
   type SubPersonaMode,
   type SubPersonaSessionState,
+  type ShiftDecision,
 } from '@/lib/ai/mary-persona';
 import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
 import {
@@ -153,6 +155,7 @@ export async function POST(request: NextRequest) {
     let finalCoachingContext: CoachingContext | undefined = coachingContext;
     let currentMode: SubPersonaMode = 'inquisitive'; // Default mode
     let subPersonaState: SubPersonaSessionState | undefined;
+    let shiftDecision: ShiftDecision | undefined;
 
     if (!finalCoachingContext) {
       try {
@@ -199,11 +202,27 @@ export async function POST(request: NextRequest) {
             recentMessages: conversationHistory?.slice(-5) || [],
           };
 
+          // Story 6.2: Check for dynamic mode shifting
+          shiftDecision = shouldShiftMode(subPersonaState, conversationHistory || []);
+
+          if (shiftDecision.shouldShift) {
+            // Apply the mode shift
+            subPersonaState.currentMode = shiftDecision.toMode;
+            currentMode = shiftDecision.toMode;
+
+            console.log('[Chat Stream] Mode shift detected:', {
+              from: shiftDecision.fromMode,
+              to: shiftDecision.toMode,
+              reason: shiftDecision.reason,
+            });
+          }
+
           console.log('[Chat Stream] Sub-persona state initialized:', {
             pathway,
             mode: currentMode,
             exchangeCount: subPersonaState.exchangeCount,
             userState: subPersonaState.detectedUserState,
+            modeShifted: shiftDecision?.shouldShift || false,
           });
         }
       } catch (error) {
@@ -236,16 +255,24 @@ export async function POST(request: NextRequest) {
         try {
           console.log('[Chat Stream] Stream started, sending metadata');
 
-          // Send initial metadata (Story 6.1: include mode in response)
+          // Send initial metadata (Story 6.1: include mode, Story 6.2: include shift info)
           controller.enqueue(encoder.encodeMetadata({
             coachingContext: finalCoachingContext,
             messageId: `msg-${Date.now()}`,
             timestamp: new Date().toISOString(),
             // Story 6.1: Include sub-persona mode in metadata
+            // Story 6.2: Include shift decision for mode transitions
             subPersona: {
               mode: currentMode,
               exchangeCount: subPersonaState?.exchangeCount || 0,
               userControlEnabled: subPersonaState?.userControlEnabled || false,
+              // Story 6.2: Mode shift information
+              modeShift: shiftDecision?.shouldShift ? {
+                from: shiftDecision.fromMode,
+                to: shiftDecision.toMode,
+                reason: shiftDecision.reason,
+                transitionPhrase: shiftDecision.transitionPhrase,
+              } : undefined,
             },
           }));
 
