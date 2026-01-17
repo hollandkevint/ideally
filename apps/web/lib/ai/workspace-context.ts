@@ -1,4 +1,4 @@
-import { CoachingContext } from './mary-persona';
+import { CoachingContext, maryPersona, SubPersonaSessionState } from './mary-persona';
 
 export interface WorkspaceData {
   id: string;
@@ -17,6 +17,7 @@ export interface BmadSessionData {
   progress: number;
   context: Record<string, any>;
   insights?: string[];
+  sub_persona_state?: SubPersonaSessionState | null;
 }
 
 export class WorkspaceContextBuilder {
