@@ -3,6 +3,8 @@
  *
  * Manages temporary guest sessions using localStorage.
  * No database writes - all data stored client-side.
+ *
+ * Story 6.5: 10-Message Trial Gate with soft/hard gate system
  */
 
 export interface GuestMessage {
@@ -18,10 +20,23 @@ export interface GuestSession {
   messageCount: number
   createdAt: string
   lastActivityAt: string
+  softGateDismissed?: boolean // Story 6.5: Track if user dismissed soft gate
 }
 
+// Story 6.5: Trial gate configuration
+export const TRIAL_CONFIG = {
+  softGate: 10,    // Show modal, allow dismiss for 2 more messages
+  hardGate: 12,    // Must signup to continue
+  partialOutputAt: 10 // Generate partial output preview at this point
+} as const
+
+export type TrialStatus =
+  | { status: 'active'; remaining: number }
+  | { status: 'soft_gate'; remaining: number }
+  | { status: 'hard_gate'; remaining: 0 }
+
 const STORAGE_KEY = 'thinkhaven_guest_session'
-const MAX_MESSAGES = 10
+const MAX_MESSAGES = TRIAL_CONFIG.hardGate
 
 export class GuestSessionStore {
   /**
@@ -106,21 +121,85 @@ export class GuestSessionStore {
   }
 
   /**
-   * Check if message limit reached
+   * Check if message limit reached (hard gate)
    */
   static hasReachedLimit(): boolean {
     const session = this.getSession()
     if (!session) return false
-    return session.messageCount >= MAX_MESSAGES
+    return session.messageCount >= TRIAL_CONFIG.hardGate
   }
 
   /**
-   * Get remaining messages
+   * Get remaining messages (to hard gate)
    */
   static getRemainingMessages(): number {
     const session = this.getSession()
-    if (!session) return MAX_MESSAGES
-    return Math.max(0, MAX_MESSAGES - session.messageCount)
+    if (!session) return TRIAL_CONFIG.softGate
+    return Math.max(0, TRIAL_CONFIG.hardGate - session.messageCount)
+  }
+
+  /**
+   * Story 6.5: Get trial status with soft/hard gate distinction
+   */
+  static getTrialStatus(): TrialStatus {
+    const session = this.getSession()
+    if (!session) {
+      return { status: 'active', remaining: TRIAL_CONFIG.softGate }
+    }
+
+    const { messageCount, softGateDismissed } = session
+
+    if (messageCount >= TRIAL_CONFIG.hardGate) {
+      return { status: 'hard_gate', remaining: 0 }
+    }
+
+    if (messageCount >= TRIAL_CONFIG.softGate) {
+      // If soft gate was dismissed, they can continue to hard gate
+      if (softGateDismissed) {
+        return {
+          status: 'soft_gate',
+          remaining: TRIAL_CONFIG.hardGate - messageCount
+        }
+      }
+      // First time hitting soft gate
+      return { status: 'soft_gate', remaining: TRIAL_CONFIG.hardGate - messageCount }
+    }
+
+    return {
+      status: 'active',
+      remaining: TRIAL_CONFIG.softGate - messageCount
+    }
+  }
+
+  /**
+   * Story 6.5: Check if at soft gate (show modal)
+   */
+  static isAtSoftGate(): boolean {
+    const session = this.getSession()
+    if (!session) return false
+    return session.messageCount >= TRIAL_CONFIG.softGate &&
+           session.messageCount < TRIAL_CONFIG.hardGate &&
+           !session.softGateDismissed
+  }
+
+  /**
+   * Story 6.5: Dismiss soft gate (allow 2 more messages)
+   */
+  static dismissSoftGate(): void {
+    const session = this.getSession()
+    if (!session) return
+
+    session.softGateDismissed = true
+    this.saveSession(session)
+  }
+
+  /**
+   * Story 6.5: Check if partial output should be generated
+   */
+  static shouldShowPartialOutput(): boolean {
+    const session = this.getSession()
+    if (!session) return false
+    return session.messageCount >= TRIAL_CONFIG.partialOutputAt
   }
 
   /**

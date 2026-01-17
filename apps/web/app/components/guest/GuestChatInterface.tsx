@@ -1,7 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { GuestSessionStore, GuestMessage } from '@/lib/guest/session-store'
+import {
+  GuestSessionStore,
+  GuestMessage,
+  TRIAL_CONFIG,
+  type TrialStatus
+} from '@/lib/guest/session-store'
+import { generatePartialOutput, type PartialOutput } from '@/lib/guest/partial-output'
 import SignupPromptModal from './SignupPromptModal'
 import StreamingMessage from '../chat/StreamingMessage'
 import MessageInput from '../chat/MessageInput'
@@ -22,9 +28,11 @@ export default function GuestChatInterface() {
   const [currentInput, setCurrentInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [remainingMessages, setRemainingMessages] = useState(5)
+  const [trialStatus, setTrialStatus] = useState<TrialStatus>({ status: 'active', remaining: TRIAL_CONFIG.softGate })
   const [showSignupModal, setShowSignupModal] = useState(false)
   const [showSavePrompt, setShowSavePrompt] = useState(false)
+  const [partialOutput, setPartialOutput] = useState<PartialOutput | null>(null)
+  const [gateType, setGateType] = useState<'soft' | 'hard'>('soft')
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -50,7 +58,7 @@ export default function GuestChatInterface() {
         timestamp: new Date(msg.timestamp)
       }))
       setMessages(loadedMessages)
-      setRemainingMessages(GuestSessionStore.getRemainingMessages())
+      setTrialStatus(GuestSessionStore.getTrialStatus())
     } else {
       // Show welcome message
       const welcomeMessage: Message = {
@@ -58,7 +66,7 @@ export default function GuestChatInterface() {
         role: 'assistant',
         content: `Hey there! I'm Mary, your AI business strategist. I'm here to help you think through business challenges, validate ideas, and develop strategic insights.
 
-**Try me out with 10 free messages** - no signup required. After that, you can sign up to continue our conversation and unlock unlimited access.
+**Try me out with ${TRIAL_CONFIG.softGate} free messages** - no signup required. After that, you can sign up to continue our conversation and unlock unlimited access.
 
 **What would you like to explore today?**`,
         timestamp: new Date()
@@ -67,12 +75,41 @@ export default function GuestChatInterface() {
     }
   }, [])
 
+  // Story 6.5: Check trial status and show appropriate gate
+  const checkAndShowGate = useCallback((guestMessages: GuestMessage[]) => {
+    const status = GuestSessionStore.getTrialStatus()
+    setTrialStatus(status)
+
+    if (status.status === 'hard_gate') {
+      // Hard gate - must sign up
+      setGateType('hard')
+      setPartialOutput(generatePartialOutput(guestMessages))
+      setShowSignupModal(true)
+    } else if (status.status === 'soft_gate' && GuestSessionStore.isAtSoftGate()) {
+      // First time at soft gate - show modal with dismiss option
+      setGateType('soft')
+      setPartialOutput(generatePartialOutput(guestMessages))
+      setShowSignupModal(true)
+    }
+  }, [])
+
+  // Story 6.5: Handle soft gate dismissal
+  const handleSoftGateDismiss = useCallback(() => {
+    GuestSessionStore.dismissSoftGate()
+    setTrialStatus(GuestSessionStore.getTrialStatus())
+  }, [])
+
   const sendMessage = async (messageContent: string) => {
     if (!messageContent.trim() || isLoading) return
 
-    // Check if limit reached
+    // Check if hard limit reached
     if (GuestSessionStore.hasReachedLimit()) {
-      setShowSignupModal(true)
+      const session = GuestSessionStore.getSession()
+      if (session) {
+        setGateType('hard')
+        setPartialOutput(generatePartialOutput(session.messages))
+        setShowSignupModal(true)
+      }
       return
     }
 
@@ -92,7 +129,7 @@ export default function GuestChatInterface() {
 
     // Save user message to guest session
     GuestSessionStore.addMessage('user', messageContent)
-    setRemainingMessages(GuestSessionStore.getRemainingMessages())
+    setTrialStatus(GuestSessionStore.getTrialStatus())
 
     // Create assistant message placeholder
     const assistantMessage: Message = {
@@ -160,17 +197,17 @@ export default function GuestChatInterface() {
                 // Save assistant response to guest session
                 GuestSessionStore.addMessage('assistant', fullContent)
 
-                // Update remaining count
-                setRemainingMessages(GuestSessionStore.getRemainingMessages())
+                // Get updated session and check gates
+                const session = GuestSessionStore.getSession()
+                if (session) {
+                  checkAndShowGate(session.messages)
+                }
 
-                // Show save prompt after each message (except if limit reached)
-                if (!GuestSessionStore.hasReachedLimit()) {
+                // Show save prompt if not at gate
+                const currentStatus = GuestSessionStore.getTrialStatus()
+                if (currentStatus.status === 'active') {
                   setShowSavePrompt(true)
-                  // Auto-hide after 5 seconds
                   setTimeout(() => setShowSavePrompt(false), 5000)
-                } else {
-                  // Limit reached - show signup modal
-                  setShowSignupModal(true)
                 }
 
                 return
@@ -235,6 +272,15 @@ export default function GuestChatInterface() {
     router.push('/auth?mode=signup&from=guest')
   }
 
+  // Calculate display values
+  const displayRemaining = trialStatus.status === 'active'
+    ? trialStatus.remaining
+    : trialStatus.status === 'soft_gate'
+      ? trialStatus.remaining
+      : 0
+
+  const isAtLimit = trialStatus.status === 'hard_gate'
+
   return (
     <div className="chat-interface flex flex-col h-full">
       {/* Header */}
@@ -256,13 +302,13 @@ export default function GuestChatInterface() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Message Counter */}
+            {/* Message Counter - Story 6.5: Updated display */}
             <div
               className="flex items-center gap-2 px-3 py-1.5 rounded-full"
               style={{
-                backgroundColor: remainingMessages <= 2
+                backgroundColor: displayRemaining <= 2
                   ? 'rgba(139, 77, 59, 0.1)'
-                  : remainingMessages <= 4
+                  : displayRemaining <= 4
                     ? 'rgba(212, 168, 75, 0.15)'
                     : 'rgba(74, 103, 65, 0.1)'
               }}
@@ -270,14 +316,19 @@ export default function GuestChatInterface() {
               <span
                 className="text-sm font-medium"
                 style={{
-                  color: remainingMessages <= 2
+                  color: displayRemaining <= 2
                     ? 'var(--rust)'
-                    : remainingMessages <= 4
+                    : displayRemaining <= 4
                       ? 'var(--mustard)'
                       : 'var(--forest)'
                 }}
               >
-                {remainingMessages}/10 messages
+                {trialStatus.status === 'soft_gate' && !GuestSessionStore.getSession()?.softGateDismissed
+                  ? `${TRIAL_CONFIG.softGate} reached`
+                  : trialStatus.status === 'hard_gate'
+                    ? 'Trial complete'
+                    : `${displayRemaining}/${TRIAL_CONFIG.softGate} messages`
+                }
               </span>
             </div>
 
@@ -380,20 +431,23 @@ export default function GuestChatInterface() {
           value={currentInput}
           onChange={setCurrentInput}
           onSubmit={sendMessage}
-          disabled={isLoading || GuestSessionStore.hasReachedLimit()}
+          disabled={isLoading || isAtLimit}
           placeholder={
-            GuestSessionStore.hasReachedLimit()
+            isAtLimit
               ? 'Sign up to continue chatting...'
-              : `Ask Mary for strategic guidance... (${remainingMessages} messages left)`
+              : `Ask Mary for strategic guidance... (${displayRemaining} messages left)`
           }
           maxLength={4000}
         />
       </div>
 
-      {/* Signup Modal */}
+      {/* Signup Modal - Story 6.5: Enhanced with gate type and partial output */}
       <SignupPromptModal
         isOpen={showSignupModal}
         onClose={() => setShowSignupModal(false)}
+        gateType={gateType}
+        partialOutput={partialOutput}
+        onDismiss={gateType === 'soft' ? handleSoftGateDismiss : undefined}
       />
     </div>
   )
