@@ -1,4 +1,4 @@
-import { 
+import {
   BusinessModelPhaseData,
   RevenueStream,
   CustomerSegment,
@@ -6,6 +6,10 @@ import {
   LeanCanvasData,
   LEAN_CANVAS_TEMPLATE
 } from '../templates/business-model-templates';
+import {
+  type KillRecommendation,
+  type ViabilityScore,
+} from '@/lib/ai/mary-persona';
 
 /**
  * Lean Canvas Generator
@@ -761,6 +765,101 @@ export class LeanCanvasGenerator {
   private extractLeanCanvasFromVPC(sessionData: BusinessModelPhaseData): LeanCanvasData {
     // Extract basic Lean Canvas data from Value Proposition Canvas session
     return this.buildLeanCanvasData(sessionData);
+  }
+
+  // =============================================================================
+  // Story 6.3: Kill Recommendation Integration
+  // =============================================================================
+
+  /**
+   * Generate Lean Canvas with viability assessment
+   * Story 6.3: Includes kill recommendation when warranted
+   */
+  generateLeanCanvasWithViability(
+    sessionData: BusinessModelPhaseData,
+    killRecommendation: KillRecommendation,
+    options: CanvasGenerationOptions = {
+      format: 'markdown',
+      includeAnalysis: true,
+      includeImplementationNotes: true,
+      includeFeasibilityScores: true,
+      template: 'lean-canvas'
+    }
+  ): GeneratedCanvas {
+    const baseCanvas = this.generateLeanCanvas(sessionData, options);
+
+    // Append viability assessment to content
+    const viabilitySection = this.formatViabilitySection(killRecommendation);
+    baseCanvas.content += viabilitySection;
+
+    return baseCanvas;
+  }
+
+  /**
+   * Format viability section for canvas output
+   * Story 6.3: Creates markdown section for viability assessment
+   */
+  private formatViabilitySection(killRecommendation: KillRecommendation): string {
+    const { viabilityScore, action, confidence, summary, rationale, improvements } = killRecommendation;
+
+    let markdown = `\n## Viability Assessment\n\n`;
+    markdown += `**Overall Score: ${viabilityScore.overall}/10**\n\n`;
+
+    // Dimension table
+    markdown += `| Dimension | Score | Status |\n`;
+    markdown += `|-----------|-------|--------|\n`;
+    markdown += `| Problem Clarity | ${viabilityScore.dimensions.problemClarity}/10 | ${this.getScoreStatus(viabilityScore.dimensions.problemClarity)} |\n`;
+    markdown += `| Target User | ${viabilityScore.dimensions.targetUserClarity}/10 | ${this.getScoreStatus(viabilityScore.dimensions.targetUserClarity)} |\n`;
+    markdown += `| Solution Fit | ${viabilityScore.dimensions.solutionFit}/10 | ${this.getScoreStatus(viabilityScore.dimensions.solutionFit)} |\n`;
+    markdown += `| Competitive Moat | ${viabilityScore.dimensions.competitiveMoat}/10 | ${this.getScoreStatus(viabilityScore.dimensions.competitiveMoat)} |\n`;
+    markdown += `| Revenue Viability | ${viabilityScore.dimensions.revenueViability}/10 | ${this.getScoreStatus(viabilityScore.dimensions.revenueViability)} |\n`;
+    markdown += `| Technical Feasibility | ${viabilityScore.dimensions.technicalFeasibility}/10 | ${this.getScoreStatus(viabilityScore.dimensions.technicalFeasibility)} |\n\n`;
+
+    // Critical issues
+    if (viabilityScore.criticalIssues.length > 0) {
+      markdown += `### Critical Issues\n\n`;
+      viabilityScore.criticalIssues.forEach(issue => {
+        markdown += `- ⚠️ ${issue}\n`;
+      });
+      markdown += `\n`;
+    }
+
+    // Recommended action
+    markdown += `### Recommended Action: **${action.toUpperCase()}**\n\n`;
+    markdown += `${summary}\n\n`;
+
+    // Rationale
+    if (rationale.length > 0) {
+      markdown += `**Rationale:**\n`;
+      rationale.forEach(r => {
+        markdown += `- ${r}\n`;
+      });
+      markdown += `\n`;
+    }
+
+    // Improvements
+    if (improvements.length > 0) {
+      markdown += `### To Improve Viability\n\n`;
+      improvements.forEach(imp => {
+        markdown += `- ${imp}\n`;
+      });
+      markdown += `\n`;
+    }
+
+    markdown += `---\n\n`;
+    markdown += `*Viability assessment confidence: ${confidence}*\n`;
+
+    return markdown;
+  }
+
+  /**
+   * Get status indicator for score
+   */
+  private getScoreStatus(score: number): string {
+    if (score >= 7) return '✅ Strong';
+    if (score >= 5) return '⚡ Moderate';
+    if (score >= 3) return '⚠️ Weak';
+    return '❌ Critical';
   }
 }
 

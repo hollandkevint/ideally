@@ -1,4 +1,5 @@
 import { Message } from '@/lib/ai/types'
+import { type KillRecommendation } from '@/lib/ai/mary-persona'
 
 export interface ProductBrief {
   title: string
@@ -656,6 +657,108 @@ export class ProductBriefGenerator {
 </body>
 </html>`
   }
+}
+
+// =============================================================================
+// Story 6.3: Kill Recommendation Integration
+// =============================================================================
+
+/**
+ * Generate Product Brief with viability assessment
+ * Story 6.3: Includes kill recommendation when warranted
+ */
+export function generateProductBriefWithViability(
+  messages: Message[],
+  productName: string,
+  killRecommendation: KillRecommendation,
+  options: ProductBriefOptions = {
+    format: 'markdown',
+    includeTimeline: true,
+    includeResources: true,
+    detailLevel: 'detailed'
+  }
+): string {
+  const generator = new ProductBriefGenerator()
+  const brief = generator.generateBrief(messages, productName, options)
+  let content = generator.formatBrief(brief, options.format)
+
+  // Append viability section
+  if (options.format === 'markdown') {
+    content += formatViabilitySectionMarkdown(killRecommendation)
+  }
+
+  return content
+}
+
+/**
+ * Format viability section for product brief
+ * Story 6.3: Creates markdown section for recommended action
+ */
+function formatViabilitySectionMarkdown(killRecommendation: KillRecommendation): string {
+  const { viabilityScore, action, confidence, summary, rationale, improvements } = killRecommendation
+
+  let md = `\n## Viability Assessment\n\n`
+  md += `### Overall Score: ${viabilityScore.overall}/10\n\n`
+
+  // Dimension breakdown
+  md += `| Dimension | Score | Assessment |\n`
+  md += `|-----------|-------|------------|\n`
+  md += `| Problem Clarity | ${viabilityScore.dimensions.problemClarity}/10 | ${getScoreLabel(viabilityScore.dimensions.problemClarity)} |\n`
+  md += `| Target User | ${viabilityScore.dimensions.targetUserClarity}/10 | ${getScoreLabel(viabilityScore.dimensions.targetUserClarity)} |\n`
+  md += `| Solution Fit | ${viabilityScore.dimensions.solutionFit}/10 | ${getScoreLabel(viabilityScore.dimensions.solutionFit)} |\n`
+  md += `| Competitive Moat | ${viabilityScore.dimensions.competitiveMoat}/10 | ${getScoreLabel(viabilityScore.dimensions.competitiveMoat)} |\n`
+  md += `| Revenue Viability | ${viabilityScore.dimensions.revenueViability}/10 | ${getScoreLabel(viabilityScore.dimensions.revenueViability)} |\n`
+  md += `| Technical Feasibility | ${viabilityScore.dimensions.technicalFeasibility}/10 | ${getScoreLabel(viabilityScore.dimensions.technicalFeasibility)} |\n\n`
+
+  // Critical issues
+  if (viabilityScore.criticalIssues.length > 0) {
+    md += `### Critical Issues\n\n`
+    viabilityScore.criticalIssues.forEach(issue => {
+      md += `- ⚠️ ${issue}\n`
+    })
+    md += `\n`
+  }
+
+  // Recommended action
+  md += `### Recommended Action: **${action.toUpperCase()}**\n\n`
+  md += `${summary}\n\n`
+
+  // Rationale
+  if (rationale.length > 0) {
+    md += `**Key Considerations:**\n`
+    rationale.forEach(r => {
+      md += `- ${r}\n`
+    })
+    md += `\n`
+  }
+
+  // Path forward
+  if (improvements.length > 0 && action !== 'kill') {
+    md += `### Path Forward\n\n`
+    improvements.forEach((imp, i) => {
+      md += `${i + 1}. ${imp}\n`
+    })
+    md += `\n`
+  } else if (action === 'kill') {
+    md += `### If You Decide to Proceed Anyway\n\n`
+    md += `Despite this recommendation, if you choose to move forward, focus on:\n\n`
+    improvements.forEach((imp, i) => {
+      md += `${i + 1}. ${imp}\n`
+    })
+    md += `\n`
+  }
+
+  md += `---\n`
+  md += `*Assessment confidence: ${confidence}*\n`
+
+  return md
+}
+
+function getScoreLabel(score: number): string {
+  if (score >= 7) return '✅ Strong'
+  if (score >= 5) return '⚡ Needs work'
+  if (score >= 3) return '⚠️ Weak'
+  return '❌ Critical'
 }
 
 export function createProductBriefGenerator(): ProductBriefGenerator {

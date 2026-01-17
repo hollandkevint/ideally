@@ -85,6 +85,88 @@ export interface ViabilityAssessment {
   reasoning: string;
 }
 
+// =============================================================================
+// Story 6.3: Kill Recommendation System - Detailed Viability
+// =============================================================================
+
+/**
+ * Detailed viability score with dimension breakdown
+ * Story 6.3: Transparent scoring by dimension
+ */
+export interface ViabilityScore {
+  overall: number; // 1-10
+  dimensions: {
+    problemClarity: number;      // Is the problem well-defined?
+    targetUserClarity: number;   // Who is this for?
+    solutionFit: number;         // Does solution address problem?
+    competitiveMoat: number;     // Why won't others copy?
+    revenueViability: number;    // Can this make money?
+    technicalFeasibility: number; // Can this be built?
+  };
+  criticalIssues: string[];
+  improvementOpportunities: string[];
+}
+
+/**
+ * Kill recommendation output
+ * Story 6.3: Structured recommendation for output generators
+ */
+export interface KillRecommendation {
+  action: 'proceed' | 'pivot' | 'kill';
+  confidence: 'high' | 'medium' | 'low';
+  viabilityScore: ViabilityScore;
+  summary: string;
+  rationale: string[];
+  improvements: string[];
+}
+
+/**
+ * Escalation prompt templates
+ * Story 6.3: Natural language templates for each escalation level
+ */
+export const ESCALATION_PROMPTS: Record<KillEscalationLevel, string> = {
+  none: '',
+  diplomatic: `Based on our discussion, I'm noticing some potential challenges that we should explore:
+
+{issues}
+
+I want to understand these better before we proceed. Can you help me understand your thinking on these points?`,
+
+  probe: `I need to challenge you directly on something important:
+
+{issue}
+
+This is a critical assumption that could make or break your idea. How would you address this concern?`,
+
+  explicit: `I've been thinking carefully about everything you've shared, and I need to be completely honest with you:
+
+{recommendation}
+
+Here's my reasoning:
+{rationale}
+
+You've done good work exploring this, but I think pursuing this path as-is would lead to:
+{consequences}`,
+
+  kill_score: `## Viability Assessment
+
+**Overall Score: {score}/10**
+
+| Dimension | Score | Notes |
+|-----------|-------|-------|
+{dimension_table}
+
+### Critical Issues
+{critical_issues}
+
+### Recommended Action: {action}
+{action_rationale}
+
+### If You Want to Proceed Anyway
+Here's what you'd need to address to improve viability:
+{improvements}`,
+};
+
 /**
  * Session state for tracking mode transitions and kill decisions
  */
@@ -1490,4 +1572,288 @@ You are shifting from ${fromBehavior.name} mode to ${toBehavior.name} mode.
 - Role: ${toBehavior.role}
 - Behaviors: ${toBehavior.behaviors.slice(0, 2).join('; ')}
 `;
+}
+
+// =============================================================================
+// Story 6.3: Kill Recommendation System - Helper Functions
+// =============================================================================
+
+/**
+ * Calculate detailed viability score with dimensions
+ * Story 6.3: Transparent scoring by dimension
+ *
+ * @param concerns - List of identified concerns
+ * @param strengths - List of identified strengths
+ * @param conversationContext - Optional context for more nuanced scoring
+ * @returns Detailed viability score
+ */
+export function calculateDetailedViability(
+  concerns: string[],
+  strengths: string[],
+  conversationContext?: {
+    problemDiscussed: boolean;
+    targetUserDefined: boolean;
+    competitorsMentioned: boolean;
+    revenueModelDiscussed: boolean;
+    technicalApproachDiscussed: boolean;
+  }
+): ViabilityScore {
+  // Base dimension scores (5 = neutral)
+  const dimensions = {
+    problemClarity: 5,
+    targetUserClarity: 5,
+    solutionFit: 5,
+    competitiveMoat: 5,
+    revenueViability: 5,
+    technicalFeasibility: 5,
+  };
+
+  // Adjust based on concerns (lower scores)
+  concerns.forEach((concern) => {
+    const lowerConcern = concern.toLowerCase();
+
+    if (lowerConcern.includes('problem') || lowerConcern.includes('need') || lowerConcern.includes('pain')) {
+      dimensions.problemClarity = Math.max(1, dimensions.problemClarity - 1.5);
+    }
+    if (lowerConcern.includes('user') || lowerConcern.includes('customer') || lowerConcern.includes('audience')) {
+      dimensions.targetUserClarity = Math.max(1, dimensions.targetUserClarity - 1.5);
+    }
+    if (lowerConcern.includes('solution') || lowerConcern.includes('fit') || lowerConcern.includes('address')) {
+      dimensions.solutionFit = Math.max(1, dimensions.solutionFit - 1.5);
+    }
+    if (lowerConcern.includes('competition') || lowerConcern.includes('competitor') || lowerConcern.includes('moat')) {
+      dimensions.competitiveMoat = Math.max(1, dimensions.competitiveMoat - 1.5);
+    }
+    if (lowerConcern.includes('revenue') || lowerConcern.includes('money') || lowerConcern.includes('pricing')) {
+      dimensions.revenueViability = Math.max(1, dimensions.revenueViability - 1.5);
+    }
+    if (lowerConcern.includes('technical') || lowerConcern.includes('build') || lowerConcern.includes('feasib')) {
+      dimensions.technicalFeasibility = Math.max(1, dimensions.technicalFeasibility - 1.5);
+    }
+  });
+
+  // Adjust based on strengths (raise scores)
+  strengths.forEach((strength) => {
+    const lowerStrength = strength.toLowerCase();
+
+    if (lowerStrength.includes('problem') || lowerStrength.includes('need') || lowerStrength.includes('pain')) {
+      dimensions.problemClarity = Math.min(10, dimensions.problemClarity + 1.2);
+    }
+    if (lowerStrength.includes('user') || lowerStrength.includes('customer') || lowerStrength.includes('audience')) {
+      dimensions.targetUserClarity = Math.min(10, dimensions.targetUserClarity + 1.2);
+    }
+    if (lowerStrength.includes('solution') || lowerStrength.includes('fit') || lowerStrength.includes('address')) {
+      dimensions.solutionFit = Math.min(10, dimensions.solutionFit + 1.2);
+    }
+    if (lowerStrength.includes('unique') || lowerStrength.includes('different') || lowerStrength.includes('moat')) {
+      dimensions.competitiveMoat = Math.min(10, dimensions.competitiveMoat + 1.2);
+    }
+    if (lowerStrength.includes('revenue') || lowerStrength.includes('money') || lowerStrength.includes('pricing')) {
+      dimensions.revenueViability = Math.min(10, dimensions.revenueViability + 1.2);
+    }
+    if (lowerStrength.includes('technical') || lowerStrength.includes('build') || lowerStrength.includes('feasib')) {
+      dimensions.technicalFeasibility = Math.min(10, dimensions.technicalFeasibility + 1.2);
+    }
+  });
+
+  // Boost scores if context shows discussion occurred
+  if (conversationContext) {
+    if (conversationContext.problemDiscussed) dimensions.problemClarity += 0.5;
+    if (conversationContext.targetUserDefined) dimensions.targetUserClarity += 0.5;
+    if (conversationContext.competitorsMentioned) dimensions.competitiveMoat += 0.5;
+    if (conversationContext.revenueModelDiscussed) dimensions.revenueViability += 0.5;
+    if (conversationContext.technicalApproachDiscussed) dimensions.technicalFeasibility += 0.5;
+  }
+
+  // Cap all dimensions at 10
+  Object.keys(dimensions).forEach((key) => {
+    const k = key as keyof typeof dimensions;
+    dimensions[k] = Math.min(10, Math.max(1, Math.round(dimensions[k] * 10) / 10));
+  });
+
+  // Calculate overall score
+  const overall = Object.values(dimensions).reduce((a, b) => a + b, 0) / 6;
+
+  // Identify critical issues (dimensions below 4)
+  const criticalIssues: string[] = [];
+  if (dimensions.problemClarity < 4) criticalIssues.push('Problem is not clearly defined');
+  if (dimensions.targetUserClarity < 4) criticalIssues.push('Target user is unclear or too broad');
+  if (dimensions.solutionFit < 4) criticalIssues.push('Solution may not adequately address the problem');
+  if (dimensions.competitiveMoat < 4) criticalIssues.push('No clear competitive advantage or moat');
+  if (dimensions.revenueViability < 4) criticalIssues.push('Revenue model is unrealistic or undefined');
+  if (dimensions.technicalFeasibility < 4) criticalIssues.push('Technical approach may be infeasible');
+
+  // Identify improvement opportunities (dimensions 4-6)
+  const improvementOpportunities: string[] = [];
+  if (dimensions.problemClarity >= 4 && dimensions.problemClarity <= 6) {
+    improvementOpportunities.push('Sharpen problem definition with specific user pain points');
+  }
+  if (dimensions.targetUserClarity >= 4 && dimensions.targetUserClarity <= 6) {
+    improvementOpportunities.push('Define target user more specifically (demographics, behaviors)');
+  }
+  if (dimensions.solutionFit >= 4 && dimensions.solutionFit <= 6) {
+    improvementOpportunities.push('Validate solution-problem fit with user interviews');
+  }
+  if (dimensions.competitiveMoat >= 4 && dimensions.competitiveMoat <= 6) {
+    improvementOpportunities.push('Identify unique differentiators or defensible advantages');
+  }
+  if (dimensions.revenueViability >= 4 && dimensions.revenueViability <= 6) {
+    improvementOpportunities.push('Test pricing assumptions with potential customers');
+  }
+  if (dimensions.technicalFeasibility >= 4 && dimensions.technicalFeasibility <= 6) {
+    improvementOpportunities.push('Prototype core technical components to validate approach');
+  }
+
+  return {
+    overall: Math.round(overall * 10) / 10,
+    dimensions,
+    criticalIssues,
+    improvementOpportunities,
+  };
+}
+
+/**
+ * Generate a kill recommendation based on viability score
+ * Story 6.3: Creates structured recommendation for outputs
+ *
+ * @param viabilityScore - The calculated viability score
+ * @param concerns - List of concerns from exploration
+ * @param strengths - List of strengths identified
+ * @returns Kill recommendation with action, rationale, and improvements
+ */
+export function generateKillRecommendation(
+  viabilityScore: ViabilityScore,
+  concerns: string[],
+  strengths: string[]
+): KillRecommendation {
+  const overall = viabilityScore.overall;
+
+  // Determine action and confidence
+  let action: 'proceed' | 'pivot' | 'kill';
+  let confidence: 'high' | 'medium' | 'low';
+
+  if (overall >= 7) {
+    action = 'proceed';
+    confidence = overall >= 8 ? 'high' : 'medium';
+  } else if (overall >= 5) {
+    action = 'pivot';
+    confidence = 'medium';
+  } else if (overall >= 3) {
+    action = 'pivot';
+    confidence = 'low';
+  } else {
+    action = 'kill';
+    confidence = overall < 2 ? 'high' : 'medium';
+  }
+
+  // Generate summary based on action
+  let summary: string;
+  switch (action) {
+    case 'proceed':
+      summary = `This idea shows strong fundamentals with an overall viability score of ${overall}/10. While there are areas for improvement, the core concept is solid and worth pursuing.`;
+      break;
+    case 'pivot':
+      summary = `This idea has potential but needs significant refinement. With a score of ${overall}/10, I recommend pivoting to address the ${viabilityScore.criticalIssues.length} critical issues identified.`;
+      break;
+    case 'kill':
+      summary = `Based on our thorough exploration, I cannot recommend pursuing this idea as-is. With a score of ${overall}/10, the fundamental challenges outweigh the potential.`;
+      break;
+  }
+
+  // Generate rationale from concerns and scores
+  const rationale: string[] = [];
+  if (concerns.length > 0) {
+    rationale.push(`Key concerns identified: ${concerns.slice(0, 3).join('; ')}`);
+  }
+  viabilityScore.criticalIssues.forEach((issue) => {
+    rationale.push(issue);
+  });
+  if (strengths.length > 0 && action !== 'kill') {
+    rationale.push(`Notable strengths: ${strengths.slice(0, 2).join('; ')}`);
+  }
+
+  return {
+    action,
+    confidence,
+    viabilityScore,
+    summary,
+    rationale,
+    improvements: viabilityScore.improvementOpportunities,
+  };
+}
+
+/**
+ * Generate escalation prompt from template
+ * Story 6.3: Fills in escalation template with specific data
+ *
+ * @param level - The escalation level
+ * @param data - Data to fill into the template
+ * @returns Formatted escalation prompt
+ */
+export function generateEscalationPrompt(
+  level: KillEscalationLevel,
+  data: {
+    issues?: string[];
+    issue?: string;
+    recommendation?: string;
+    rationale?: string[];
+    consequences?: string[];
+    score?: number;
+    dimensions?: ViabilityScore['dimensions'];
+    criticalIssues?: string[];
+    action?: string;
+    actionRationale?: string;
+    improvements?: string[];
+  }
+): string {
+  let template = ESCALATION_PROMPTS[level];
+
+  if (level === 'none' || !template) {
+    return '';
+  }
+
+  // Replace placeholders
+  if (data.issues) {
+    template = template.replace('{issues}', data.issues.map(i => `- ${i}`).join('\n'));
+  }
+  if (data.issue) {
+    template = template.replace('{issue}', data.issue);
+  }
+  if (data.recommendation) {
+    template = template.replace('{recommendation}', data.recommendation);
+  }
+  if (data.rationale) {
+    template = template.replace('{rationale}', data.rationale.map(r => `- ${r}`).join('\n'));
+  }
+  if (data.consequences) {
+    template = template.replace('{consequences}', data.consequences.map(c => `- ${c}`).join('\n'));
+  }
+  if (data.score !== undefined) {
+    template = template.replace('{score}', data.score.toString());
+  }
+  if (data.dimensions) {
+    const rows = [
+      `| Problem Clarity | ${data.dimensions.problemClarity}/10 | How well-defined is the problem? |`,
+      `| Target User | ${data.dimensions.targetUserClarity}/10 | Who is this for? |`,
+      `| Solution Fit | ${data.dimensions.solutionFit}/10 | Does solution address problem? |`,
+      `| Competitive Moat | ${data.dimensions.competitiveMoat}/10 | Why won't others copy? |`,
+      `| Revenue Viability | ${data.dimensions.revenueViability}/10 | Can this make money? |`,
+      `| Technical Feasibility | ${data.dimensions.technicalFeasibility}/10 | Can this be built? |`,
+    ];
+    template = template.replace('{dimension_table}', rows.join('\n'));
+  }
+  if (data.criticalIssues) {
+    template = template.replace('{critical_issues}', data.criticalIssues.map(i => `- ${i}`).join('\n') || '- None identified');
+  }
+  if (data.action) {
+    template = template.replace('{action}', data.action.toUpperCase());
+  }
+  if (data.actionRationale) {
+    template = template.replace('{action_rationale}', data.actionRationale);
+  }
+  if (data.improvements) {
+    template = template.replace('{improvements}', data.improvements.map(i => `- ${i}`).join('\n') || '- Continue as planned');
+  }
+
+  return template;
 }
