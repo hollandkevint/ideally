@@ -217,6 +217,8 @@ export interface CoachingContext {
     role: 'user' | 'assistant';
     content: string;
   }>;
+  // Dynamic context markdown (Phase 2: Context Injection)
+  dynamicContextMarkdown?: string;
 }
 
 export class MaryPersona {
@@ -271,6 +273,11 @@ export class MaryPersona {
       sections.push(this.generateSubPersonaSection(context));
       sections.push(this.generateKillDecisionSection(context));
       sections.push(this.generateAntiSycophancySection());
+    }
+
+    // Add dynamic context if available (Phase 2: Context Injection)
+    if (context?.dynamicContextMarkdown) {
+      sections.push(`DYNAMIC SESSION CONTEXT:\n${context.dynamicContextMarkdown}`);
     }
 
     return sections.filter(Boolean).join('\n\n');

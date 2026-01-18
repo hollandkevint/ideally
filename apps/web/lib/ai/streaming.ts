@@ -9,6 +9,13 @@ export interface StreamChunk {
     coachingContext?: CoachingContext;
     messageId?: string;
     timestamp?: string;
+    isGuest?: boolean;
+    subPersona?: {
+      currentMode: string;
+      detectedUserState: string;
+      exchangeCount: number;
+      userControlEnabled: boolean;
+    };
   };
   errorDetails?: {
     retryable?: boolean;
@@ -21,6 +28,8 @@ export interface StreamChunk {
     cost_estimate_usd: number;
   };
   limitStatus?: MessageLimitStatus | null;
+  // Additional data to return on completion (e.g., updated sub-persona state)
+  additionalData?: Record<string, unknown>;
 }
 
 export class StreamEncoder {
@@ -51,8 +60,12 @@ export class StreamEncoder {
     return this.encodeChunk(chunk);
   }
 
-  encodeComplete(usage?: StreamChunk['usage'], limitStatus?: MessageLimitStatus | null): Uint8Array {
-    const chunk: StreamChunk = { type: 'complete', usage, limitStatus };
+  encodeComplete(
+    usage?: StreamChunk['usage'],
+    limitStatus?: MessageLimitStatus | null,
+    additionalData?: Record<string, unknown>
+  ): Uint8Array {
+    const chunk: StreamChunk = { type: 'complete', usage, limitStatus, additionalData };
     return this.encodeChunk(chunk);
   }
 

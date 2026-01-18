@@ -1,5 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
+import type { Tool, ContentBlock, ToolUseBlock, TextBlock } from '@anthropic-ai/sdk/resources/messages';
 import { maryPersona, type CoachingContext } from './mary-persona';
+import { MARY_TOOLS } from './tools/index';
 
 // Initialize Anthropic client (lazy initialization to avoid build-time errors)
 let anthropic: Anthropic | null = null;
@@ -57,6 +59,20 @@ export interface StreamingResponse {
 export interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+export interface ToolUseResult {
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+
+export interface MessageWithToolUse {
+  id: string;
+  textContent: string;
+  toolUses: ToolUseResult[];
+  stopReason: 'end_turn' | 'tool_use' | 'max_tokens' | 'stop_sequence';
+  usage?: TokenUsage;
 }
 
 export class ClaudeClient {
@@ -212,6 +228,188 @@ export class ClaudeClient {
     } catch (error) {
       console.error('Claude connection test failed:', error);
       return false;
+    }
+  }
+
+  /**
+   * Send a message with tool support (non-streaming).
+   * Returns the full response including any tool use blocks.
+   */
+  async sendMessageWithTools(
+    message: string,
+    conversationHistory: ConversationMessage[] = [],
+    coachingContext?: CoachingContext,
+    options?: {
+      tools?: Tool[];
+      maxTokens?: number;
+    }
+  ): Promise<MessageWithToolUse> {
+    try {
+      console.log('[Claude Client] sendMessageWithTools called', {
+        messageLength: message.length,
+        historyLength: conversationHistory.length,
+        hasCoachingContext: !!coachingContext,
+        toolCount: options?.tools?.length || MARY_TOOLS.length,
+        timestamp: new Date().toISOString()
+      });
+
+      const cleanHistory = conversationHistory.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      const messages = [
+        ...cleanHistory,
+        { role: 'user' as const, content: message }
+      ];
+
+      const client = getAnthropicClient();
+      const tools = options?.tools || MARY_TOOLS;
+
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: options?.maxTokens || 4096,
+        temperature: 0.7,
+        system: maryPersona.generateSystemPrompt(coachingContext),
+        messages: messages,
+        tools: tools,
+      });
+
+      console.log('[Claude Client] Response received', {
+        stopReason: response.stop_reason,
+        contentBlocks: response.content.length,
+      });
+
+      // Extract text and tool use blocks
+      let textContent = '';
+      const toolUses: ToolUseResult[] = [];
+
+      for (const block of response.content) {
+        if (block.type === 'text') {
+          textContent += (block as TextBlock).text;
+        } else if (block.type === 'tool_use') {
+          const toolBlock = block as ToolUseBlock;
+          toolUses.push({
+            id: toolBlock.id,
+            name: toolBlock.name,
+            input: toolBlock.input as Record<string, unknown>,
+          });
+        }
+      }
+
+      // Calculate token usage
+      const usage: TokenUsage = {
+        input_tokens: response.usage.input_tokens,
+        output_tokens: response.usage.output_tokens,
+        total_tokens: response.usage.input_tokens + response.usage.output_tokens,
+        cost_estimate_usd: (response.usage.input_tokens * 0.000003) + (response.usage.output_tokens * 0.000015),
+      };
+
+      if (this.tokenUsageCallback) {
+        this.tokenUsageCallback(usage);
+      }
+
+      return {
+        id: crypto.randomUUID(),
+        textContent,
+        toolUses,
+        stopReason: response.stop_reason as MessageWithToolUse['stopReason'],
+        usage,
+      };
+    } catch (error) {
+      console.error('Claude API Error (with tools):', error);
+      throw new ClaudeApiError(`Failed to send message with tools: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Continue a conversation after tool execution.
+   * This is used to send tool results back to Claude.
+   */
+  async continueWithToolResults(
+    conversationHistory: Array<{
+      role: 'user' | 'assistant';
+      content: string | ContentBlock[];
+    }>,
+    toolResults: Array<{
+      type: 'tool_result';
+      tool_use_id: string;
+      content: string;
+    }>,
+    coachingContext?: CoachingContext,
+    options?: {
+      tools?: Tool[];
+      maxTokens?: number;
+    }
+  ): Promise<MessageWithToolUse> {
+    try {
+      console.log('[Claude Client] continueWithToolResults called', {
+        historyLength: conversationHistory.length,
+        toolResultCount: toolResults.length,
+        timestamp: new Date().toISOString()
+      });
+
+      const client = getAnthropicClient();
+      const tools = options?.tools || MARY_TOOLS;
+
+      // Build messages array with tool results
+      const messages = [
+        ...conversationHistory,
+        { role: 'user' as const, content: toolResults }
+      ];
+
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: options?.maxTokens || 4096,
+        temperature: 0.7,
+        system: maryPersona.generateSystemPrompt(coachingContext),
+        messages: messages as Anthropic.MessageParam[],
+        tools: tools,
+      });
+
+      console.log('[Claude Client] Tool continuation response received', {
+        stopReason: response.stop_reason,
+        contentBlocks: response.content.length,
+      });
+
+      // Extract text and tool use blocks
+      let textContent = '';
+      const toolUses: ToolUseResult[] = [];
+
+      for (const block of response.content) {
+        if (block.type === 'text') {
+          textContent += (block as TextBlock).text;
+        } else if (block.type === 'tool_use') {
+          const toolBlock = block as ToolUseBlock;
+          toolUses.push({
+            id: toolBlock.id,
+            name: toolBlock.name,
+            input: toolBlock.input as Record<string, unknown>,
+          });
+        }
+      }
+
+      const usage: TokenUsage = {
+        input_tokens: response.usage.input_tokens,
+        output_tokens: response.usage.output_tokens,
+        total_tokens: response.usage.input_tokens + response.usage.output_tokens,
+        cost_estimate_usd: (response.usage.input_tokens * 0.000003) + (response.usage.output_tokens * 0.000015),
+      };
+
+      if (this.tokenUsageCallback) {
+        this.tokenUsageCallback(usage);
+      }
+
+      return {
+        id: crypto.randomUUID(),
+        textContent,
+        toolUses,
+        stopReason: response.stop_reason as MessageWithToolUse['stopReason'],
+        usage,
+      };
+    } catch (error) {
+      console.error('Claude API Error (tool continuation):', error);
+      throw new ClaudeApiError(`Failed to continue with tool results: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

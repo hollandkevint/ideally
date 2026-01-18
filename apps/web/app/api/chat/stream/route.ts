@@ -1,18 +1,133 @@
 import { NextRequest } from 'next/server';
-import { claudeClient } from '@/lib/ai/claude-client';
+import { claudeClient, type ConversationMessage } from '@/lib/ai/claude-client';
 import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
 import { createClient } from '@/lib/supabase/server';
-import { CoachingContext } from '@/lib/ai/mary-persona';
-import { WorkspaceContextBuilder, ConversationContextManager } from '@/lib/ai/workspace-context';
+import { CoachingContext, SubPersonaSessionState } from '@/lib/ai/mary-persona';
+import { WorkspaceContextBuilder, ConversationContextManager, BmadSessionData } from '@/lib/ai/workspace-context';
+import { ContextBuilder } from '@/lib/ai/context-builder';
 import {
   incrementMessageCount,
   checkMessageLimit,
   getLimitReachedMessage,
 } from '@/lib/bmad/message-limit-manager';
+import { ToolExecutor, type ToolCall } from '@/lib/ai/tool-executor';
+import type { ContentBlock } from '@anthropic-ai/sdk/resources/messages';
+
+// Maximum number of tool execution rounds to prevent infinite loops
+const MAX_TOOL_ROUNDS = 5;
+
+/**
+ * Execute the agentic tool loop.
+ * Sends message, executes any tool calls, continues until end_turn.
+ */
+async function executeAgenticLoop(
+  message: string,
+  conversationHistory: ConversationMessage[],
+  coachingContext: CoachingContext | undefined,
+  sessionId: string,
+  userId: string
+): Promise<{
+  finalText: string;
+  toolsExecuted: Array<{ name: string; success: boolean }>;
+  rounds: number;
+}> {
+  const toolExecutor = new ToolExecutor({ sessionId, userId });
+  const toolsExecuted: Array<{ name: string; success: boolean }> = [];
+  let rounds = 0;
+  let accumulatedText = '';
+
+  // Build conversation for multi-turn tool use
+  const conversation: Array<{
+    role: 'user' | 'assistant';
+    content: string | ContentBlock[];
+  }> = conversationHistory.map(msg => ({
+    role: msg.role,
+    content: msg.content
+  }));
+
+  // Add initial user message
+  conversation.push({ role: 'user', content: message });
+
+  // Initial call with tools
+  let response = await claudeClient.sendMessageWithTools(
+    message,
+    conversationHistory,
+    coachingContext
+  );
+
+  accumulatedText += response.textContent;
+
+  // Agentic loop: keep going while Claude wants to use tools
+  while (response.stopReason === 'tool_use' && rounds < MAX_TOOL_ROUNDS) {
+    rounds++;
+
+    console.log('[Agentic Loop] Round', rounds, 'processing', response.toolUses.length, 'tool calls');
+
+    // Convert tool uses to ToolCall format
+    const toolCalls: ToolCall[] = response.toolUses.map(tu => ({
+      id: tu.id,
+      name: tu.name,
+      input: tu.input
+    }));
+
+    // Execute all tools
+    const results = await toolExecutor.executeAll(toolCalls);
+
+    // Track what was executed
+    results.forEach(result => {
+      toolsExecuted.push({
+        name: result.toolName,
+        success: result.result.success
+      });
+    });
+
+    // Format results for Claude
+    const toolResultsForClaude = ToolExecutor.formatResultsForClaude(results);
+
+    // Add assistant's response (with tool use) to conversation
+    // We need to reconstruct the content blocks
+    const assistantContent: ContentBlock[] = [];
+    if (response.textContent) {
+      assistantContent.push({
+        type: 'text',
+        text: response.textContent
+      } as ContentBlock);
+    }
+    response.toolUses.forEach(tu => {
+      assistantContent.push({
+        type: 'tool_use',
+        id: tu.id,
+        name: tu.name,
+        input: tu.input
+      } as ContentBlock);
+    });
+    conversation.push({ role: 'assistant', content: assistantContent });
+
+    // Continue the conversation with tool results
+    response = await claudeClient.continueWithToolResults(
+      conversation,
+      toolResultsForClaude,
+      coachingContext
+    );
+
+    accumulatedText += response.textContent;
+  }
+
+  if (rounds >= MAX_TOOL_ROUNDS && response.stopReason === 'tool_use') {
+    console.warn('[Agentic Loop] Hit max rounds limit, stopping');
+    accumulatedText += '\n\n(I reached my processing limit for this turn. Let me know if you need me to continue.)';
+  }
+
+  return {
+    finalText: accumulatedText,
+    toolsExecuted,
+    rounds
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, workspaceId, conversationHistory, coachingContext } = await request.json();
+    const { message, workspaceId, conversationHistory, coachingContext, useTools } = await request.json();
 
     // Log incoming request (sanitized)
     console.log('[Chat Stream] Incoming request:', {
@@ -20,6 +135,7 @@ export async function POST(request: NextRequest) {
       workspaceId,
       historyLength: conversationHistory?.length || 0,
       hasCoachingContext: !!coachingContext,
+      useTools: !!useTools,
       timestamp: new Date().toISOString()
     });
 
@@ -144,24 +260,47 @@ export async function POST(request: NextRequest) {
 
     // Build or use provided coaching context
     let finalCoachingContext: CoachingContext | undefined = coachingContext;
-    
+    let bmadSessionForUpdate: BmadSessionData | null = null;
+
     if (!finalCoachingContext) {
       try {
-        // Try to get current BMad session data
+        // Try to get current BMad session data (including sub_persona_state)
         const { data: bmadSession } = await supabase
           .from('bmad_sessions')
-          .select('*')
+          .select('id, pathway, current_phase, overall_completion, sub_persona_state')
           .eq('workspace_id', workspaceId)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
 
+        if (bmadSession) {
+          // Map to BmadSessionData interface
+          bmadSessionForUpdate = {
+            id: bmadSession.id,
+            pathway: bmadSession.pathway,
+            current_phase: bmadSession.current_phase,
+            progress: bmadSession.overall_completion || 0,
+            context: {},
+            sub_persona_state: bmadSession.sub_persona_state as SubPersonaSessionState | null,
+          };
+        }
+
         finalCoachingContext = await WorkspaceContextBuilder.buildCoachingContext(
           workspaceId,
           user.id,
-          bmadSession
+          bmadSessionForUpdate || undefined
         );
+
+        // Phase 2: Enrich with dynamic context from database
+        if (bmadSessionForUpdate?.id) {
+          const dynamicContextMarkdown = await ContextBuilder.getFormattedContext(
+            bmadSessionForUpdate.id,
+            user.id,
+            bmadSessionForUpdate.current_phase
+          );
+          finalCoachingContext.dynamicContextMarkdown = dynamicContextMarkdown;
+        }
       } catch (error) {
         console.warn('Could not build coaching context:', error);
         // Continue without context
@@ -174,6 +313,27 @@ export async function POST(request: NextRequest) {
       historyWithContext,
       6000 // Leave room for response
     );
+
+    // Update sub-persona state based on user message (dynamic mode shifting)
+    let updatedSubPersonaState: SubPersonaSessionState | null = null;
+    if (finalCoachingContext?.subPersonaState) {
+      // Include recent messages for user state detection
+      finalCoachingContext.recentMessages = managedHistory.slice(-10);
+
+      // Update state (detects user emotional state and may shift mode)
+      updatedSubPersonaState = WorkspaceContextBuilder.updateSubPersonaState(
+        finalCoachingContext,
+        message,
+        managedHistory
+      );
+
+      console.log('[Chat Stream] Sub-persona state updated:', {
+        currentMode: updatedSubPersonaState?.currentMode,
+        detectedUserState: updatedSubPersonaState?.detectedUserState,
+        exchangeCount: updatedSubPersonaState?.exchangeCount,
+        userControlEnabled: updatedSubPersonaState?.userControlEnabled,
+      });
+    }
 
     console.log('[Chat Stream] Preparing to call Claude:', {
       messageLength: message.length,
@@ -189,56 +349,104 @@ export async function POST(request: NextRequest) {
         try {
           console.log('[Chat Stream] Stream started, sending metadata');
 
-          // Send initial metadata
+          // Send initial metadata (including sub-persona mode for UI)
           controller.enqueue(encoder.encodeMetadata({
             coachingContext: finalCoachingContext,
             messageId: `msg-${Date.now()}`,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            // Sub-persona system metadata
+            subPersona: updatedSubPersonaState ? {
+              currentMode: updatedSubPersonaState.currentMode,
+              detectedUserState: updatedSubPersonaState.detectedUserState,
+              exchangeCount: updatedSubPersonaState.exchangeCount,
+              userControlEnabled: updatedSubPersonaState.userControlEnabled,
+            } : undefined,
+            useTools: !!useTools,
           }));
 
-          console.log('[Chat Stream] Calling Claude API...');
+          console.log('[Chat Stream] Calling Claude API...', { useTools: !!useTools });
 
-          // Get Claude streaming response with coaching context
-          const claudeResponse = await claudeClient.sendMessage(
-            message,
-            managedHistory,
-            finalCoachingContext
-          );
-
-          console.log('[Chat Stream] Claude API responded, starting to stream content');
-          
-          // Stream the response
           let fullContent = '';
-          const reader = claudeResponse.content[Symbol.asyncIterator] ? 
-            claudeResponse.content[Symbol.asyncIterator]() : null;
-          
-          if (reader) {
-            // Stream chunks from async iterator
-            while (true) {
-              const { done, value } = await reader.next();
-              if (done) break;
-              
-              if (value) {
-                fullContent += value;
-                controller.enqueue(encoder.encodeContent(value));
-                
-                // Add small delay for better visual effect
-                await new Promise(resolve => setTimeout(resolve, 10));
-              }
-            }
-          } else {
-            // Fallback: Send full content at once
-            fullContent = claudeResponse.content as string;
-            
-            // Simulate streaming for better UX
+          let toolsExecuted: Array<{ name: string; success: boolean }> = [];
+          let agenticRounds = 0;
+
+          // Branch: Agentic loop with tools OR standard streaming
+          if (useTools && bmadSessionForUpdate?.id) {
+            // Use agentic loop with tool execution
+            console.log('[Chat Stream] Using agentic tool loop');
+
+            const agenticResult = await executeAgenticLoop(
+              message,
+              managedHistory,
+              finalCoachingContext,
+              bmadSessionForUpdate.id,
+              user.id
+            );
+
+            fullContent = agenticResult.finalText;
+            toolsExecuted = agenticResult.toolsExecuted;
+            agenticRounds = agenticResult.rounds;
+
+            console.log('[Chat Stream] Agentic loop complete:', {
+              textLength: fullContent.length,
+              toolsExecuted: toolsExecuted.length,
+              rounds: agenticRounds
+            });
+
+            // Simulate streaming the accumulated text for better UX
             const words = fullContent.split(' ');
-            
             for (let i = 0; i < words.length; i++) {
               controller.enqueue(encoder.encodeContent(words[i] + (i < words.length - 1 ? ' ' : '')));
-              
               // Variable delay based on word length for natural feel
-              const delay = Math.max(20, Math.min(100, words[i].length * 10));
+              const delay = Math.max(10, Math.min(50, words[i].length * 5));
               await new Promise(resolve => setTimeout(resolve, delay));
+            }
+
+          } else {
+            // Standard streaming (no tools)
+            console.log('[Chat Stream] Using standard streaming');
+
+            // Get Claude streaming response with coaching context
+            const claudeResponse = await claudeClient.sendMessage(
+              message,
+              managedHistory,
+              finalCoachingContext
+            );
+
+            console.log('[Chat Stream] Claude API responded, starting to stream content');
+
+            // Stream the response
+            const reader = claudeResponse.content[Symbol.asyncIterator] ?
+              claudeResponse.content[Symbol.asyncIterator]() : null;
+
+            if (reader) {
+              // Stream chunks from async iterator
+              while (true) {
+                const { done, value } = await reader.next();
+                if (done) break;
+
+                if (value) {
+                  fullContent += value;
+                  controller.enqueue(encoder.encodeContent(value));
+
+                  // Add small delay for better visual effect
+                  await new Promise(resolve => setTimeout(resolve, 10));
+                }
+              }
+            } else {
+              // Fallback: Send full content at once
+              fullContent = claudeResponse.content as string;
+
+              // Simulate streaming for better UX
+              const words = fullContent.split(' ');
+
+              for (let i = 0; i < words.length; i++) {
+                controller.enqueue(encoder.encodeContent(words[i] + (i < words.length - 1 ? ' ' : '')));
+
+                // Variable delay based on word length for natural feel
+                const delay = Math.max(20, Math.min(100, words[i].length * 10));
+                await new Promise(resolve => setTimeout(resolve, delay));
+              }
             }
           }
 
@@ -249,16 +457,39 @@ export async function POST(request: NextRequest) {
           // Message count was already incremented atomically BEFORE processing
           // to prevent race conditions (see lines 109-144)
 
+          // Persist updated sub-persona state to database
+          if (updatedSubPersonaState && bmadSessionForUpdate?.id) {
+            try {
+              const { error: updateError } = await supabase
+                .from('bmad_sessions')
+                .update({ sub_persona_state: updatedSubPersonaState })
+                .eq('id', bmadSessionForUpdate.id);
+
+              if (updateError) {
+                console.error('[Chat Stream] Failed to persist sub-persona state:', updateError);
+              } else {
+                console.log('[Chat Stream] Sub-persona state persisted:', {
+                  sessionId: bmadSessionForUpdate.id,
+                  mode: updatedSubPersonaState.currentMode,
+                });
+              }
+            } catch (persistError) {
+              console.error('[Chat Stream] Error persisting sub-persona state:', persistError);
+            }
+          }
+
           console.log('[Chat Stream] Stream complete:', {
             contentLength: fullContent.length,
-            usage: claudeResponse.usage,
             limitStatus,
+            toolsExecuted: toolsExecuted.length > 0 ? toolsExecuted : undefined,
+            agenticRounds: agenticRounds > 0 ? agenticRounds : undefined,
           });
 
-          // Send completion signal with usage data and limit status
+          // Send completion signal with usage data, limit status, and tool info
           controller.enqueue(encoder.encodeComplete(
-            claudeResponse.usage,
-            limitStatus
+            undefined, // Usage tracking happens inside agentic loop
+            limitStatus,
+            toolsExecuted.length > 0 ? { toolsExecuted, agenticRounds } : undefined
           ));
           controller.enqueue(encoder.encodeDone());
           controller.close();

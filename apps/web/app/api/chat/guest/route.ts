@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { claudeClient } from '@/lib/ai/claude-client';
 import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
+import { maryPersona, SubPersonaSessionState, CoachingContext } from '@/lib/ai/mary-persona';
 
 /**
  * Guest Chat Stream API
@@ -14,7 +15,7 @@ import { StreamEncoder, createStreamHeaders } from '@/lib/ai/streaming';
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, conversationHistory } = await request.json();
+    const { message, conversationHistory, subPersonaState: clientSubPersonaState } = await request.json();
 
     // Validate request
     if (!message) {
@@ -27,9 +28,30 @@ export async function POST(request: NextRequest) {
     // Limit conversation history to prevent abuse
     const limitedHistory = (conversationHistory || []).slice(-10);
 
+    // Initialize or use existing sub-persona state
+    // Guest sessions default to 'new-idea' pathway
+    let subPersonaState: SubPersonaSessionState;
+    if (clientSubPersonaState) {
+      // Restore state from client localStorage
+      subPersonaState = clientSubPersonaState;
+    } else {
+      // Initialize fresh state for new guest session
+      subPersonaState = maryPersona.initializeSubPersonaState('new-idea');
+    }
+
+    // Update sub-persona state based on user message
+    subPersonaState = maryPersona.updateSessionState(
+      subPersonaState,
+      message,
+      limitedHistory
+    );
+
     console.log('[Guest Chat] Request:', {
       messageLength: message.length,
       historyLength: limitedHistory.length,
+      currentMode: subPersonaState.currentMode,
+      detectedUserState: subPersonaState.detectedUserState,
+      exchangeCount: subPersonaState.exchangeCount,
       timestamp: new Date().toISOString()
     });
 
@@ -41,25 +63,31 @@ export async function POST(request: NextRequest) {
         try {
           console.log('[Guest Chat] Stream started');
 
-          // Send initial metadata
+          // Send initial metadata (including sub-persona mode)
           controller.enqueue(encoder.encodeMetadata({
             messageId: `guest-msg-${Date.now()}`,
             timestamp: new Date().toISOString(),
-            isGuest: true
+            isGuest: true,
+            // Sub-persona system metadata
+            subPersona: {
+              currentMode: subPersonaState.currentMode,
+              detectedUserState: subPersonaState.detectedUserState,
+              exchangeCount: subPersonaState.exchangeCount,
+              userControlEnabled: subPersonaState.userControlEnabled,
+            },
           }));
 
           console.log('[Guest Chat] Calling Claude API...');
 
-          // Guest-specific coaching context - basic Mary persona
-          const guestCoachingContext = {
-            mode: 'strategic-advisor',
-            focusAreas: ['business strategy', 'idea validation', 'problem solving'],
-            communicationStyle: 'conversational and encouraging',
-            constraints: [
-              'This is a guest session with limited features',
-              'Encourage signup for full access',
-              'Keep responses focused and actionable'
-            ]
+          // Guest-specific coaching context with sub-persona system
+          const guestCoachingContext: CoachingContext = {
+            currentBmadSession: {
+              pathway: 'new-idea',
+              phase: 'discovery',
+              progress: 0,
+            },
+            subPersonaState: subPersonaState,
+            recentMessages: limitedHistory,
           };
 
           // Get Claude streaming response
@@ -109,8 +137,11 @@ export async function POST(request: NextRequest) {
             usage: claudeResponse.usage
           });
 
-          // Send completion signal (no usage data for guests to prevent API exposure)
-          controller.enqueue(encoder.encodeComplete());
+          // Send completion signal with sub-persona state for client persistence
+          // (no usage data for guests to prevent API exposure)
+          controller.enqueue(encoder.encodeComplete(undefined, undefined, {
+            subPersonaState: subPersonaState, // Client should store this in localStorage
+          }));
           controller.enqueue(encoder.encodeDone());
           controller.close();
 

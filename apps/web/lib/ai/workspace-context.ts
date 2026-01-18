@@ -55,6 +55,15 @@ export class WorkspaceContextBuilder {
         if (currentSession.insights) {
           context.previousInsights = currentSession.insights.slice(-5); // Last 5 insights
         }
+
+        // Initialize or load sub-persona state
+        if (currentSession.sub_persona_state) {
+          // Use existing state from database
+          context.subPersonaState = currentSession.sub_persona_state;
+        } else {
+          // Initialize new sub-persona state based on pathway
+          context.subPersonaState = maryPersona.initializeSubPersonaState(currentSession.pathway);
+        }
       }
 
       return context;
@@ -145,6 +154,32 @@ export class WorkspaceContextBuilder {
     }
 
     return actions;
+  }
+
+  /**
+   * Update sub-persona state after a user message
+   * Returns the updated state for persistence to database
+   */
+  static updateSubPersonaState(
+    context: CoachingContext,
+    userMessage: string,
+    recentMessages: Array<{ role: 'user' | 'assistant'; content: string }>
+  ): SubPersonaSessionState | null {
+    if (!context.subPersonaState) {
+      return null;
+    }
+
+    // Update state with new message context
+    const updatedState = maryPersona.updateSessionState(
+      context.subPersonaState,
+      userMessage,
+      recentMessages
+    );
+
+    // Update context in place
+    context.subPersonaState = updatedState;
+
+    return updatedState;
   }
 
   static generateContextSummary(context: CoachingContext): string {
