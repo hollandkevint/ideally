@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C4785C"/>
+      <stop offset="100%" style="stop-color:#B56A4E"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square for iOS -->
+  <rect width="180" height="180" rx="40" fill="url(#bg)"/>
+  <!-- Stylized "T" with thinking bubble effect -->
+  <g fill="#FAF7F2">
+    <!-- Main T shape -->
+    <rect x="30" y="40" width="120" height="20" rx="4"/>
+    <rect x="75" y="40" width="30" height="105" rx="4"/>
+    <!-- Thought bubble dots -->
+    <circle cx="145" cy="50" r="10" opacity="0.9"/>
+    <circle cx="158" cy="35" r="6" opacity="0.7"/>
+    <circle cx="167" cy="24" r="4" opacity="0.5"/>
+  </g>
+</svg>

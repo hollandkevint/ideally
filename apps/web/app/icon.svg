@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C4785C"/>
+      <stop offset="100%" style="stop-color:#B56A4E"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)"/>
+  <!-- Stylized "T" with thinking bubble effect -->
+  <g fill="#FAF7F2">
+    <!-- Main T shape -->
+    <rect x="100" y="120" width="312" height="56" rx="8"/>
+    <rect x="220" y="120" width="72" height="280" rx="8"/>
+    <!-- Thought bubble dots (representing thinking/haven) -->
+    <circle cx="400" cy="140" r="24" opacity="0.9"/>
+    <circle cx="440" cy="100" r="16" opacity="0.7"/>
+    <circle cx="465" cy="70" r="10" opacity="0.5"/>
+  </g>
+</svg>
