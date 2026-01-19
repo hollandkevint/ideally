@@ -13,6 +13,8 @@ import {
   type RecommendActionInput,
   type GenerateDocumentInput,
   type UpdateContextInput,
+  type DiscoverPhaseActionsInput,
+  type DiscoverDocumentTypesInput,
 } from './tools/index';
 
 import {
@@ -24,6 +26,12 @@ import {
 } from './tools/session-tools';
 
 import { generateDocument } from './tools/document-tools';
+
+import {
+  discoverPathways,
+  discoverPhaseActions,
+  discoverDocumentTypes,
+} from './tools/discovery-tools';
 
 // =============================================================================
 // Types
@@ -74,6 +82,24 @@ export class ToolExecutor {
 
     try {
       switch (toolCall.name) {
+        // Phase 5: Discovery Tools
+        case TOOL_NAMES.DISCOVER_PATHWAYS:
+          result = await discoverPathways();
+          break;
+
+        case TOOL_NAMES.DISCOVER_PHASE_ACTIONS:
+          result = await discoverPhaseActions(
+            toolCall.input as DiscoverPhaseActionsInput
+          );
+          break;
+
+        case TOOL_NAMES.DISCOVER_DOCUMENT_TYPES:
+          result = await discoverDocumentTypes(
+            toolCall.input as DiscoverDocumentTypesInput
+          );
+          break;
+
+        // Phase 3: Core Session Tools
         case TOOL_NAMES.READ_SESSION_STATE:
           result = await readSessionState(this.context.sessionId);
           break;
