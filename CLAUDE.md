@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Core Value**: Enforced methodology + sub-persona balancing + anti-sycophancy + polished outputs
 - **Tech Stack**: Next.js 15.5, React 19, TypeScript, Supabase, Stripe, Anthropic Claude
 - **Architecture**: Monorepo with Next.js app in `apps/web/`
-- **Deployment**: Vercel project `thinkhaven` (https://thinkhaven-hollandkevints-projects.vercel.app)
+- **Deployment**: Vercel project `thinkhaven` (https://thinkhaven.co)
 
 ## Essential Commands
 
@@ -321,7 +321,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - **Platform**: Vercel
 - **Project Name**: `thinkhaven`
 - **Root Directory**: Leave blank (deploy from `apps/web/` locally)
-- **Production URL**: https://thinkhaven-hollandkevints-projects.vercel.app
+- **Production URL**: https://thinkhaven.co
 - **Environment**: Set via Vercel dashboard (Settings → Environment Variables)
 - **Builds**: Automatic on push to main branch
 - **Deploy manually**: `cd apps/web && vercel --prod`

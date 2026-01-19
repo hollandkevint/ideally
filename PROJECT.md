@@ -24,7 +24,7 @@ vercel --prod              # Deploy to production
 ## Project Structure
 
 ```
-ideally/
+thinkhaven/
 ├── apps/
 │   └── web/               # Main Next.js application
 │       ├── app/           # Next.js App Router pages
@@ -126,8 +126,8 @@ vercel --prod            # Deploy to production
 
 ## Active Vercel Projects
 
-1. **thinkhaven** - This project (ideally repository)
-   - URL: https://thinkhaven-hollandkevints-projects.vercel.app
+1. **thinkhaven** - This project
+   - URL: https://thinkhaven.co
 
 2. **neurobot** - Separate project
    - URL: https://neurobot-delta.vercel.app
@@ -154,7 +154,7 @@ vercel --prod            # Deploy to production
 
 ## Support
 
-- **Repository**: https://github.com/hollandkevint/ideally
+- **Repository**: https://github.com/hollandkevint/thinkhaven
 - **Vercel Dashboard**: https://vercel.com/hollandkevints-projects/thinkhaven
 - **Issues**: Create GitHub issues for bugs/features
 

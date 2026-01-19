@@ -195,7 +195,7 @@ ORDER BY rating DESC;
 - **Dashboard:** https://thinkhaven.co/dashboard
 - **Supabase:** https://supabase.com/dashboard/project/lbnhfsocxbwhbvnfpjdw
 - **Vercel:** https://vercel.com/dashboard
-- **GitHub:** https://github.com/hollandkevint/ideally
+- **GitHub:** https://github.com/hollandkevint/thinkhaven
 
 ---
 
