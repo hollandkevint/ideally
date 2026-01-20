@@ -1,6 +1,6 @@
 # ThinkHaven SLC Launch Checklist
 
-**Goal:** Share ThinkHaven with your network for initial testing (target: 100 sessions with 20-message limits).
+**Goal:** Share ThinkHaven with your network for initial testing (target: 100 sessions with 10-message limits).
 
 **Status:** ✅ Implementation complete - Ready for testing and deployment
 
@@ -18,7 +18,7 @@
 2. **Message Limit System** ([Migration 008](supabase/migrations/008_add_message_limits.sql))
    - New columns: `message_count`, `message_limit`, `limit_reached_at`
    - RPC functions: `increment_message_count()`, `check_message_limit()`
-   - Default limit: 20 messages per session
+   - Default limit: 10 messages per session
 
 3. **API Integration** ([route.ts](app/api/chat/stream/route.ts))
    - Checks message limit before processing
@@ -84,11 +84,11 @@
   4. Check terminal: Look for `[LAUNCH_MODE] Bypassing credit check`
 
 - [ ] **Test Message Limits**
-  1. In the session, send 15 messages (use short messages to speed up)
+  1. In the session, send 5 messages (use short messages to speed up)
   2. Expected: No warnings yet
-  3. Send 5 more messages (20 total)
-  4. Expected: Yellow warning appears after message 15
-  5. Try to send message 21
+  3. Send 5 more messages (10 total)
+  4. Expected: Yellow warning appears after message 5
+  5. Try to send message 11
   6. Expected: Red error banner, message blocked
 
 - [ ] **Test Limit Status in API**
@@ -102,11 +102,11 @@
 - [ ] **Commit and Push**
   ```bash
   git add .
-  git commit -m "✨ FEAT: Add launch mode with 20-message session limits
+  git commit -m "✨ FEAT: Add launch mode with 10-message session limits
 
   - Bypass credit system via NEXT_PUBLIC_LAUNCH_MODE flag
   - Add message_count tracking to bmad_sessions (migration 008)
-  - Implement 20-message limit enforcement in chat API
+  - Implement 10-message limit enforcement in chat API
   - Add warning UI components for limit notifications
   - Create setup documentation for SLC launch period
 
@@ -125,7 +125,7 @@
 - [ ] **Test on Production URL (https://thinkhaven.co)**
   1. Sign up with new test account
   2. Start session → Verify immediate start (no credit error)
-  3. Send 15-20 messages → Verify warnings appear
+  3. Send 8-10 messages → Verify warnings appear
   4. Hit limit → Verify error message and export options
 
 - [ ] **Cross-Browser Testing**
@@ -205,7 +205,7 @@
   - Go to https://thinkhaven.co
   - Sign up and start a "New Idea" session
   - Work through a real business problem you have
-  - Each session has a 20-message limit (this is intentional for focused work)
+  - Each session has a 10-message limit (this is intentional for focused work)
 
   What I'm looking for:
   1. Did Mary (the AI coach) help you think more clearly?
@@ -223,7 +223,7 @@
 
 **Leading Indicators:**
 - [ ] 50+ sessions completed (not just started)
-- [ ] Average 15+ messages per session (engagement)
+- [ ] Average 7+ messages per session (engagement)
 - [ ] <5% of sessions hit errors (stability)
 
 **Feedback to Collect:**

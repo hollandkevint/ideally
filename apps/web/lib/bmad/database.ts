@@ -10,6 +10,7 @@ import {
   BmadMethodError,
   UserResponse
 } from './types';
+import { DEFAULT_MESSAGE_LIMIT } from './message-limit-manager';
 
 // Database row types that match Supabase schema
 export interface BmadSessionRow {
@@ -26,6 +27,8 @@ export interface BmadSessionRow {
   current_step: string;
   next_steps: string[];
   status: 'active' | 'paused' | 'completed' | 'abandoned';
+  message_limit?: number;
+  message_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -220,7 +223,8 @@ export class BmadDatabase {
           templates: sessionData.templates,
           current_phase: sessionData.currentPhase,
           current_template: sessionData.currentTemplate,
-          current_step: 'session_initialized'
+          current_step: 'session_initialized',
+          message_limit: DEFAULT_MESSAGE_LIMIT
         })
         .select('id')
         .single();

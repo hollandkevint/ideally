@@ -203,9 +203,13 @@ export async function POST(request: NextRequest) {
       hasState: !!workspace.workspace_state
     });
 
+    // ADMIN BYPASS CHECK: Kevin gets unlimited messages (check BEFORE any message limit logic)
+    const isAdmin = user.email?.toLowerCase() === 'kholland7@gmail.com';
+
     // Get or create BMad session for message limit tracking
     let sessionId: string | null = null;
     let limitStatus: any = null;
+
     try {
       const { data: bmadSession } = await supabase
         .from('bmad_sessions')
@@ -217,45 +221,98 @@ export async function POST(request: NextRequest) {
         .single();
 
       sessionId = bmadSession?.id || null;
+
+      // If no session exists, auto-create one for message limit tracking
+      if (!sessionId) {
+        console.log('[Chat Stream] No BMad session found, creating one for message tracking');
+
+        const { data: newSession, error: createError } = await supabase
+          .from('bmad_sessions')
+          .insert({
+            user_id: user.id,
+            workspace_id: workspaceId,
+            pathway: 'new-idea', // Default pathway for tracking purposes
+            templates: [],
+            current_phase: 'discovery',
+            current_template: 'general',
+            current_step: 'chat',
+            next_steps: [],
+            status: 'active',
+            overall_completion: 0,
+            message_count: 0,
+            message_limit: 10, // Use 10-message limit as per current code standard
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          console.error('[Chat Stream] Failed to create tracking session:', createError);
+          // Don't fail the request - continue without tracking (fail open for session creation)
+        } else {
+          sessionId = newSession?.id || null;
+          console.log('[Chat Stream] Created tracking session:', { sessionId });
+        }
+      }
     } catch (error) {
-      console.warn('Could not find BMad session for message limit tracking:', error);
+      console.warn('Could not find/create BMad session for message limit tracking:', error);
     }
 
     // ATOMIC: Increment message count FIRST to prevent race conditions
-    // Then check if this message pushed us over the limit
-    if (sessionId) {
+    // Skip entirely for admin users to avoid DB state drift
+    if (sessionId && !isAdmin) {
       const incrementResult = await incrementMessageCount(sessionId);
 
-      if (incrementResult) {
-        // Check if THIS increment pushed us over the limit
-        if (incrementResult.limitReached && incrementResult.newCount > incrementResult.messageLimit) {
-          console.log('[Chat Stream] Message limit exceeded:', {
-            sessionId,
-            newCount: incrementResult.newCount,
-            limit: incrementResult.messageLimit
-          });
-
-          // Get current status for error response
-          limitStatus = await checkMessageLimit(sessionId);
-
-          return new Response(JSON.stringify({
-            error: 'MESSAGE_LIMIT_REACHED',
-            message: getLimitReachedMessage(),
-            limitStatus,
-          }), {
-            status: 429, // Too Many Requests
-            headers: { 'Content-Type': 'application/json' }
-          });
-        }
-
-        // Update limitStatus for later use in response
-        limitStatus = await checkMessageLimit(sessionId);
-        console.log('[Chat Stream] Message count pre-incremented:', {
-          sessionId,
-          newCount: incrementResult.newCount,
-          remaining: limitStatus?.remaining,
+      // Fail closed: If tracking fails, reject the request
+      if (!incrementResult) {
+        console.error('[Chat Stream] Message tracking failed - rejecting request');
+        return new Response(JSON.stringify({
+          error: 'MESSAGE_TRACKING_ERROR',
+          message: 'Unable to track message count. Please try again.',
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
         });
       }
+
+      // Check if THIS increment pushed us over the limit (simplified check)
+      if (incrementResult.limitReached) {
+        console.log('[Chat Stream] Message limit exceeded:', {
+          sessionId,
+          newCount: incrementResult.newCount,
+          limit: incrementResult.messageLimit
+        });
+
+        // Get current status for error response
+        limitStatus = await checkMessageLimit(sessionId);
+
+        return new Response(JSON.stringify({
+          error: 'MESSAGE_LIMIT_REACHED',
+          message: getLimitReachedMessage(),
+          limitStatus,
+        }), {
+          status: 429, // Too Many Requests
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Update limitStatus for later use in response
+      limitStatus = await checkMessageLimit(sessionId);
+
+      console.log('[Chat Stream] Message count pre-incremented:', {
+        sessionId,
+        newCount: incrementResult.newCount,
+        remaining: limitStatus?.remaining,
+      });
+    } else if (isAdmin) {
+      // Admin: Skip increment, set limitStatus to look unlimited so UI doesn't warn
+      console.log('[Chat Stream] Admin bypass: Skipping message limit tracking for', user.email);
+      limitStatus = {
+        currentCount: 0,
+        messageLimit: -1,
+        remaining: 9999,
+        limitReached: false,
+        warningThreshold: false,
+      };
     }
 
     // Build or use provided coaching context

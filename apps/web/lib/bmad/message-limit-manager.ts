@@ -2,7 +2,7 @@
  * Message Limit Manager
  *
  * Handles session message limits for the SLC launch period.
- * Enforces 20-message limit per session before Stripe integration.
+ * Enforces 10-message limit per session before Stripe integration.
  *
  * Message limits are only enforced when LAUNCH_MODE is enabled.
  * After Stripe integration, this can be removed or integrated with credit tiers.
@@ -14,7 +14,7 @@ import { createClient } from '@/lib/supabase/server';
 // CONSTANTS
 // ============================================================================
 
-export const DEFAULT_MESSAGE_LIMIT = 20;
+export const DEFAULT_MESSAGE_LIMIT = 10;
 export const WARNING_THRESHOLD = 5; // Show warning when 5 messages remaining
 
 // ============================================================================
@@ -176,13 +176,13 @@ export function getWarningMessage(remaining: number): string {
  */
 export function getLimitReachedMessage(): string {
   return `
-You've reached the 20-message limit for this session. Here's what you can do:
+You've reached the 10-message limit for this session. Here's what you can do:
 
 1. **Export your work**: Use the export options above to save your conversation as PDF or Markdown
 2. **Start a new session**: Click "New Session" to continue with a fresh strategic thinking session
 3. **Review your insights**: Take some time to reflect on what we've discovered together
 
-During our launch period, each session is limited to 20 messages to ensure quality interactions. This gives us both time to explore your strategy deeply without overwhelming you with information.
+During our launch period, each session is limited to 10 messages to ensure quality interactions. This gives us both time to explore your strategy deeply without overwhelming you with information.
 
 Ready to export or start fresh?
   `.trim();

@@ -9,7 +9,7 @@
 
 ALTER TABLE bmad_sessions
 ADD COLUMN IF NOT EXISTS message_count INTEGER DEFAULT 0 NOT NULL,
-ADD COLUMN IF NOT EXISTS message_limit INTEGER DEFAULT 20 NOT NULL,
+ADD COLUMN IF NOT EXISTS message_limit INTEGER DEFAULT 10 NOT NULL,
 ADD COLUMN IF NOT EXISTS limit_reached_at TIMESTAMPTZ DEFAULT NULL;
 
 -- ============================================================================
@@ -85,7 +85,7 @@ $$ LANGUAGE plpgsql;
 -- ============================================================================
 
 COMMENT ON COLUMN bmad_sessions.message_count IS 'Number of messages sent in this session (user messages only)';
-COMMENT ON COLUMN bmad_sessions.message_limit IS 'Maximum messages allowed per session (default: 20 for SLC launch)';
+COMMENT ON COLUMN bmad_sessions.message_limit IS 'Maximum messages allowed per session (default: 10 for SLC launch)';
 COMMENT ON COLUMN bmad_sessions.limit_reached_at IS 'Timestamp when message limit was reached';
 
 COMMENT ON FUNCTION increment_message_count(TEXT) IS 'Atomically increments message count and returns limit status';

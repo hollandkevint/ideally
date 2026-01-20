@@ -85,6 +85,15 @@ export async function hasCredits(userId: string, required: number = 1): Promise<
   // Bypass credit checks in launch mode (for initial testing period)
   // Use server-only env var (no NEXT_PUBLIC prefix) to prevent client manipulation
   const isLaunchMode = process.env.LAUNCH_MODE === 'true';
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  // Admin bypass for Kevin
+  if (user?.email?.toLowerCase() === 'kholland7@gmail.com') {
+    console.log('[ADMIN] Bypassing credit check for Kevin');
+    return true;
+  }
+
   if (isLaunchMode) {
     console.log('[LAUNCH_MODE] Bypassing credit check for user:', userId);
     return true;
@@ -116,6 +125,19 @@ export async function deductCredit(
   // Bypass credit deduction in launch mode (for initial testing period)
   // Use server-only env var (no NEXT_PUBLIC prefix) to prevent client manipulation
   const isLaunchMode = process.env.LAUNCH_MODE === 'true';
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Admin bypass for Kevin
+  if (user?.email?.toLowerCase() === 'kholland7@gmail.com') {
+    console.log('[ADMIN] Bypassing credit deduction for Kevin');
+    return {
+      success: true,
+      balance: 9999, // Admin balance
+      message: 'Admin: credit deduction bypassed',
+    };
+  }
+
   if (isLaunchMode) {
     console.log('[LAUNCH_MODE] Bypassing credit deduction for user:', userId, 'session:', sessionId);
     return {
@@ -124,8 +146,6 @@ export async function deductCredit(
       message: 'Launch mode: credit deduction bypassed',
     };
   }
-
-  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase.rpc('deduct_credit_transaction', {

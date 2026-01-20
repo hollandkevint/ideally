@@ -42,7 +42,7 @@ export function MessageLimitWarning({
               Message Limit Reached
             </h3>
             <p className="text-sm text-red-800 mb-3">
-              You've reached the 20-message limit for this session. Save your work or start a new session to continue.
+              You've reached the 10-message limit for this session. Save your work or start a new session to continue.
             </p>
             <div className="flex flex-wrap gap-2">
               {onExport && (
