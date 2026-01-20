@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-*Last Updated: 2026-01-04*
+*Last Updated: 2026-01-19*
 
 ## Project Context
 **ThinkHaven** - Decision accelerator that validates or kills business ideas before users waste time building
@@ -37,8 +37,9 @@ npm run test:e2e:ui      # Run E2E tests with UI
 ### Database Migrations
 ```bash
 # Migrations are in apps/web/supabase/migrations/
-# Run in order: 001 → 002 → 003 → 004 → 005 → 006
+# Run in order: 001 → 011 (sequential, never skip)
 # Use Supabase dashboard or CLI to apply
+# Latest: 011_add_sub_persona_state.sql
 ```
 
 ## Architecture Overview
@@ -47,6 +48,8 @@ npm run test:e2e:ui      # Run E2E tests with UI
 
 **BMad Method Engine** (`apps/web/lib/bmad/`)
 - **session-orchestrator.ts**: Central session lifecycle manager with credit system integration
+- **session-primitives.ts**: Atomic session operations (Phase 4) - create, load, persist, delete
+- **capability-discovery.ts**: Runtime capability discovery (Phase 5) - pathways, actions, documents
 - **pathway-router.ts**: Routes users to appropriate strategic pathways
 - **template-engine.ts**: Loads and executes BMad templates
 - **analysis/**: Domain-specific analysis frameworks (market positioning, pricing, revenue optimization)
@@ -54,10 +57,16 @@ npm run test:e2e:ui      # Run E2E tests with UI
 - **generators/**: Document generators (concept documents, lean canvas, feature briefs)
 
 **AI Integration** (`apps/web/lib/ai/`)
-- **claude-client.ts**: Anthropic Claude API integration
+- **claude-client.ts**: Anthropic Claude API integration with tool calling support
 - **mary-persona.ts**: Mary AI business analyst persona definition
 - **streaming.ts**: Server-sent events for real-time AI responses
 - **context-manager.ts**: Manages session context and conversation history
+- **context-builder.ts**: Dynamic context enrichment from database (Phase 2)
+- **tool-executor.ts**: Executes Mary's tools and formats results for Claude
+- **tools/index.ts**: Tool registry with 9 agent tools (discovery + session tools)
+- **tools/discovery-tools.ts**: Pathway, phase action, and document type discovery
+- **tools/document-tools.ts**: Document generation tool implementations
+- **tools/session-tools.ts**: Session state management tool implementations
 - **conversation-persistence.ts**: Database persistence for conversations
 
 **Session Credit System** (`apps/web/lib/monetization/`)
@@ -98,6 +107,41 @@ npm run test:e2e:ui      # Run E2E tests with UI
 - **Kill Framework**: Escalation sequence for anti-sycophancy recommendations
 - **67 tests**: Full coverage in `tests/lib/ai/mary-persona.test.ts`
 - **Status**: Types/logic implemented, needs wiring to Claude API (Epic 6)
+
+**Agent-Native Tool System** (`apps/web/lib/ai/tools/`)
+Mary has 9 tools that enable agent-controlled session progression:
+
+| Tool | Purpose |
+|------|---------|
+| `discover_pathways` | List all available strategic pathways |
+| `discover_phase_actions` | List actions available in a phase |
+| `discover_document_types` | List available document generators |
+| `read_session_state` | Read current session phase/progress/mode |
+| `complete_phase` | Signal phase completion and advance |
+| `switch_persona_mode` | Change coaching mode dynamically |
+| `recommend_action` | Provide viability recommendation (proceed/pivot/kill) |
+| `generate_document` | Generate Lean Canvas, PRD, or other documents |
+| `update_session_context` | Record insights for later document generation |
+
+**Usage Pattern:**
+```typescript
+// Enable tools in chat request
+const response = await fetch('/api/chat/stream', {
+  method: 'POST',
+  body: JSON.stringify({
+    message,
+    workspaceId,
+    conversationHistory,
+    useTools: true  // Enable agentic tool loop
+  })
+});
+```
+
+**Agentic Loop** (`apps/web/app/api/chat/stream/route.ts:23-126`):
+- Max 5 tool rounds per message to prevent infinite loops
+- Tools execute sequentially within a round
+- Results passed back to Claude for continued reasoning
+- Final text includes all accumulated responses
 
 **Structured Output Generators** (`apps/web/lib/bmad/generators/`)
 - **ConceptDocumentGenerator**: Business concept documents from New Idea pathway
@@ -311,10 +355,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 1. **Middleware Edge Runtime**: Do NOT use Node.js APIs in middleware - it runs on Edge Runtime
 2. **Credit Deduction**: ALWAYS use `deduct_credit_transaction()` for atomicity, never manual UPDATE
 3. **File-System Routing**: Every route reference needs a corresponding `page.tsx` file
-4. **Migration Order**: Run migrations sequentially (001 → 006), never skip
+4. **Migration Order**: Run migrations sequentially (001 → 011), never skip
 5. **Stripe Webhooks**: Verify signatures with `stripe-service.ts.constructWebhookEvent()`
 6. **Tldraw v4 API**: Use `getSnapshot(store)` and `loadSnapshot(store, data)` - NOT `store.getSnapshot()` or `store.loadSnapshot()`
 7. **E2E Tests**: Currently only smoke tests exist (7 route checks). Add more tests as features stabilize.
+8. **Agentic Tool Loop**: Max 5 rounds per message. If Mary hits the limit, she appends a "processing limit" message. Check `MAX_TOOL_ROUNDS` in `/api/chat/stream/route.ts`
+9. **Tool Results Format**: Use `ToolExecutor.formatResultsForClaude()` to convert tool results - Claude expects specific `tool_result` content block format
+10. **Session Primitives**: Use atomic functions from `session-primitives.ts` instead of direct Supabase calls for session operations
 
 ## Production Deployment
 
@@ -326,54 +373,73 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - **Builds**: Automatic on push to main branch
 - **Deploy manually**: `cd apps/web && vercel --prod`
 
-## Next Session: Epic 6 - Sub-Persona MVP
+## Current Status: Agent-Native Architecture Complete
 
-**Priority:** P0 - Critical for MVP
-**Stories:** `/docs/stories/epic-6-sub-persona-mvp/`
+**Completed Phases:**
+- Phase 1: Workspace context builder ✅
+- Phase 2: Dynamic context enrichment ✅
+- Phase 3: Tool calling infrastructure ✅
+- Phase 4: Atomic session primitives ✅
+- Phase 5: Capability discovery system ✅
 
-### Implementation Order
+**Epic 6 - Sub-Persona (Partially Complete):**
+| Story | Title | Status |
+|-------|-------|--------|
+| 6.1 | Wire Sub-Persona to Claude API | ✅ Done (via tool system) |
+| 6.2 | Dynamic Mode Shifting | ✅ Done (`switch_persona_mode` tool) |
+| 6.3 | Kill Recommendation System | ✅ Done (`recommend_action` tool) |
+| 6.4 | Output Polish (Lean Canvas + PRD) | ✅ Done (`generate_document` tool) |
+| 6.5 | 10-Message Trial Gate | Pending |
+| 6.6 | Mode Indicator UI | Pending |
 
-| Story | Title | Estimate | Status |
-|-------|-------|----------|--------|
-| 6.1 | Wire Sub-Persona to Claude API | 4-6h | Ready |
-| 6.2 | Dynamic Mode Shifting | 4-6h | Ready |
-| 6.3 | Kill Recommendation System | 6-8h | Ready |
-| 6.4 | Output Polish (Lean Canvas + PRD) | 4-6h | Ready |
-| 6.5 | 10-Message Trial Gate | 2-3h | Ready |
-| 6.6 | Mode Indicator UI | 2-3h | Ready |
+### Next Steps
 
-### Key Files to Modify
+1. **Enable Tool Mode in UI**: Add `useTools: true` toggle for sessions
+2. **Mode Indicator UI**: Display current sub-persona mode to users
+3. **Trial Gate**: Bump message limit from 5 to 10
+4. **Testing**: E2E tests for agentic tool flow
 
-**Story 6.1 (Wire to API):**
-- `lib/ai/claude-client.ts` - Add mode system prompt injection
-- `lib/ai/mary-persona.ts` - Export `getSystemPromptForMode()`, `selectModeForMessage()`
-- `app/api/chat/stream/route.ts` - Pass pathway, include mode in response
-- `app/api/chat/guest/route.ts` - Same for guest flow
+### Key Files for Tool Integration
 
-**Story 6.2 (Dynamic Shifting):**
-- `lib/ai/mary-persona.ts` - Add `detectUserState()`, `shouldShiftMode()`
-- `lib/ai/context-manager.ts` - Track mode history
+- `app/api/chat/stream/route.ts` - Agentic loop (lines 23-126)
+- `lib/ai/tool-executor.ts` - Tool execution engine
+- `lib/ai/tools/index.ts` - Tool definitions (MARY_TOOLS array)
+- `lib/bmad/session-primitives.ts` - Session operations
+- `lib/bmad/capability-discovery.ts` - Discovery APIs
 
-**Story 6.3 (Kill Recommendations):**
-- `lib/ai/mary-persona.ts` - Implement `assessViability()`, `generateKillRecommendation()`
-- `lib/bmad/generators/` - Add viability score to outputs
-
-### Already Implemented (This Session)
-- Sub-persona types, pathway weights, state detection logic in `mary-persona.ts`
-- 67 tests passing
-- Design system with mode colors (Wes Anderson palette)
-- Strategic direction document (`docs/prd/8-strategic-direction.md`)
-
-### Quick Start Next Session
+### Quick Start
 ```bash
 cd apps/web
 npm run dev
-# Start with Story 6.1: Wire sub-persona to Claude API
-# Key file: lib/ai/claude-client.ts
+# Test tool system: Enable useTools in chat request
+# Check: apps/web/app/api/chat/stream/route.ts
 ```
 
 ## Recent Major Changes
 
+- **Jan 19, 2026**:
+  - **Agent-Native Evolution (Phases 3-5)**:
+    - Phase 3: Tool calling infrastructure with 9 tools for session control
+    - Phase 4: Atomic session primitives replacing bundled operations
+    - Phase 5: Dynamic capability discovery for emergent behavior
+    - Agentic loop in `/api/chat/stream` with max 5 tool rounds
+    - Tools: `discover_pathways`, `discover_phase_actions`, `discover_document_types`, `read_session_state`, `complete_phase`, `switch_persona_mode`, `recommend_action`, `generate_document`, `update_session_context`
+  - **Session Primitives** (`lib/bmad/session-primitives.ts`):
+    - `createSessionRecord()`, `loadSessionState()`, `persistSessionState()`, `deleteSession()`
+    - `completePhase()` - agent-controlled phase advancement
+    - `recordInsight()`, `getSessionInsights()` - context capture
+    - `PHASE_ORDER` - source of truth for pathway phase sequences
+  - **Capability Discovery** (`lib/bmad/capability-discovery.ts`):
+    - `listAvailablePathways()` - discover all pathways
+    - `listPhaseActions()` - discover actions per phase
+    - `listDocumentTypes()` - discover generatable documents
+    - `discoverCapabilities()` - contextual suggestions based on session state
+  - **Context System** (`lib/ai/context-builder.ts`):
+    - Phase 2 dynamic context enrichment
+    - Retrieves insights and phase outputs for AI context
+  - **UI Updates**:
+    - Dashboard simplified with cleaner session card design
+    - ThinkHaven branded favicon
 - **Jan 4, 2026**:
   - **Sub-Persona Implementation**:
     - Implemented sub-persona types, weights, and state detection in `mary-persona.ts`
