@@ -292,10 +292,22 @@
 
   /* Dual-Pane Layout */
   .dual-pane-container {
-    @apply grid h-screen;
+    @apply grid h-screen transition-all duration-300 ease-in-out;
     grid-template-columns: minmax(400px, 60fr) minmax(300px, 40fr);
     gap: 1px;
     background: var(--divider);
+  }
+
+  .dual-pane-container.canvas-closed {
+    grid-template-columns: 100% 0;
+    gap: 0;
+  }
+
+  .dual-pane-container.canvas-closed .canvas-pane {
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
   }
 
   .chat-pane {

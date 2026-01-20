@@ -18,8 +18,6 @@ import {
   LogOut,
   Settings,
   Sparkles,
-  MessageSquare,
-  Lightbulb,
   Folder,
   Home,
 } from 'lucide-react';
@@ -34,27 +32,15 @@ interface BmadSession {
   updated_at: string;
 }
 
-interface UserStats {
-  totalSessions: number;
-  totalMessages: number;
-  totalInsights: number;
-}
-
 export default function AppDashboardPage() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const [sessions, setSessions] = useState<BmadSession[]>([]);
-  const [stats, setStats] = useState<UserStats>({
-    totalSessions: 0,
-    totalMessages: 0,
-    totalInsights: 0,
-  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
       fetchSessions();
-      fetchStats();
     }
   }, [user]);
 
@@ -72,36 +58,6 @@ export default function AppDashboardPage() {
       console.error('Error fetching sessions:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      // Get total sessions
-      const { count: sessionCount } = await supabase
-        .from('bmad_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      // Get total messages
-      const { count: messageCount } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      // Get total conversations (as proxy for insights)
-      const { count: conversationCount } = await supabase
-        .from('conversations')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      setStats({
-        totalSessions: sessionCount || 0,
-        totalMessages: messageCount || 0,
-        totalInsights: conversationCount || 0,
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
     }
   };
 
@@ -126,7 +82,6 @@ export default function AppDashboardPage() {
 
       // Refresh sessions
       fetchSessions();
-      fetchStats();
     } catch (error) {
       console.error('Error deleting session:', error);
     }
@@ -260,51 +215,6 @@ export default function AppDashboardPage() {
                 New Session
               </Button>
             </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-6 mb-12">
-            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-lg bg-blue-50">
-                  <Sparkles className="w-6 h-6" style={{ color: 'var(--primary)' }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                    {stats.totalSessions}
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Sessions</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-lg bg-green-50">
-                  <MessageSquare className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                    {stats.totalMessages}
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Messages</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 border bg-white hover:shadow-sm transition-shadow" style={{ borderColor: 'var(--border)' }}>
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-lg bg-purple-50">
-                  <Lightbulb className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                    {stats.totalInsights}
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--muted)' }}>Insights</p>
-                </div>
-              </div>
-            </Card>
           </div>
 
           {/* Session Grid or Empty State */}

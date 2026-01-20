@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { LayoutTemplate } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import BmadInterface from '@/app/components/bmad/BmadInterface'
@@ -63,6 +64,7 @@ export default function WorkspacePage() {
     lastModified: Date
   } | null>(null)
   const [limitStatus, setLimitStatus] = useState<MessageLimitStatus | null>(null)
+  const [isCanvasOpen, setIsCanvasOpen] = useState(false)
   const isOnline = useOnlineStatus()
   const { preserveInput, hasPreservedInput, peekPreservedInput, clearPreservedInput } = useSharedInput(params.id as string)
 
@@ -418,7 +420,7 @@ export default function WorkspacePage() {
     <ArtifactPanel />
     {/* Keyboard Shortcuts Handler */}
     <ArtifactKeyboardHandler />
-    <div className="dual-pane-container">
+    <div className={`dual-pane-container ${!isCanvasOpen ? 'canvas-closed' : ''}`}>
       {/* State Bridge Component for Sync */}
       <StateBridge workspaceId={workspace.id} className="hidden" />
       
@@ -438,6 +440,14 @@ export default function WorkspacePage() {
             <h1 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{workspace.name}</h1>
           </div>
           <div className="flex items-center gap-3 text-xs">
+            <button
+              onClick={() => setIsCanvasOpen(!isCanvasOpen)}
+              className="flex items-center gap-1 px-3 py-1 rounded transition-colors hover:bg-black/5"
+              style={{ border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            >
+              <LayoutTemplate className="w-3 h-3" />
+              {isCanvasOpen ? 'Hide Canvas' : 'Show Canvas'}
+            </button>
             <ArtifactList mode="badge" />
             <ExportPanel
               messages={workspace.chat_context}
