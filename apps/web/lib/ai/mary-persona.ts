@@ -1,3 +1,6 @@
+import { PathwayType } from '../bmad/types';
+import { PATHWAY_COGNITIVE_MODES, CognitiveMode } from '../bmad/pathway-router';
+
 // =============================================================================
 // Sub-Persona System Types (FR-AC6 through FR-AC14)
 // =============================================================================
@@ -125,6 +128,95 @@ export interface ModeBehavior {
   tone: string;
 }
 
+/**
+ * Devil's Advocate Lateral Thinking Techniques
+ * Based on Edward de Bono's provocative operations
+ * Story 1.6: Enhance Devil's Advocate with structured provocation
+ */
+export const DEVILS_ADVOCATE_TECHNIQUES = {
+  provocation: {
+    name: 'Provocation (PO)',
+    description: 'Deliberately provocative statements to break mental patterns',
+    examples: [
+      'What if your biggest feature is actually your biggest weakness?',
+      'What if customers DON\'T want this to be easier?',
+      'What if your competition is irrelevant to your success?',
+    ],
+    instruction: 'Use "PO:" mentally before making deliberately provocative statements that challenge conventional thinking',
+  },
+  reversal: {
+    name: 'Reversal',
+    description: 'Invert assumptions to reveal hidden constraints',
+    examples: [
+      'Instead of acquiring customers, what if they had to apply to use your product?',
+      'What if you charged 10x more - what would have to change?',
+      'What if you eliminated your most popular feature?',
+    ],
+    instruction: 'Flip the user\'s assumption 180 degrees and explore what insights emerge',
+  },
+  challenge: {
+    name: 'Challenge',
+    description: 'Question the status quo and default assumptions',
+    examples: [
+      'Why does this need to be a software product at all?',
+      'Who says the customer is always right in this context?',
+      'What if the problem you\'re solving doesn\'t actually matter?',
+    ],
+    instruction: 'Ask "why must it be this way?" for any assumption the user takes for granted',
+  },
+  dominantIdeaEscape: {
+    name: 'Dominant Idea Escape',
+    description: 'Surface and escape shared assumptions that constrain thinking',
+    examples: [
+      'Everyone in your space seems to assume X. What if X is wrong?',
+      'The entire industry builds around Y. What if you ignored Y completely?',
+      'You keep returning to Z as a constraint. Is Z actually fixed?',
+    ],
+    instruction: 'Identify the "water the fish swims in" - assumptions so fundamental they\'re invisible',
+  },
+} as const;
+
+/**
+ * Value Articulation Prompts (Story 2.7)
+ * Core questions that force users to articulate value without hiding behind technology
+ */
+export const VALUE_ARTICULATION_PROMPTS = {
+  core: [
+    'Without mentioning technology, what value does your solution provide?',
+    'What behavior change do you expect from users?',
+    'If this works perfectly, what\'s different in your customer\'s life?',
+    'What would your customer pay to NOT have this problem?',
+    'In one sentence, what transformation do you enable?',
+  ],
+  pathwaySpecific: {
+    'new-idea': [
+      'What does your customer\'s "before" look like? What about "after"?',
+      'If you couldn\'t build software, how else might you solve this?',
+      'What would your customer tell a friend about why they use this?',
+    ],
+    'business-model': [
+      'Why would someone pay for this instead of doing it themselves?',
+      'What\'s the most valuable thing you do that\'s hardest to copy?',
+      'If you raised prices 3x, who would still pay?',
+    ],
+    'business-model-problem': [
+      'What value are customers NOT paying for that they should?',
+      'What part of your offering creates the most "aha" moments?',
+      'If you could only charge for one thing, what would it be?',
+    ],
+    'feature-refinement': [
+      'How does this feature change what the user can accomplish?',
+      'What can the user do after using this that they couldn\'t do before?',
+      'What\'s the smallest version of this that still delivers value?',
+    ],
+    'strategic-optimization': [
+      'What would make your best customers even more successful?',
+      'Where are users getting stuck that they shouldn\'t be?',
+      'What value are you leaving on the table?',
+    ],
+  },
+} as const;
+
 export const MODE_BEHAVIORS: Record<SubPersonaMode, ModeBehavior> = {
   inquisitive: {
     name: 'Inquisitive',
@@ -146,8 +238,10 @@ export const MODE_BEHAVIORS: Record<SubPersonaMode, ModeBehavior> = {
       'Probe blind spots the user may not see',
       'Play the role of skeptical investor or customer',
       'Challenge claims that lack evidence or validation',
+      'Use lateral thinking techniques: provocation, reversal, challenge, and dominant idea escape',
+      'Surface assumptions so fundamental they\'re invisible to the user',
     ],
-    questionTypes: ['challenging', 'stress-testing', 'risk-probing'],
+    questionTypes: ['challenging', 'stress-testing', 'risk-probing', 'provocative', 'reversal'],
     tone: 'constructively critical and direct',
   },
   encouraging: {
@@ -882,6 +976,52 @@ ${currentBehavior.behaviors.map(b => `- ${b}`).join('\n')}
 ${currentBehavior.questionTypes.map(q => `- ${q}`).join('\n')}
 `;
 
+    // Story 1.6: Add lateral thinking techniques for Devil's Advocate mode
+    if (state.currentMode === 'devil_advocate') {
+      section += `
+**Lateral Thinking Techniques:**
+Apply these techniques naturally - embody them, don't announce them:
+
+1. **Provocation (PO)**: ${DEVILS_ADVOCATE_TECHNIQUES.provocation.description}
+   - ${DEVILS_ADVOCATE_TECHNIQUES.provocation.instruction}
+
+2. **Reversal**: ${DEVILS_ADVOCATE_TECHNIQUES.reversal.description}
+   - ${DEVILS_ADVOCATE_TECHNIQUES.reversal.instruction}
+
+3. **Challenge**: ${DEVILS_ADVOCATE_TECHNIQUES.challenge.description}
+   - ${DEVILS_ADVOCATE_TECHNIQUES.challenge.instruction}
+
+4. **Dominant Idea Escape**: ${DEVILS_ADVOCATE_TECHNIQUES.dominantIdeaEscape.description}
+   - ${DEVILS_ADVOCATE_TECHNIQUES.dominantIdeaEscape.instruction}
+
+IMPORTANT: Use these techniques organically. Never say "I'm using the reversal technique." Instead, simply ask the reversal question naturally. The goal is insight, not methodology theater.
+`;
+    }
+
+    // Story 2.7: Add value articulation prompts for Inquisitive mode
+    if (state.currentMode === 'inquisitive') {
+      section += this.generateValueArticulationSection(context?.currentBmadSession?.pathway);
+    }
+
+    // Story 2.6: Add cognitive framework alignment based on pathway
+    const pathway = context?.currentBmadSession?.pathway;
+    if (pathway) {
+      const cognitiveMode = this.getCognitiveModeForPathway(pathway);
+      if (cognitiveMode) {
+        section += `
+**Cognitive Framework - ${cognitiveMode.name}:**
+${cognitiveMode.description}
+
+Relevant Frameworks: ${cognitiveMode.frameworks.join(', ')}
+
+Key Questions to Weave In:
+${cognitiveMode.keyQuestions.map(q => `- ${q}`).join('\n')}
+
+Apply this cognitive lens throughout the conversation. These questions should inform your thinking, not be asked verbatim.
+`;
+      }
+    }
+
     // Add mode balancing guidance
     const weights = state.pathwayWeights;
     section += `
@@ -922,6 +1062,58 @@ The user appears to be in a ${state.detectedUserState} state. Adapt your approac
     }
 
     return section;
+  }
+
+  /**
+   * Generate value articulation prompts section (Story 2.7)
+   * Helps users articulate value without hiding behind technology
+   */
+  private generateValueArticulationSection(pathway?: string): string {
+    const coreQuestions = VALUE_ARTICULATION_PROMPTS.core;
+    const pathwayQuestions = pathway
+      ? VALUE_ARTICULATION_PROMPTS.pathwaySpecific[pathway as keyof typeof VALUE_ARTICULATION_PROMPTS.pathwaySpecific] || []
+      : [];
+
+    let section = `
+**Value Articulation Guidance:**
+Help users articulate the TRUE value they create, not just describe their solution.
+
+Core Questions to Ask (when natural):
+${coreQuestions.map(q => `- "${q}"`).join('\n')}
+`;
+
+    if (pathwayQuestions.length > 0) {
+      section += `
+Pathway-Specific Questions:
+${pathwayQuestions.map(q => `- "${q}"`).join('\n')}
+`;
+    }
+
+    section += `
+IMPORTANT: These questions should emerge naturally from the conversation. Don't rapid-fire them. Use them when the user is being vague about value or hiding behind technical descriptions. The goal is to help them discover clarity, not to interrogate them.
+`;
+
+    return section;
+  }
+
+  /**
+   * Get cognitive mode for a pathway (Story 2.6)
+   * Maps pathway types to cognitive frameworks
+   */
+  private getCognitiveModeForPathway(pathway: string): CognitiveMode | null {
+    // Map pathway string to PathwayType enum
+    const pathwayTypeMap: Record<string, PathwayType> = {
+      'new-idea': PathwayType.NEW_IDEA,
+      'business-model': PathwayType.BUSINESS_MODEL,
+      'business-model-problem': PathwayType.BUSINESS_MODEL_PROBLEM,
+      'feature-refinement': PathwayType.FEATURE_REFINEMENT,
+      'strategic-optimization': PathwayType.STRATEGIC_OPTIMIZATION,
+    };
+
+    const pathwayType = pathwayTypeMap[pathway];
+    if (!pathwayType) return null;
+
+    return PATHWAY_COGNITIVE_MODES[pathwayType] || null;
   }
 
   /**

@@ -60,3 +60,13 @@ export {
   type CommunicationPlan,
   type ProjectBriefOptions
 } from './project-brief-generator'
+
+// Story 3.5: Assumption extraction for exports
+export {
+  extractAssumptions,
+  categorizeAssumptions,
+  formatAssumptionsAsMarkdown,
+  formatAssumptionsAsHtml,
+  type Assumption,
+  type CategorizedAssumptions
+} from './assumption-extractor'

@@ -1,8 +1,84 @@
-import { 
-  PathwayType, 
-  BmadPathway, 
-  BmadMethodError 
+import {
+  PathwayType,
+  BmadPathway,
+  BmadMethodError
 } from './types';
+
+/**
+ * Cognitive Framework Modes (Story 2.6)
+ * Maps pathways to appropriate cognitive frameworks for deeper strategic thinking
+ */
+export interface CognitiveMode {
+  name: string;
+  description: string;
+  frameworks: string[];
+  keyQuestions: string[];
+}
+
+export const PATHWAY_COGNITIVE_MODES: Record<PathwayType, CognitiveMode> = {
+  [PathwayType.NEW_IDEA]: {
+    name: 'Thinking about Value',
+    description: 'Focus on understanding what value you create and for whom',
+    frameworks: ['Jobs-to-be-Done', 'Value Proposition Canvas', 'Customer Development'],
+    keyQuestions: [
+      'What job is the customer trying to get done?',
+      'What pains are they experiencing with current solutions?',
+      'What gains would make their life meaningfully better?',
+      'Why would someone switch from their current solution to yours?',
+    ],
+  },
+  [PathwayType.BUSINESS_MODEL]: {
+    name: 'Thinking through Constraints',
+    description: 'Systematically test assumptions that could make or break your model',
+    frameworks: ['Assumption Testing', 'Lean Validation', 'Risk Assessment'],
+    keyQuestions: [
+      'What must be true for this business model to work?',
+      'Which assumptions carry the highest risk if wrong?',
+      'How could you test this assumption with minimal investment?',
+      'What would kill this business model fastest?',
+    ],
+  },
+  [PathwayType.BUSINESS_MODEL_PROBLEM]: {
+    name: 'Thinking through Constraints',
+    description: 'Identify and address the constraints blocking your revenue model',
+    frameworks: ['Constraint Analysis', 'Root Cause Analysis', 'Business Model Canvas'],
+    keyQuestions: [
+      'What is the real constraint preventing growth?',
+      'Is this a demand problem, pricing problem, or delivery problem?',
+      'What evidence do you have for the root cause?',
+      'If this constraint disappeared, what would change?',
+    ],
+  },
+  [PathwayType.FEATURE_REFINEMENT]: {
+    name: 'Thinking with People',
+    description: 'Co-design with users to ensure features solve real problems',
+    frameworks: ['Co-Design', 'User Story Mapping', 'Design Thinking'],
+    keyQuestions: [
+      'How did you learn that users want this feature?',
+      'What does success look like from the user\'s perspective?',
+      'What would users give up to have this feature?',
+      'How will you know if the feature is working?',
+    ],
+  },
+  [PathwayType.STRATEGIC_OPTIMIZATION]: {
+    name: 'Thinking about Systems',
+    description: 'Understand the interconnections and optimize the whole system',
+    frameworks: ['Systems Thinking', 'Impact Mapping', 'Feedback Loops'],
+    keyQuestions: [
+      'How does this change affect other parts of the system?',
+      'What second-order effects might occur?',
+      'Where are the leverage points for maximum impact?',
+      'What feedback loops exist that could amplify or dampen this change?',
+    ],
+  },
+};
+
+/**
+ * Get cognitive mode for a pathway type
+ */
+export function getCognitiveMode(pathwayType: PathwayType): CognitiveMode {
+  return PATHWAY_COGNITIVE_MODES[pathwayType];
+}
 
 /**
  * Pathway recommendation result

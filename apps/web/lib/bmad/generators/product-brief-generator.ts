@@ -1,4 +1,10 @@
 import { Message } from '@/lib/ai/types'
+import {
+  extractAssumptions,
+  formatAssumptionsAsMarkdown,
+  formatAssumptionsAsHtml,
+  Assumption,
+} from './assumption-extractor'
 
 export interface ProductBrief {
   title: string
@@ -12,6 +18,7 @@ export interface ProductBrief {
   risks: Risk[]
   timeline: TimelinePhase[]
   resources: ResourceRequirement[]
+  assumptions: Assumption[] // Story 3.5: Track assumptions from conversation
   metadata: {
     generatedAt: Date
     sourceMessages: number
@@ -111,6 +118,8 @@ export class ProductBriefGenerator {
     const risks = this.extractRisks(messages)
     const timeline = options.includeTimeline ? this.generateTimeline(messages) : []
     const resources = options.includeResources ? this.generateResourceRequirements(messages) : []
+    // Story 3.5: Extract assumptions from conversation
+    const assumptions = extractAssumptions(messages)
 
     return {
       title: `Product Brief: ${productName}`,
@@ -124,6 +133,7 @@ export class ProductBriefGenerator {
       risks,
       timeline,
       resources,
+      assumptions,
       metadata: {
         generatedAt: new Date(),
         sourceMessages: messages.length,
@@ -573,6 +583,11 @@ export class ProductBriefGenerator {
       })
     }
 
+    // Story 3.5: Include assumptions section
+    if (brief.assumptions && brief.assumptions.length > 0) {
+      md += formatAssumptionsAsMarkdown(brief.assumptions)
+    }
+
     md += `\n---\n*Confidence Score: ${brief.metadata.confidenceScore}% | Generated: ${brief.metadata.generatedAt.toLocaleString()}*\n`
 
     return md
@@ -649,6 +664,8 @@ export class ProductBriefGenerator {
   <ul>
     ${brief.risks.map(r => `<li class="risk-${r.severity}"><strong>${r.description}</strong> (${r.severity}) - ${r.mitigation}</li>`).join('\n')}
   </ul>
+
+  ${brief.assumptions && brief.assumptions.length > 0 ? formatAssumptionsAsHtml(brief.assumptions) : ''}
 
   <footer>
     Confidence Score: ${brief.metadata.confidenceScore}% | Generated: ${brief.metadata.generatedAt.toLocaleString()}
